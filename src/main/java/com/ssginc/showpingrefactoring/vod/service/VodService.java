@@ -22,4 +22,5 @@ public interface VodService {
 
     Page<VodResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable);
 
+    VodResponseDto getVodByNo(Long streamNo);
 }

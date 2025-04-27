@@ -85,4 +85,19 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         GROUP BY w.stream.streamNo ORDER BY count(w.stream.streamNo) DESC
     """)
     Page<VodResponseDto> findAllVodByCategoryAndWatch(Long categoryNo, Pageable pageable);
+
+    /**
+     * 특정 영상번호의 VOD 정보를 반환해주는 쿼리 메서드
+     * @param streamNo 영상 번호
+     * @return VOD 정보
+     */
+    @Query("""
+        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
+        p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamNo = :streamNo
+    """)
+    VodResponseDto findVodByNo(Long streamNo);
+
 }

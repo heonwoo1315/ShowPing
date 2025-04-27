@@ -77,4 +77,14 @@ public class VodServiceImpl implements VodService {
     public Page<VodResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable) {
         return vodRepository.findAllVodByCategoryAndWatch(categoryNo, pageable);
     }
+
+    /**
+     * 영상번호로 VOD 정보를 가져오는 메서드
+     * @param streamNo 영상 번호
+     * @return 쿼리를 통해 가져온 영상정보 DTO
+     */
+    @Override
+    public VodResponseDto getVodByNo(Long streamNo) {
+        return vodRepository.findVodByNo(streamNo);
+    }
 }

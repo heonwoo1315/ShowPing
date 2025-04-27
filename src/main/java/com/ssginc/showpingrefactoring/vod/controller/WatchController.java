@@ -1,6 +1,7 @@
 package com.ssginc.showpingrefactoring.vod.controller;
 
 import com.ssginc.showpingrefactoring.vod.dto.request.WatchRequestDto;
+import com.ssginc.showpingrefactoring.vod.dto.response.VodResponseDto;
 import com.ssginc.showpingrefactoring.vod.dto.response.WatchResponseDto;
 import com.ssginc.showpingrefactoring.vod.service.VodService;
 import com.ssginc.showpingrefactoring.vod.service.WatchService;
@@ -27,6 +28,8 @@ import java.util.Map;
 public class WatchController {
 
     private final StreamService streamService;
+
+    private final VodService vodService;
 
     private final WatchService watchService;
 
@@ -55,7 +58,7 @@ public class WatchController {
         GetStreamProductInfoResponseDto streamProductInfo = streamService.getStreamProductInfo(streamNo);
 
         // VOD 객체 정보 불러오기
-        StreamResponseDto vodDto = streamService.getVodByNo(streamNo);
+        VodResponseDto vodDto = vodService.getVodByNo(streamNo);
         model.addAttribute("vodDto", vodDto);
         model.addAttribute("productInfo", streamProductInfo);
 
