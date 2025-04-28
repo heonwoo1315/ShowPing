@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+<div layout:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/watch/stream.css}">
+    <link rel="stylesheet" th:href="@{/webjars/ekko-lightbox/5.2.0/dist/ekko-lightbox.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:inline="javascript">
+        function parseStreamStartTime(dateStr) {
+            dateStr = dateStr.replace(/^["']|["']$/g, "");
+            let fixedStr = dateStr;
+            // 정규식: 소수점 이하 3자리까지만 남김
+            fixedStr = fixedStr.replace(/(\.\d{3})\d+/, '$1');
+            // 타임존이 없으면 한국 표준시 +09:00 추가
+            if (!/[+-]\d\d:\d\d$/.test(fixedStr) && !fixedStr.endsWith("Z")) {
+                fixedStr += "+09:00";
+            }
+            let parsedDate = new Date(fixedStr);
+            return parsedDate;
+        }
+
+        // ========== 끝 ==========
+
+        // vodDto.streamStartTime을 반드시 문자열 리터럴로 출력 (작은 따옴표 사용)
+        var rawStreamStartTime = '[[${vodDto.streamStartTime}]]';
+        let testParsed = new Date(rawStreamStartTime);
+
+        // 전역 변수 window.streamStartTime을 Date 객체로 설정
+        window.streamStartTime = parseStreamStartTime(rawStreamStartTime);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let streamNo = [[${vodDto.streamNo}]];
+            let title = 'stream_' + streamNo + '_' + [[${vodDto.streamTitle}]];
+
+            addWatch(streamNo);
+            fetchSubtitle(title);
+            fetchChatMessages(streamNo);
+            streamVideo(title);
+            controlTabs();
+
+            // ========== 추가된 부분: 비디오 요소의 play 이벤트 발생 시 updateChatMessages() 호출 ==========
+            const videoElement = document.getElementById('vod');  // id 'vod'와 일치
+            if (videoElement) {
+                videoElement.addEventListener('play', () => {
+                    updateChatMessages();
+                });
+                const chatContainer = document.getElementById('chat-messages');
+                const scrollToLatestButton = document.getElementById('scroll-to-latest');
+                if (chatContainer && scrollToLatestButton) {
+                    chatContainer.addEventListener('scroll', function () {
+                        if (chatContainer.scrollTop + chatContainer.clientHeight < chatContainer.scrollHeight - 20) {
+                            scrollToLatestButton.style.display = 'block';
+                        } else {
+                            scrollToLatestButton.style.display = 'none';
+                        }
+                    });
+
+                    scrollToLatestButton.addEventListener('click', function () {
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        scrollToLatestButton.style.display = 'none';
+                    });
+                }
+            }
+            // ========== 끝 ==========
+        });
+    </script>
+
+
+    <script defer th:src="@{/js/watch/vod.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
+
+
+    <div class="main-contents">
+        <div class="title">
+            <h1>VOD Streaming</h1>
+        </div>
+        <div class="content-container">
+            <div class="vod-container">
+                <video id="vod" controls controlsList="nofullscreen">
+                </video>
+            </div>
+            <div class="chat-container">
+                <!-- 공지 영역 -->
+                <div class="announcement">
+                    공지 | Live 방송 중에만 초특가 <strong>세일 !!</strong>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <!-- 초기 메시지 추가 가능 -->
+                </div>
+
+                <!-- 최신 채팅으로 이동 버튼 -->
+                <button id="scroll-to-latest" class="scroll-button" style="display:none;">
+                    ↓ 최신 채팅으로 이동
+                </button>
+            </div>
+            <div class="product-view-container">
+                <!-- 상단 탭 영역 -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="tab-product">상품 정보</button>
+                    <button class="tab-btn" data-target="tab-faq">FAQ</button>
+                    <!--                    <button class="tab-btn" data-target="tab-event">이벤트</button>-->
+                </div>
+
+                <!-- 탭 콘텐츠: 상품 정보 -->
+                <div id="tab-product" class="tab-content active">
+                    <!-- 상품 이미지 영역 -->
+                    <div class="product-image">
+                        <img th:src="${productInfo.productImg}" alt="상품 이미지" th:if="${productInfo != null}">
+                    </div>
+                    <!-- 상품 정보 영역 (하단) -->
+                    <div class="product-details" th:if="${productInfo != null}">
+                        <p class="product-view-name" th:text="${productInfo.productName}"></p>
+                        <div class="prices">
+                            <span class="current-view-price" th:text="${productInfo.productSalePrice}"></span>
+                            <span class="original-view-price" th:text="${productInfo.productPrice}"></span>
+                        </div>
+                        <button class="buy-button"
+                                th:onclick="|location.href='@{/product/detail/{productNo}(productNo=${productInfo.productNo})}'|">
+                            구매하기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 탭 콘텐츠: FAQ -->
+                <div id="tab-faq" class="tab-content">
+                    <!-- FAQ 항목 1 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 라이브 중에만 할인이 적용되나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>네 그렇습니다. 현재 진행 중인 이벤트는 라이브 특가 이벤트로써 라이브 방송 진행 중일때만 할인가가 적용됩니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 항목 2 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 배송은 얼마나 걸리나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>배송사마다 차이가 발생할 수 있으나 기본적으로 1~2일 소요됩니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 항목 3 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 방송 중 부적절한 메시지를 발견했어요. 해당 유저를 신고를 할 수 있나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>네 가능합니다. 부적절한 메시지를 입력한 유저의 아이디를 클릭하시면 해당 유저를 신고하실 수 있습니다. 이후 운영진에서 해당 유저의 메시지를 제한하는 등 적절한 조치를 취하도록 하겠습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 항목 4 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 라이브 방송을 놓쳤어요. 혹시 다시 볼 수 있나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>네 방송이 종료된 후 VOD란에서 종료된 라이브 영상을 다시 시청하실 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 항목 5 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 상세 문의는 어디서 할 수 있나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>고객센터(010-1234-5678)로 전화주시면 답변 도와드리겠습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 항목 6 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Q. 다른 시청 이벤트는 없나요?</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>판매사가 시청 이벤트 요청시 FAQ 탭 옆에 시청 이벤트란에서 확인하실 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모달 오버레이 (배경 흐림 효과용) -->
+        <div class="modal-overlay" id="modalOverlay"></div>
+
+        <div class="report-modal" id="reportModal">
+            <h2>채팅 신고</h2>
+            <p class="description">신고 사유를 선택해 주세요.</p>
+            <form id="reportForm">
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="reportReason" value="음란성, 폭력성 또는 괴롭힘" required/>
+                        음란성, 폭력성 또는 괴롭힘
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="reportReason" value="비방 및 명예훼손"/>
+                        비방 및 명예훼손
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="reportReason" value="스팸 및 도배 행위"/>
+                        스팸 및 도배 행위
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="reportReason" value="광고성 또는 부적절한 발언"/>
+                        광고성 또는 부적절한 발언
+                    </label>
+                </div>
+                <div class="report-content">
+                    <!-- 신고 대상 정보가 동적으로 들어갈 부분 -->
+                    <p class="chatContent" id="reportTargetText">신고 대상의 채팅 내용</p>
+                </div>
+                <div class="button-group">
+                    <button type="button" id="cancelBtn">취소</button>
+                    <button type="submit" id="submitBtn">신고하기</button>
+                </div>
+            </form>
+        </div>
+
+        <br>
+        <div class="settings-buttons">
+            <div class="buttons-container">
+                <button id="subtitle-on" onclick="onSubtitle()">
+                    <span class="glyphicon glyphicon-play">자막켜기</span>
+                </button>
+                <button id="subtitle-off" onclick="offSubtitle()">
+                    <span class="glyphicon glyphicon-play">자막끄기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

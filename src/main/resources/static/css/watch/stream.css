@@ -1,0 +1,700 @@
+.video {
+    width: 300px;
+    height: 480px;
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center;
+    overflow: hidden; /* 넘치는 부분 자르기 */
+    background-color: #fff; /* 비디오 로딩 전 배경 */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow
+    ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.main-contents {
+    justify-content: center;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    padding-top: 40px;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+}
+
+.vod-container {
+    width: 300px;
+}
+
+/* Chat Room Container */
+.chat-container {
+    position: relative;
+    width: 300px;
+    min-width: 300px;
+    height: 480px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    font-family: 'Noto Sans', 'Noto Sans KR', sans-serif;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.product-container {
+    width: 300px;
+}
+
+#vod, #live, #live-video {
+    width: 100%; /* 부모 요소 너비에 맞춤 */
+    height: 100%; /* 부모 요소 높이에 맞춤 */
+    object-fit: fill; /* 비율을 유지하면서 div에 꽉 차게 조정 */
+}
+
+#product {
+    width: 300px;
+    height: 480px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    /* 중앙 정렬을 모두 해제하고 내부에서 배치할 수 있게 수정 */
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;          /* 내부 여백 */
+    box-sizing: border-box; /* 패딩을 포함하여 높이 계산 */
+    overflow-y: auto;       /* 내용이 많을 경우 스크롤 */
+}
+
+div.dragged {
+    cursor: all-scroll !important;
+    border-color: blue !important;
+    z-index: 10 !important;
+}
+
+.settings-buttons {
+    width: 100%;
+    justify-content: end;
+    padding-bottom: 20px;
+}
+
+
+.buttons-container {
+    width: 85%;
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+}
+
+#subtitle-on, #start {
+    background-color: #04AA6D;
+    width: 100px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 20px;
+    color: white;
+}
+
+#subtitle-off, #stop {
+    background-color: #f44336;
+    width: 100px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 20px;
+    color: white;
+}
+
+/* 공통 폼 래퍼 */
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 각 그룹 간격 */
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+/* 가로 배치용 클래스 */
+.form-group.horizontal {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between; /* 레이블과 입력을 양쪽에 배치 */
+}
+
+/* 레이블과 입력(또는 textarea) 사이 기본 간격 */
+.form-group.horizontal label {
+    margin-right: 10px;
+    white-space: nowrap; /* 레이블이 줄바꿈되지 않도록 */
+}
+
+/* 입력 칸 확장 (레이블 옆을 채우도록) */
+.form-group.horizontal input,
+.form-group.horizontal textarea {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* textarea 높이 지정(필요시) */
+.form-group.horizontal textarea {
+    min-height: 160px;
+    resize: none;  /* 사용자 리사이즈 허용 */
+}
+
+/* 상품 선택 부분: 필요 시 별도 지정 가능 */
+.form-group.horizontal.select-group {
+    /* 이미 .horizontal에 align-items: center가 있으면 중복 불필요 */
+    display: flex;
+    align-items: center;      /* 수직 중앙 정렬 */
+    justify-content: space-between; /* 좌우로 떨어뜨리기 */
+}
+
+/* 상품 선택 버튼 - 배경/테두리 제거 */
+.select-btn {
+    background: none;  /* 배경 제거 */
+    border: none;      /* 테두리 제거 */
+    cursor: pointer;
+    color: #000;       /* 글자색 */
+    font-size: 14px;   /* 버튼 글자 크기 */
+    display: inline-flex;
+    align-items: center;  /* 버튼 안 아이콘/텍스트 수직 중앙 정렬 */
+    justify-content: center;
+}
+
+/* 할인율 입력 부분 수평 배치 */
+.discount-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 업데이트 버튼 우측에 작게 배치 */
+.form-group.horizontal.update-group {
+    justify-content: flex-end; /* 버튼을 오른쪽으로 */
+}
+
+/* 업데이트 버튼 스타일 */
+.update-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px; /* 작게 보이고 싶다면 12px 정도로 조정 가능 */
+    cursor: pointer;
+}
+
+/* 선택된 상품 영역 */
+.product-element {
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fafafa;
+    box-sizing: border-box;
+}
+
+/* 상품 이미지 */
+.product-element .product-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* 상품 정보 */
+.product-element .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 상품명 */
+.product-element .product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    line-height: 1.3;
+    margin: 0;
+}
+
+/* 가격 컨테이너 (할인가 + 원가를 나란히 배치) */
+.product-element .product-price-container {
+    display: flex;
+    gap: 8px;
+    align-items: baseline; /* 글자 크기가 달라도 수평 맞춤 */
+}
+
+/* 할인된 가격 */
+.product-element .product-origin-price {
+    font-size: 14px;
+    font-weight: bold;
+    color: #e60023;
+}
+
+/* Announcement Section */
+.announcement {
+    background-color: #ffe6e6;
+    color: #ff6666;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;     /* 세로 중앙 정렬 */
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Chat Messages Section */
+.chat-messages {
+    flex-grow: 1;
+    /*height: calc(100% - 140px); !* 전체 높이에서 입력 영역(예: 50px)과 공지 영역(예: 50px) 등을 뺀 높이 *!*/
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    padding: 10px;
+    /*background-color: #f9f9f9;*/
+    margin-bottom: 10px;
+    font-size: 14px;
+    padding-bottom: 40px;
+}
+
+.chat-messages .message {
+    color: #555; /* 메시지 텍스트 색상 */
+    margin-bottom: 8px;
+}
+
+.chat-messages .username {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.chat-messages.admin .username {
+    color: #ff6666; /* 관리자 메시지 색상 */
+}
+
+.chat-messages.user .username {
+    color: #333; /* 일반 사용자 메시지 색상 */
+}
+
+/* 최신 채팅으로 이동 버튼 */
+.scroll-button {
+    position: absolute;
+    bottom: 55px; /* 입력 영역 높이(예: 50px) 위에 약간의 여유 (10px) */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10;
+    /* display는 JavaScript에서 제어 */
+}
+
+/* Input Section */
+.input-container {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); /* 수평 중앙 정렬 보정 */
+    width: 100%;
+    display: flex;
+    background-color: #fff;
+    border-top: #f9f9f9;
+    padding: 10px;
+}
+
+.input-container input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+.input-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+}
+
+/* 채팅 메시지 래퍼 */
+.chat-wrapper {
+    position: relative;
+    height: 440px;
+    flex: 1; /* 위/아래로 늘어나도록 설정 */
+    overflow-y: auto; /* 스크롤 가능 */
+    padding-bottom: 70px; /* input-container가 겹치지 않도록 하단 여백 */
+    border: 1px solid #ddd; /* (선택) 영역 구분을 위한 스타일 */
+}
+
+.report-modal {
+    display: none; /* 초기에는 숨김 */
+    width: 320px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; /* 채팅창 위에 표시 */
+}
+
+/* 모달 배경(반투명) */
+.modal-overlay {
+    display: none; /* 초기에는 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+}
+
+.report-modal h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.description {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    margin-bottom: 20px;
+}
+
+.radio-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin-right: 8px;
+}
+
+.report-content {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#cancelBtn,
+#submitBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+}
+
+#cancelBtn {
+    background-color: #ccc;
+    color: #333;
+}
+
+#submitBtn {
+    background-color: #f05d5e;
+    color: #fff;
+}
+
+.user-name {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#char-count {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+#error-message {
+    display: none;  /* 기본 상태에서는 숨김 */
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: bold;
+    position: relative;  /* 또는 상황에 맞게 absolute 등으로 설정 */
+    z-index: 10;
+}
+
+/********************/
+/* 시청 페이지 상품 화면 */
+/********************/
+.product-view-container {
+    width: 300px;
+    height: 480px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    /* 중앙 정렬을 모두 해제하고 내부에서 배치할 수 있게 수정 */
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* 패딩을 포함하여 높이 계산 */
+}
+
+/* 상단 탭 영역 */
+.tabs {
+    height: 40px;
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 40px;
+    color: #333;
+}
+
+.tabs button.active {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+}
+
+/* 상품 이미지 영역: flex를 이용해 이미지 중앙 정렬 */
+.product-image {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-image img {
+    width: 250px;
+    height: 250px;
+}
+
+/* 상품 정보 영역 (하단) */
+.product-details {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 127px;
+    background-color: #F4F5F7;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.product-view-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.prices {
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.current-view-price {
+    color: #d9534f;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.original-view-price {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* 구매하기 버튼: 크기 약간 키우고, 우측 하단에 위치 */
+.buy-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #D4D1D1;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buy-button:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* 탭 컨테이너 */
+.tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    /*margin-bottom: 20px; !* 기존보다 아래 여백을 좀 더 크게 *!*/
+}
+
+/* 각 탭 버튼 */
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* 글자 크기 조금 확대 */
+    text-align: center;
+    color: #333;
+    /*padding: 12px 0; !* 세로 패딩 추가 *!*/
+    font-weight: 500; /* 반두껍게 */
+    transition: color 0.2s ease;
+}
+
+/* 탭 버튼에 마우스 올렸을 때 효과 */
+.tab-btn:hover {
+    color: #000; /* hover 시 좀 더 진하게 */
+}
+
+/* 활성화된 탭 버튼 */
+.tab-btn.active {
+    font-weight: 700;
+    border-bottom: 3px solid #000;
+    color: #000;
+}
+
+/* 탭 콘텐츠 영역 */
+.tab-content {
+    display: none;
+    max-height: 4200px; /* 원하는 높이 지정 */
+    overflow-y: auto;  /* 스크롤 활성화 */
+    padding: 20px; /* FAQ 전체 여백을 조금 더 */
+    background-color: #fff; /* FAQ 배경 흰색 */
+}
+
+/* 활성화된 탭 콘텐츠만 보이도록 */
+.tab-content.active {
+    display: block;
+}
+
+/* ========== FAQ 탭 스타일 ========== */
+#tab-faq {
+    max-height: none; /* 스크롤을 없애거나 자유롭게 보이도록 */
+    background-color: #fafafa; /* FAQ 영역 배경을 살짝 회색 */
+    border: 1px solid #eee;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* FAQ 제목을 크게 보이게 하고 싶다면 pseudo-element로 추가 가능
+   (HTML 수정 없이 제목을 표시하는 예시)
+*/
+#tab-faq::before {
+    content: "자주 묻는 질문 FAQ";
+    display: block;
+    white-space: pre; /* 개행(\n)을 실제 줄바꿈으로 처리 */
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* ========== FAQ 아이템 ========== */
+.faq-item {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+/* 펼쳐졌을 때 약간의 음영 효과를 줄 수도 있음 */
+.faq-item.active {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* FAQ 질문 영역 */
+.faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    position: relative;
+}
+
+/* 화살표 아이콘 */
+.faq-arrow {
+    transition: transform 0.2s ease;
+    font-size: 14px;
+    color: #999;
+}
+
+/* 펼쳐진 상태일 때 화살표 회전 */
+.faq-item.active .faq-arrow {
+    transform: rotate(180deg);
+}
+
+/* FAQ 답변 영역 (기본 숨김) */
+.faq-answer {
+    display: none;
+    margin-top: 15px;
+    line-height: 1.6;
+    font-size: 14px;
+    color: #555;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+/* 펼쳐졌을 때 .faq-answer 보이기 */
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+/* .faq-answer 내부의 <p> 태그 스타일 */
+.faq-answer p {
+    margin: 0;
+    padding: 0;
+}
