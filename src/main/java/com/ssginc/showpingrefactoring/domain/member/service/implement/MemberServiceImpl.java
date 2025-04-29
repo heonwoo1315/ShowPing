@@ -9,10 +9,14 @@ import com.ssginc.showpingrefactoring.domain.member.dto.MemberDto;
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
+import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +24,14 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Map<String, Boolean> verifiedEmailStorage = new HashMap<>();
 
     @Override
     public void signup(SignupRequestDto request) {
+        if (!verifiedEmailStorage.containsKey(request.getEmail()) || !verifiedEmailStorage.get(request.getEmail())) {
+            throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
+
         if (memberRepository.findByMemberId(request.getMemberId()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_MEMBER_ID);
         }
@@ -42,6 +51,9 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberRepository.save(member);
+
+        // 회원가입 완료 후 인증 성공 기록 삭제 (optional)
+        verifiedEmailStorage.remove(request.getEmail());
     }
 
     @Override

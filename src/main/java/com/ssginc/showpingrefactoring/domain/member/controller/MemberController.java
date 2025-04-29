@@ -1,9 +1,8 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
-import com.ssginc.showpingrefactoring.domain.member.dto.SignupRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.UpdateMemberRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.MemberDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.*;
 import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
+import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final Map<String, Boolean> verifiedEmailStorage = new HashMap<>();
+    private final MailService mailService;
 
     /**
      * 회원 가입
@@ -69,5 +73,24 @@ public class MemberController {
             return jwtTokenProvider.getUsername(token);
         }
         throw new RuntimeException("No Authorization Header Found");
+    }
+
+    @PostMapping("/email/send-code")
+    public ResponseEntity<String> sendVerificationCode(@RequestBody EmailRequestDto request) {
+        mailService.sendSignupVerificationCode(request.getEmail());
+        return ResponseEntity.ok("인증 코드가 이메일로 발송되었습니다.");
+    }
+
+    @PostMapping("/email/verify-code")
+    public ResponseEntity<String> verifyCode(@RequestBody EmailVerifyRequestDto request) {
+        boolean isValid = mailService.verifySignupCode(request.getEmail(), request.getCode());
+
+        if (isValid) {
+            // 이메일 인증 성공 기록 (임시 저장소)
+            verifiedEmailStorage.put(request.getEmail(), true);
+            return ResponseEntity.ok("인증 성공");
+        } else {
+            return ResponseEntity.badRequest().body("인증 실패: 잘못된 코드입니다.");
+        }
     }
 }
