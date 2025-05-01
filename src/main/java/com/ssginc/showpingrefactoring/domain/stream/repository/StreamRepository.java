@@ -17,7 +17,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      * @return 라이브 방송 정보 리스트
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -31,7 +31,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      * @return 라이브 방송 정보 리스트
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -46,7 +46,7 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      * @return 페이징 정보가 포함된 준비중인 라이브 목록
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -61,12 +61,12 @@ public interface StreamRepository extends JpaRepository<Stream, Long> {
      * @return stream 정보
      */
     @Query("""
-                    SELECT new com.ssginc.showpinglive.dto.object.GetStreamRegisterInfoDto
-                    (s.streamNo, s.streamTitle, s.streamDescription,
-                    p.productNo, p.productName, p.productPrice, p.productSale, p.productImg)
-                    FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
-                    WHERE s.member.memberId = :memberId AND s.streamStatus = "STANDBY"
-            """)
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.object.GetStreamRegisterInfoDto
+        (s.streamNo, s.streamTitle, s.streamDescription,
+        p.productNo, p.productName, p.productPrice, p.productSale, p.productImg)
+        FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
+        WHERE s.member.memberId = :memberId AND s.streamStatus = "STANDBY"
+    """)
     GetStreamRegisterInfoDto findStreamByMemberIdAndStreamStatus(String memberId);
 
 }
