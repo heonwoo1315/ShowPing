@@ -97,7 +97,7 @@ function filterStandBy() {
 }
 
 function loadBroadCast(pageNo) {
-    axios.get('/api/stream/broadcast', {
+    axios.get('/api/live/active', {
         params: {
             pageNo: pageNo,
         }
@@ -170,7 +170,7 @@ function loadBroadCast(pageNo) {
 }
 
 function loadLive() {
-    axios.get('/api/stream/live')
+    axios.get('/api/live/onair')
         .then(response => {
             const live = response.data['live'];
             const liveGrid = document.getElementById('live-grid');
@@ -228,7 +228,7 @@ function loadLive() {
 }
 
 function loadStandBy(pageNo) {
-    axios.get('/api/stream/standby/list', {
+    axios.get('/api/live/standby', {
         params: {
             pageNo: pageNo,
         }

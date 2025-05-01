@@ -6,7 +6,7 @@
             "Authorization": "Bearer " + accessToken,
         }
 
-        const response = await axios.get("/api/stream/stream", {
+        const response = await axios.get("/api/live/live-info", {
             headers: header
         });
 

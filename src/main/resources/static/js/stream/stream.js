@@ -344,7 +344,7 @@ function viewerResponse(message) {
 }
 
 function startLive() {
-    axios.post("/api/stream/start", {
+    axios.post("/api/live/start", {
         streamNo: streamNo
     })
         .then((response) => {
@@ -484,7 +484,7 @@ function getConstraints() {
 }
 
 function stopLive() {
-    axios.post("/api/stream/stop", {
+    axios.post("/api/live/stop", {
         streamNo: streamNo
     })
         .then((response) => {

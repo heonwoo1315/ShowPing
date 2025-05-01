@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 1) + 선택 버튼을 누르면 모달 열기
     selectBtn.addEventListener("click", function() {
-        axios.get("/api/stream/product/list")
+        axios.get("/api/live/product/list")
             .then((response) => {
                 // API를 통해 받은 상품 목록
                 const products = response.data;

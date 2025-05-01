@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // axios로 방송을 등록
-        axios.post("/api/stream/register",
+        axios.post("/api/live/register",
             data, {
             headers: header
             })

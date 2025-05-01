@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/stream")
+@RequestMapping("/api/live")
 @RequiredArgsConstructor
 public class StreamApiController {
 
@@ -35,7 +35,7 @@ public class StreamApiController {
      * 라이브 방송을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
-    @GetMapping("/live")
+    @GetMapping("/onair")
     public ResponseEntity<?> getLive() {
         StreamResponseDto live = streamService.getLive();
 
@@ -49,7 +49,7 @@ public class StreamApiController {
      * 라이브 중.예정 방송목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
-    @GetMapping("/broadcast")
+    @GetMapping("/active")
     public ResponseEntity<?> getBroadCast(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);
         Page<StreamResponseDto> pageInfo = streamService.getAllBroadCastByPage(pageable);
@@ -64,7 +64,7 @@ public class StreamApiController {
      * 준비중인 방송목록을 반환해주는 컨트롤러 메서드
      * @return 전달할 응답객체 (json 형태로 전달)
      */
-    @GetMapping("/standby/list")
+    @GetMapping("/standby")
     public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);;
         Page<StreamResponseDto> pageInfo = streamService.getAllStandbyByPage(pageable);
@@ -139,7 +139,7 @@ public class StreamApiController {
      * @param userDetails
      * @return 방송 정보가 담긴 응답 객체
      */
-    @GetMapping("/stream")
+    @GetMapping("/live-info")
     public ResponseEntity<GetStreamRegisterInfoResponseDto> getStreamInfo(@AuthenticationPrincipal UserDetails userDetails) {
         String memberId = null;
         if (userDetails != null) {
