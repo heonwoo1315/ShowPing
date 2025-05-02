@@ -36,12 +36,12 @@ public class StreamApiController {
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/onair")
-    public ResponseEntity<?> getLive() {
-        StreamResponseDto live = liveService.getLive();
+    public ResponseEntity<?> getOnair() {
+        StreamResponseDto onair = liveService.getOnair();
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
-        result.put("live", live);
+        result.put("onair", onair);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -50,9 +50,9 @@ public class StreamApiController {
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/active")
-    public ResponseEntity<?> getBroadCast(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+    public ResponseEntity<?> getActive(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<StreamResponseDto> pageInfo = liveService.getAllBroadCastByPage(pageable);
+        Page<StreamResponseDto> pageInfo = liveService.getAllActiveByPage(pageable);
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
@@ -65,7 +65,7 @@ public class StreamApiController {
      * @return 전달할 응답객체 (json 형태로 전달)
      */
     @GetMapping("/standby")
-    public ResponseEntity<?> getStandByList(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
+    public ResponseEntity<?> getStandby(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);;
         Page<StreamResponseDto> pageInfo = liveService.getAllStandbyByPage(pageable);
 
@@ -92,14 +92,14 @@ public class StreamApiController {
      * @return 생성 혹은 수정된 방송 데이터의 방송 번호가 포함된 응답 객체
      */
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Long>> createStream(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterLiveRequestDto request) {
+    public ResponseEntity<Map<String, Long>> resgisterLive(@AuthenticationPrincipal UserDetails userDetails, @RequestBody RegisterLiveRequestDto request) {
         String memberId = null;
 
         if (userDetails != null) {
             memberId = userDetails.getUsername();
         }
 
-        Long streamNo = liveService.createStream(memberId, request);
+        Long streamNo = liveService.registerLive(memberId, request);
 
         Map<String, Long> response = new HashMap<>();
         response.put("streamNo", streamNo);
@@ -113,8 +113,8 @@ public class StreamApiController {
      * @return 시작한 방송에 대한 정보
      */
     @PostMapping("/start")
-    public ResponseEntity<StartLiveResponseDto> startStream(@RequestBody LiveRequestDto request) {
-        StartLiveResponseDto response = liveService.startStream(request.getStreamNo());
+    public ResponseEntity<StartLiveResponseDto> startLive(@RequestBody LiveRequestDto request) {
+        StartLiveResponseDto response = liveService.startLive(request.getStreamNo());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -125,8 +125,8 @@ public class StreamApiController {
      * @return 방송 종료 설정 적용 여부
      */
     @PostMapping("/stop")
-    public ResponseEntity<Map<String, Boolean>> stopStream(@RequestBody LiveRequestDto request) {
-        Boolean result = liveService.stopStream(request.getStreamNo());
+    public ResponseEntity<Map<String, Boolean>> stopLive(@RequestBody LiveRequestDto request) {
+        Boolean result = liveService.stopLive(request.getStreamNo());
 
         Map<String, Boolean> response = new HashMap<>();
         response.put("result", result);
@@ -140,13 +140,13 @@ public class StreamApiController {
      * @return 방송 정보가 담긴 응답 객체
      */
     @GetMapping("/live-info")
-    public ResponseEntity<GetLiveRegisterInfoResponseDto> getStreamInfo(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<GetLiveRegisterInfoResponseDto> getLiveInfo(@AuthenticationPrincipal UserDetails userDetails) {
         String memberId = null;
         if (userDetails != null) {
             memberId = userDetails.getUsername();
         }
 
-        GetLiveRegisterInfoResponseDto response = liveService.getStreamRegisterInfo(memberId);
+        GetLiveRegisterInfoResponseDto response = liveService.getLiveRegisterInfo(memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

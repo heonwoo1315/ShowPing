@@ -77,9 +77,9 @@ public class LiveServiceImpl implements LiveService {
      * @return 라이브 방송정보 1개
      */
     @Override
-    public StreamResponseDto getLive() {
-        List<StreamResponseDto> liveList = liveRepository.findLive();
-        return liveList.isEmpty() ? null : liveList.get(0);
+    public StreamResponseDto getOnair() {
+        List<StreamResponseDto> onairList = liveRepository.findOnair();
+        return onairList.isEmpty() ? null : onairList.get(0);
     }
 
     /**
@@ -88,8 +88,8 @@ public class LiveServiceImpl implements LiveService {
      * @return 방송 중, 방송 대기 중인 방송 정보 페이지 리스트
      */
     @Override
-    public Page<StreamResponseDto> getAllBroadCastByPage(Pageable pageable) {
-        return liveRepository.findAllBroadCastByPage(pageable);
+    public Page<StreamResponseDto> getAllActiveByPage(Pageable pageable) {
+        return liveRepository.findAllActiveByPage(pageable);
     }
 
     /**
@@ -109,7 +109,7 @@ public class LiveServiceImpl implements LiveService {
      * @return 생성 혹은 수정된 방송의 방송 번호
      */
     @Override
-    public Long createStream(String memberId, RegisterLiveRequestDto request) {
+    public Long registerLive(String memberId, RegisterLiveRequestDto request) {
         // 생성 혹은 수정된 streamNo
         Long responseStreamNo;
         Product product = productRepository.findById(request.getProductNo()).orElseThrow(RuntimeException::new);
@@ -163,7 +163,7 @@ public class LiveServiceImpl implements LiveService {
      * @param streamNo 시작하려는 방송 번호
      * @return 시작한 방송에 대한 정보
      */
-    public StartLiveResponseDto startStream(Long streamNo) {
+    public StartLiveResponseDto startLive(Long streamNo) {
         Stream stream = liveRepository.findById(streamNo).orElseThrow(RuntimeException::new);
 
         // 방송 시작 시간 설정
@@ -194,7 +194,7 @@ public class LiveServiceImpl implements LiveService {
      * @param streamNo 종료하려는 방송 번호
      * @return 방송 종료 설정 적용 여부
      */
-    public Boolean stopStream(Long streamNo) {
+    public Boolean stopLive(Long streamNo) {
         Stream stream = liveRepository.findById(streamNo).orElseThrow(RuntimeException::new);
 
         // 방송 종료 시간 설정
@@ -219,9 +219,9 @@ public class LiveServiceImpl implements LiveService {
      * @return GetStreamRegisterInfoDto 로그인한 회원으로 등록된 방송 정보
      */
     @Override
-    public GetLiveRegisterInfoResponseDto getStreamRegisterInfo(String memberId) {
+    public GetLiveRegisterInfoResponseDto getLiveRegisterInfo(String memberId) {
         try {
-            GetLiveRegisterInfoDto streamInfo = liveRepository.findStreamByMemberIdAndStreamStatus(memberId);
+            GetLiveRegisterInfoDto streamInfo = liveRepository.findStandbyLiveByMemberId(memberId);
 
             if (streamInfo == null) {
                 throw new RuntimeException("해당 회원으로 등록된 방송 정보가 없습니다.");

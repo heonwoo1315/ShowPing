@@ -24,7 +24,7 @@ public interface LiveRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ONAIR'
         ORDER BY s.streamNo DESC
     """)
-    List<StreamResponseDto> findLive();
+    List<StreamResponseDto> findOnair();
 
     /**
      * 진행중인 라이브 방송을 반환해주는 쿼리 메서드
@@ -38,7 +38,7 @@ public interface LiveRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ONAIR' OR s.streamStatus = 'STANDBY'
         ORDER BY s.streamNo DESC, s.streamStatus ASC
     """)
-    Page<StreamResponseDto> findAllBroadCastByPage(Pageable pageable);
+    Page<StreamResponseDto> findAllActiveByPage(Pageable pageable);
 
     /**
      * 준비중인 라이브 목록과 페이지 정보를 반환해주는 쿼리 메서드
@@ -61,12 +61,12 @@ public interface LiveRepository extends JpaRepository<Stream, Long> {
      * @return stream 정보
      */
     @Query("""
-        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.object.GetStreamRegisterInfoDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.object.GetLiveRegisterInfoDto
         (s.streamNo, s.streamTitle, s.streamDescription,
         p.productNo, p.productName, p.productPrice, p.productSale, p.productImg)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         WHERE s.member.memberId = :memberId AND s.streamStatus = "STANDBY"
     """)
-    GetLiveRegisterInfoDto findStreamByMemberIdAndStreamStatus(String memberId);
+    GetLiveRegisterInfoDto findStandbyLiveByMemberId(String memberId);
 
 }

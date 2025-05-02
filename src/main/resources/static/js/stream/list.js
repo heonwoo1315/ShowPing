@@ -172,7 +172,7 @@ function loadBroadCast(pageNo) {
 function loadLive() {
     axios.get('/api/live/onair')
         .then(response => {
-            const live = response.data['live'];
+            const live = response.data['onair'];
             const liveGrid = document.getElementById('live-grid');
             liveGrid.innerHTML = '';
 

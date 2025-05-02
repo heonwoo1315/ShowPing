@@ -14,18 +14,18 @@ public interface LiveService {
 
     GetLiveProductInfoResponseDto getStreamProductInfo(Long streamNo);
 
-    StreamResponseDto getLive();
+    StreamResponseDto getOnair();
 
-    Page<StreamResponseDto> getAllBroadCastByPage(Pageable pageable);
+    Page<StreamResponseDto> getAllActiveByPage(Pageable pageable);
 
     Page<StreamResponseDto> getAllStandbyByPage(Pageable pageable);
 
-    Long createStream(String memberId, RegisterLiveRequestDto request);
+    Long registerLive(String memberId, RegisterLiveRequestDto request);
 
-    StartLiveResponseDto startStream(Long streamNo);
+    StartLiveResponseDto startLive(Long streamNo);
 
-    Boolean stopStream(Long streamNo);
+    Boolean stopLive(Long streamNo);
 
-    GetLiveRegisterInfoResponseDto getStreamRegisterInfo(String memberId);
+    GetLiveRegisterInfoResponseDto getLiveRegisterInfo(String memberId);
 
 }
