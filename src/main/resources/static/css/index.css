@@ -1,0 +1,432 @@
+/* 전체 레이아웃 및 기본 스타일 */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    /* 가로 스크롤 방지 (배너 슬라이드 넘침 처리) */
+    overflow-x: hidden;
+}
+
+hr {
+    height: 0.8px; /* 높이 설정 */
+    background-color: #ccc; /* 색상 설정 */
+    border: none; /* 경계선 제거 */
+}
+
+h2 {
+    margin: 20px;
+    padding-left: 20px;
+}
+
+/* 배너 영역 스타일 */
+.banner {
+    position: relative;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.banner-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.banner-slide {
+    /* 각 슬라이드 폭을 배너 컨테이너의 80%로 설정 (옆에 다음 슬라이드 일부 보임) */
+    width: 60%;
+    flex-shrink: 0;
+}
+
+.banner-slide img {
+    width: 100%;
+    display: block;
+    /* 흐림 효과와 투명도 설정 (활성 슬라이드는 이 값이 재정의됨) */
+    filter: blur(3px);
+    opacity: 0.7;
+    transition: filter 0.5s ease, opacity 0.5s ease;
+}
+
+/* 현재(active) 슬라이드는 선명하게 표시 */
+.banner-slide.active img {
+    filter: none;
+    opacity: 1;
+}
+
+.banner-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+/* 이전/다음 버튼 위치 */
+.banner-btn.prev {
+    left: 10px;
+}
+
+.banner-btn.next {
+    right: 10px;
+}
+
+/* 비활성화 상태 (처음/마지막 배너에서 해당 버튼 투명 처리) */
+.banner-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* 카테고리 버튼 영역 */
+.categories {
+    width: 80%;
+    margin: 40px auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.category-button {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 50%;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* 아이콘 글자 크기 */
+.category-button .icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+/* '특급 혜택' 버튼 특수 스타일 (무지개 애니메이션 배경) */
+.category-button.special {
+    color: #fff;
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, purple, red);
+    background-size: 300% 300%;
+    animation: rainbow 5s linear infinite;
+}
+
+@keyframes rainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+/* 'HOT' 아이콘 스타일 */
+.category-button.special .hot-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #ff3333;
+    color: #fff;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    border-radius: 50%;
+}
+
+/* 필터 버튼 스타일 */
+.filters {
+    text-align: left;
+    margin-left: 30px;
+}
+
+.filter-button {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    cursor: pointer;
+}
+
+.filter-button.active {
+    background: #333;
+    color: #fff;
+    border-color: #333;
+}
+
+/* 상품 리스트 공통 스타일 */
+.items {
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* 각 상품 아이템 스타일 */
+.item {
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    width: 23%;
+    text-align: left;
+}
+
+.item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.item h3 {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+.item p {
+    margin: 4px 0;
+}
+
+/* 가격 정보 스타일 */
+.price {
+    font-weight: bold;
+}
+
+.discount-rate {
+    color: #d9534f;
+    /* red */
+    margin-right: 5px;
+}
+
+.sale-price {
+
+    color: #d9534f;
+}
+
+.original-price {
+    color: #888;
+    text-decoration: line-through;
+    margin-left: 5px;
+}
+
+/* '더보기' 버튼 스타일 */
+.load-more {
+    display: block;
+    margin: 15px auto;
+    padding: 8px 16px;
+    background: #f7f7f7;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* 숨김 요소 (로드되지 않은 아이템) */
+.hidden {
+    display: none;
+}
+
+/* 광고 섹션 스타일 */
+.ad-section {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.ad-section img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 모든 앵커 태그에서 밑줄 제거 */
+a {
+    text-decoration: none;
+    color: black;
+}
+
+/* 호버, 포커스, 액티브 상태에서도 밑줄 제거 */
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+}
+
+.live-filter-button, .vod-filter-button, .filter-button {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 10px;
+    background-color: white;
+}
+
+.live-filter-button:hover, .vod-filter-button:hover{
+    background-color: #f0f0f0;
+}
+
+.live-filter-button.selected, .vod-filter-button.selected, .filter-button.active {
+    color: #f07c8c;
+    border-color: #f07c8c;
+    background-color: white;
+    font-weight: bold;
+}
+
+.live-grid, .vod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 1개씩 한 줄 */
+    justify-items: center; /* 그리드 아이템을 가운데 정렬 */
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 개별 상품 박스 */
+.live-item {
+    padding: 15px;
+    width: 250px; /* 상품 카드 크기 조정 */
+    height: 400px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+}
+
+/* 개별 상품 박스 */
+.vod-item {
+    padding: 15px;
+    width: 250px; /* 상품 카드 크기 조정 */
+    height: 400px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+}
+
+.live-item:hover, .vod-item:hover {
+    padding: 15px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
+}
+
+/* 이미지 스타일 */
+.live-item img, .vod-item img {
+    max-width: 180px; /* 이미지 크기 조정 */
+    max-height: 180px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.live-icon{
+    position: absolute;
+    margin-left: 150px; /* 왼쪽에서 150px 만큼 띄우기 */
+}
+
+.standby-icon {
+    position: absolute;
+    margin-left: 120px; /* 왼쪽에서 150px 만큼 띄우기 */
+}
+
+.product-img {
+    width: 180px;
+    height: 180px;
+    margin-right: 10px;
+}
+
+.product-img-container {
+    position: relative;
+}
+
+.sale-icon {
+    position: absolute;
+    right: 1px; /* 왼쪽에서 90px */
+}
+
+#product-name {
+    width: 300px;
+    padding: 10px;
+    font-size: 13px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+#product-name:focus {
+    border-color: #007bff;  /* 포커스 시 테두리 색상 변경 */
+    outline: none;          /* 기본 아웃라인 제거 */
+}
+
+.review-stars {
+    display: flex;
+    margin-top: 5px;
+}
+
+.star {
+    width: 20px;
+    height: 20px;
+    margin-right: 2px;
+}
+
+/* 개별 상품 박스 */
+.product-item {
+    padding: 15px;
+    width: 250px; /* 상품 카드 크기 조정 */
+    height: 400px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    /*border: 1px solid #e0e0e0;*/
+    margin: 20px;
+}
+
+.product-item:hover {
+    padding: 15px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
+}
+
+.popular-items{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄 */
+    justify-items: center; /* 그리드 아이템을 가운데 정렬 */
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.live-grid, .vod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 1개씩 한 줄 */
+    justify-items: center; /* 그리드 아이템을 가운데 정렬 */
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
+}

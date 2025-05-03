@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title>ShowPing</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script defer th:src="@{/js/scripts.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
+  <script defer th:src="@{/js/login/logout.js}"></script>
+</head>
+<body>
+<!-- 공통 헤더 -->
+<header class="navbar">
+  <div class="navbar-container">
+    <!-- 로고 -->
+    <div class="navbar-logo">
+      <a href="/" style="color: #38A7FF">ShowPing</a>
+    </div>
+    
+    <!-- 네비게이션 메뉴 -->
+    <nav class="navbar-menu">
+      <ul class="menu-list">
+        <li class="menu-item dropdown">
+          <a>쇼핑몰</a>
+          <!-- 드롭다운 메뉴 -->
+          <ul class="dropdown-menu">
+            <li class="menu-item dropdown">
+              <ul class="dropdown-menu">
+                <!-- 카테고리 리스트 동적 추가 -->
+                <li>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li class="menu-item dropdown">
+          <a th:href="@{/stream/list}">라이브</a>
+        </li>
+        <li class="menu-item dropdown">
+          <a th:href="@{/watch/history}">시청 내역</a>
+        </li>
+        <li class="menu-item dropdown" id="admin-menu" hidden>
+          <a>관리자 메뉴</a>
+          <ul class="dropdown-menu">
+            <!-- 카테고리 리스트 동적 추가 -->
+            <li>
+              <a th:href="@{/stream/stream}">라이브 송출</a>
+              <a th:href="@{/report/report}">신고 관리</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- 검색 및 사용자 메뉴 -->
+    <div class="navbar-right">
+      <div class="icon-bar">
+        <a th:href="@{/cart}">
+          <img th:src="@{/img/icon/cart.png}" style="height: 30px">
+        </a>
+      </div>
+      
+      <div class="icon-bar">
+        <a th:href="@{/success}">
+          <img th:src="@{/img/icon/order.png}" style="height: 30px">
+        </a>
+      </div>
+      
+      <div class="icon-bar">
+        <a href="#" id="auth-button">
+          <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
+        </a>
+      </div>
+    
+    
+    </div>
+  </div>
+</header>
+
+<!-- 페이지 내용 -->
+<div class="main-content">
+  <main layout:fragment="content"></main>
+</div>
+
+<button id="scrollToTop" class="scroll-to-top">▲</button>
+
+<!-- 공통 푸터 -->
+<footer class="footer">
+  <div class="footer-container">
+    <!-- 회사 정보 섹션 -->
+    <div class="footer-column">
+      <p><strong>주식회사 ShowPing</strong></p>
+      <p>대표이사: 김창훈 | 서울 강남구 삼성동 151-7</p>
+      <p>호스팅 서비스: (주)신세계 아이앤씨</p>
+    </div>
+    
+    <!-- 고객센터 섹션 -->
+    <div class="footer-column">
+      <p><strong>고객센터</strong></p>
+      <p>1800-0000 (운영시간 365일 24시간)</p>
+      <p><a href="ssgfinal4@gmail.com">ssgfinal4@gmail.com</a></p>
+    </div>
+  
+  </div>
+  
+  <!-- 하단 섹션 -->
+  <div class="footer-bottom">
+    <p>COPYRIGHT© SHINSEGAE LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+
+</body>
+</html>
