@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
-import com.ssginc.showpingrefactoring.domain.member.dto.AdminLoginRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.LoginResponseDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.AdminLoginRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -3,13 +3,12 @@ package com.ssginc.showpingrefactoring.domain.member.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.entity.MemberRole;
-import com.ssginc.showpingrefactoring.domain.member.dto.SignupRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.UpdateMemberRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.MemberDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.SignupRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.UpdateMemberRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.object.MemberDto;
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
-import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

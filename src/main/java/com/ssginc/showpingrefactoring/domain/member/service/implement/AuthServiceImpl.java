@@ -1,10 +1,10 @@
 package com.ssginc.showpingrefactoring.domain.member.service.implement;
 
 
-import com.ssginc.showpingrefactoring.domain.member.dto.LoginRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.LoginResponseDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.ReissueRequestDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.TokenResponseDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.LoginRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.ReissueRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.response.TokenResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;

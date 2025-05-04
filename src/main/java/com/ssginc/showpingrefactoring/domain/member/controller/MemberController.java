@@ -1,7 +1,11 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
-import com.ssginc.showpingrefactoring.domain.member.dto.*;
 import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
+import com.ssginc.showpingrefactoring.domain.member.dto.object.MemberDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.EmailRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.EmailVerifyRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.SignupRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.request.UpdateMemberRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
