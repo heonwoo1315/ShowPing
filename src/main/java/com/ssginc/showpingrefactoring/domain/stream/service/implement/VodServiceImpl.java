@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.VodResponseDto;
+import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.infrastructure.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.repository.VodRepository;
 import com.ssginc.showpingrefactoring.domain.stream.service.VodService;
@@ -39,7 +39,7 @@ public class VodServiceImpl implements VodService {
      * @return vod 목록
      */
     @Override
-    public List<VodResponseDto> getAllVod() {
+    public List<StreamResponseDto> getAllVod() {
         return vodRepository.findAllVod();
     }
 
@@ -49,7 +49,7 @@ public class VodServiceImpl implements VodService {
      * @return 페이징 정보가 있는 vod 목록
      */
     @Override
-    public Page<VodResponseDto> getAllVodByPage(Pageable pageable) {
+    public Page<StreamResponseDto> getAllVodByPage(Pageable pageable) {
         return vodRepository.findAllVodByPage(pageable);
     }
 
@@ -59,22 +59,22 @@ public class VodServiceImpl implements VodService {
      * @return vod 목록
      */
     @Override
-    public List<VodResponseDto> getAllVodByCategory(Long categoryNo) {
+    public List<StreamResponseDto> getAllVodByCategory(Long categoryNo) {
         return vodRepository.findAllVodByCategory(categoryNo);
     }
 
     @Override
-    public Page<VodResponseDto> getAllVodByWatch(Pageable pageable) {
+    public Page<StreamResponseDto> getAllVodByWatch(Pageable pageable) {
         return vodRepository.findAllVodByWatch(pageable);
     }
 
     @Override
-    public Page<VodResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable) {
+    public Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable) {
         return vodRepository.findAllVodByCategoryAndPage(categoryNo, pageable);
     }
 
     @Override
-    public Page<VodResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable) {
+    public Page<StreamResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable) {
         return vodRepository.findAllVodByCategoryAndWatch(categoryNo, pageable);
     }
 
@@ -84,7 +84,7 @@ public class VodServiceImpl implements VodService {
      * @return 쿼리를 통해 가져온 영상정보 DTO
      */
     @Override
-    public VodResponseDto getVodByNo(Long streamNo) {
+    public StreamResponseDto getVodByNo(Long streamNo) {
         return vodRepository.findVodByNo(streamNo);
     }
 }

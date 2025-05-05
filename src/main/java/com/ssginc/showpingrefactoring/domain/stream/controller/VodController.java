@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.controller;
 
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.VodResponseDto;
+import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.service.SubtitleService;
 import com.ssginc.showpingrefactoring.domain.stream.service.VodService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class VodController {
      */
     @GetMapping("/list")
     public ResponseEntity<?> getVodList() {
-        List<VodResponseDto> vodList = vodService.getAllVod();
+        List<StreamResponseDto> vodList = vodService.getAllVod();
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
@@ -55,7 +55,7 @@ public class VodController {
     public ResponseEntity<?> getVodListByPage(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         // 페이지 당 불러올 객체 단위 지정 (4개)
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<VodResponseDto> pageInfo = vodService.getAllVodByPage(pageable);
+        Page<StreamResponseDto> pageInfo = vodService.getAllVodByPage(pageable);
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
@@ -72,7 +72,7 @@ public class VodController {
     public ResponseEntity<?> getVodListByWatch(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         // 페이지 당 불러올 객체 단위 지정 (4개)
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<VodResponseDto> pageInfo = vodService.getAllVodByWatch(pageable);
+        Page<StreamResponseDto> pageInfo = vodService.getAllVodByWatch(pageable);
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();
@@ -87,7 +87,7 @@ public class VodController {
      */
     @GetMapping("/list/{categoryNo}")
     public ResponseEntity<?> getVodListByCategory(@PathVariable Long categoryNo) {
-        List<VodResponseDto> vodList = vodService.getAllVodByCategory(categoryNo);
+        List<StreamResponseDto> vodList = vodService.getAllVodByCategory(categoryNo);
         Map<String, Object> result = new HashMap<>();
 
         result.put("vodList", vodList);
@@ -103,7 +103,7 @@ public class VodController {
     public ResponseEntity<?> getVodListByCategoryAndPage(@RequestParam(name = "categoryNo") Long categoryNo,
                                                          @RequestParam(defaultValue = "0", name = "pageNo") int pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<VodResponseDto> pageInfo = vodService.getAllVodByCategoryAndPage(categoryNo, pageable);
+        Page<StreamResponseDto> pageInfo = vodService.getAllVodByCategoryAndPage(categoryNo, pageable);
 
         Map<String, Object> result = new HashMap<>();
         result.put("pageInfo", pageInfo);
@@ -120,7 +120,7 @@ public class VodController {
                                                           @RequestParam(name = "categoryNo") Long categoryNo) {
         // 페이지 당 불러올 객체 단위 지정 (4개)
         Pageable pageable = PageRequest.of(pageNo, 4);
-        Page<VodResponseDto> pageInfo = vodService.getAllVodByCatgoryAndWatch(categoryNo, pageable);
+        Page<StreamResponseDto> pageInfo = vodService.getAllVodByCatgoryAndWatch(categoryNo, pageable);
 
         // Map으로 전달할 응답객체 저장
         Map<String, Object> result = new HashMap<>();

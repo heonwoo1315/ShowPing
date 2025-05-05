@@ -3,10 +3,10 @@ package com.ssginc.showpingrefactoring.domain.watch.controller;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.GetLiveProductInfoResponseDto;
+import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.service.LiveService;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.VodResponseDto;
 import com.ssginc.showpingrefactoring.domain.watch.dto.resopnse.WatchResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.service.VodService;
 import com.ssginc.showpingrefactoring.domain.watch.service.WatchService;
@@ -63,7 +63,7 @@ public class WatchController {
         GetLiveProductInfoResponseDto streamProductInfo = streamService.getStreamProductInfo(streamNo);
 
         // VOD 객체 정보 불러오기
-        VodResponseDto vodDto = vodService.getVodByNo(streamNo);
+        StreamResponseDto vodDto = vodService.getVodByNo(streamNo);
         model.addAttribute("vodDto", vodDto);
         model.addAttribute("productInfo", streamProductInfo);
 

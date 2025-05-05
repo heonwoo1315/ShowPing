@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.repository;
 
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.VodResponseDto;
+import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
     """)
-    List<VodResponseDto> findAllVod();
+    List<StreamResponseDto> findAllVod();
 
     /**
      * VOD 목록과 페이지 정보를 반환해주는 쿼리 메서드
@@ -37,7 +37,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
         ORDER BY s.streamNo DESC
     """)
-    Page<VodResponseDto> findAllVodByPage(Pageable pageable);
+    Page<StreamResponseDto> findAllVodByPage(Pageable pageable);
 
     /**
      * 특정 카테고리의 Vod 목록을 반환해주는 쿼리 메서드
@@ -52,7 +52,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
         AND c.categoryNo = :categoryNo ORDER BY s.streamNo DESC
     """)
-    List<VodResponseDto> findAllVodByCategory(Long categoryNo);
+    List<StreamResponseDto> findAllVodByCategory(Long categoryNo);
 
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
@@ -62,7 +62,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
         AND c.categoryNo = :categoryNo ORDER BY s.streamNo DESC
     """)
-    Page<VodResponseDto> findAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
+    Page<StreamResponseDto> findAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
 
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
@@ -73,7 +73,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamStatus = 'ENDED'
         GROUP BY w.stream.streamNo ORDER BY count(w.stream.streamNo) DESC
     """)
-    Page<VodResponseDto> findAllVodByWatch(Pageable pageable);
+    Page<StreamResponseDto> findAllVodByWatch(Pageable pageable);
 
     @Query("""
         SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
@@ -85,7 +85,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         WHERE s.streamStatus = 'ENDED' AND c.categoryNo = :categoryNo
         GROUP BY w.stream.streamNo ORDER BY count(w.stream.streamNo) DESC
     """)
-    Page<VodResponseDto> findAllVodByCategoryAndWatch(Long categoryNo, Pageable pageable);
+    Page<StreamResponseDto> findAllVodByCategoryAndWatch(Long categoryNo, Pageable pageable);
 
     /**
      * 특정 영상번호의 VOD 정보를 반환해주는 쿼리 메서드
@@ -99,6 +99,6 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
         JOIN Category c ON p.category.categoryNo = c.categoryNo WHERE s.streamNo = :streamNo
     """)
-    VodResponseDto findVodByNo(Long streamNo);
+    StreamResponseDto findVodByNo(Long streamNo);
 
 }

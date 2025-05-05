@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.service;
 
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.VodResponseDto;
+import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,17 +10,17 @@ public interface VodService {
 
     String uploadVideo(String title);
 
-    List<VodResponseDto> getAllVod();
+    List<StreamResponseDto> getAllVod();
 
-    Page<VodResponseDto> getAllVodByPage(Pageable pageable);
+    Page<StreamResponseDto> getAllVodByPage(Pageable pageable);
 
-    Page<VodResponseDto> getAllVodByWatch(Pageable pageable);
+    Page<StreamResponseDto> getAllVodByWatch(Pageable pageable);
 
-    List<VodResponseDto> getAllVodByCategory(Long categoryNo);
+    List<StreamResponseDto> getAllVodByCategory(Long categoryNo);
 
-    Page<VodResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
+    Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
 
-    Page<VodResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable);
+    Page<StreamResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable);
 
-    VodResponseDto getVodByNo(Long streamNo);
+    StreamResponseDto getVodByNo(Long streamNo);
 }
