@@ -3,6 +3,7 @@ package com.ssginc.showpingrefactoring.domain.stream.entity;
 import com.ssginc.showpingrefactoring.domain.chat.entity.ChatRoom;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.product.entity.Product;
+import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import lombok.*;

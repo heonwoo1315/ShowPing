@@ -7,7 +7,7 @@ import com.ssginc.showpingrefactoring.domain.report.entity.BlackList;
 import com.ssginc.showpingrefactoring.domain.report.entity.Report;
 import com.ssginc.showpingrefactoring.domain.review.entity.Review;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
-import com.ssginc.showpingrefactoring.domain.stream.entity.Watch;
+import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
