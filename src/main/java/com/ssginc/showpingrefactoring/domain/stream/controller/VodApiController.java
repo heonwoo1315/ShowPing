@@ -26,7 +26,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/vod")
 @RequiredArgsConstructor
-public class VodController {
+public class VodApiController {
 
     private final VodService vodService;
 
