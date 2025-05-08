@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.domain.stream.infrastructure.subtitle;
+package com.ssginc.showpingrefactoring.infrastructure.NCP.subtitle;
 
 import lombok.*;
 

@@ -3,7 +3,7 @@ package com.ssginc.showpingrefactoring.domain.order.controller;
 import com.ssginc.showpingrefactoring.domain.order.dto.request.OrderRequestDto;
 import com.ssginc.showpingrefactoring.domain.order.dto.object.OrderDetailDto;
 import com.ssginc.showpingrefactoring.domain.order.dto.object.OrdersDto;
-import com.ssginc.showpingrefactoring.product.service.OrderService;
+import com.ssginc.showpingrefactoring.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

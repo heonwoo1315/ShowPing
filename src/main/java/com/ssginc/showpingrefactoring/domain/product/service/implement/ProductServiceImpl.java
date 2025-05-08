@@ -4,7 +4,7 @@ import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductItemDto;
 import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductDto;
 import com.ssginc.showpingrefactoring.domain.product.entity.Product;
 import com.ssginc.showpingrefactoring.domain.product.repository.ProductRepository;
-import com.ssginc.showpingrefactoring.product.service.ProductService;
+import com.ssginc.showpingrefactoring.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

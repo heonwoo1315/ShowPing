@@ -2,7 +2,7 @@ package com.ssginc.showpingrefactoring.domain.review.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.review.dto.object.ReviewDto;
 import com.ssginc.showpingrefactoring.domain.review.repository.ReviewRepository;
-import com.ssginc.showpingrefactoring.product.service.ReviewService;
+import com.ssginc.showpingrefactoring.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

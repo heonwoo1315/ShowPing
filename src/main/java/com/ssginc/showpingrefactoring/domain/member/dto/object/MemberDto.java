@@ -1,14 +1,12 @@
 package com.ssginc.showpingrefactoring.domain.member.dto.object;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class MemberDto {
     private Long memberNo;
     private String memberId;

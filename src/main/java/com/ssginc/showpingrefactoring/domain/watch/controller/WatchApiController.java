@@ -2,20 +2,15 @@ package com.ssginc.showpingrefactoring.domain.watch.controller;
 
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.GetLiveProductInfoResponseDto;
-import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
-import com.ssginc.showpingrefactoring.domain.stream.service.LiveService;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
-import com.ssginc.showpingrefactoring.domain.watch.dto.resopnse.WatchResponseDto;
-import com.ssginc.showpingrefactoring.domain.stream.service.VodService;
+import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
 import com.ssginc.showpingrefactoring.domain.watch.service.WatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.payment.service.implement;
 
-import com.ssginc.showpingrefactoring.product.service.PaymentService;
-import com.ssginc.showpingrefactoring.product.service.PortOneService;
+import com.ssginc.showpingrefactoring.domain.payment.service.PaymentService;
+import com.ssginc.showpingrefactoring.domain.payment.service.PortOneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;

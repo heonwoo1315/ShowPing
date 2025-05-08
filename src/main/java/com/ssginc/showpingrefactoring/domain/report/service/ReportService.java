@@ -1,7 +1,7 @@
-package com.ssginc.showpingrefactoring.chat.service;
+package com.ssginc.showpingrefactoring.domain.report.service;
 
 import com.ssginc.showpingrefactoring.domain.report.dto.request.ReportRegisterRequestDto;
-import com.ssginc.showpingrefactoring.domain.chat.entity.Report;
+import com.ssginc.showpingrefactoring.domain.report.entity.Report;
 
 import java.util.List;
 

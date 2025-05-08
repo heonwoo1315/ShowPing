@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.chat.service;
+package com.ssginc.showpingrefactoring.domain.chat.service;
 
 import com.ssginc.showpingrefactoring.domain.chat.dto.object.ChatDto;
 

@@ -2,7 +2,7 @@ package com.ssginc.showpingrefactoring.domain.chat.controller;
 
 import com.ssginc.showpingrefactoring.domain.chat.dto.object.ChatDto;
 import com.ssginc.showpingrefactoring.domain.chat.repository.ChatRepository;
-import com.ssginc.showpingrefactoring.chat.service.ChatService;
+import com.ssginc.showpingrefactoring.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.payment.controller;
 
-import com.ssginc.showpingrefactoring.product.service.PaymentService;
+import com.ssginc.showpingrefactoring.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

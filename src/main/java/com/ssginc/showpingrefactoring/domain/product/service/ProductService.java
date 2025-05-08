@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.product.service;
+package com.ssginc.showpingrefactoring.domain.product.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

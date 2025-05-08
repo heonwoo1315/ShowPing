@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.watch.repository;
 
-import com.ssginc.showpingrefactoring.domain.watch.dto.resopnse.WatchResponseDto;
+import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +22,7 @@ public interface WatchRepository extends JpaRepository<Watch, Long> {
      * @return 로그인한 사용자의 시청내역 응답 객체
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.WatchResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto
         (w.stream.streamNo, s.streamTitle, p.productImg, p.productName, p.productPrice, MAX(w.watchTime))
         FROM Watch w JOIN Stream s ON w.stream.streamNo = s.streamNo
         JOIN Product p ON s.product.productNo = p.productNo WHERE w.member.memberNo = :memberNo

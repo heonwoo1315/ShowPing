@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
-import com.ssginc.showpingrefactoring.domain.stream.infrastructure.storage.StorageLoader;
+import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.repository.VodRepository;
 import com.ssginc.showpingrefactoring.domain.stream.service.VodService;
 import lombok.RequiredArgsConstructor;

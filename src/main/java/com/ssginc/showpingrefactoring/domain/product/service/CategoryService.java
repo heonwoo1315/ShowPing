@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.product.service;
+package com.ssginc.showpingrefactoring.domain.product.service;
 
 import com.ssginc.showpingrefactoring.domain.product.entity.Category;
 import java.util.List;

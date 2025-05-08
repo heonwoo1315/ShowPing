@@ -16,7 +16,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
      * @return vod 목록
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -30,7 +30,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
      * @return 페이징 정보가 포함된 VOD 목록
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -45,7 +45,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
      * @return vod 목록
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -55,7 +55,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
     List<StreamResponseDto> findAllVodByCategory(Long categoryNo);
 
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -65,7 +65,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
     Page<StreamResponseDto> findAllVodByCategoryAndPage(Long categoryNo, Pageable pageable);
 
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -76,7 +76,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
     Page<StreamResponseDto> findAllVodByWatch(Pageable pageable);
 
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription ,s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo
@@ -93,7 +93,7 @@ public interface VodRepository extends JpaRepository<Stream, Long> {
      * @return VOD 정보
      */
     @Query("""
-        SELECT new com.ssginc.showpinglive.dto.response.StreamResponseDto
+        SELECT new com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto
         (s.streamNo, s.streamTitle, s.streamDescription, s.streamStatus, c.categoryNo, c.categoryName, p.productName,
         p.productPrice, p.productSale, p.productImg, s.streamStartTime, s.streamEndTime)
         FROM Stream s JOIN Product p ON s.product.productNo = p.productNo

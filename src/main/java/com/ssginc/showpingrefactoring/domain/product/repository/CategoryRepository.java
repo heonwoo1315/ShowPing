@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.domain.order.repository;
+package com.ssginc.showpingrefactoring.domain.product.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

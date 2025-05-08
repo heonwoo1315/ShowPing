@@ -1,13 +1,13 @@
 package com.ssginc.showpingrefactoring.domain.report.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.report.dto.request.ReportRegisterRequestDto;
-import com.ssginc.showpingrefactoring.domain.chat.entity.Member;
-import com.ssginc.showpingrefactoring.domain.chat.entity.Report;
-import com.ssginc.showpingrefactoring.domain.chat.entity.ReportStatus;
-import com.ssginc.showpingrefactoring.domain.chat.entity.ReportType;
-import com.ssginc.showpingrefactoring.chat.repository.MemberRepository;
+import com.ssginc.showpingrefactoring.domain.member.entity.Member;
+import com.ssginc.showpingrefactoring.domain.report.entity.Report;
+import com.ssginc.showpingrefactoring.domain.report.entity.ReportStatus;
+import com.ssginc.showpingrefactoring.domain.report.entity.ReportType;
+import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.report.repository.ReportRepository;
-import com.ssginc.showpingrefactoring.chat.service.ReportService;
+import com.ssginc.showpingrefactoring.domain.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

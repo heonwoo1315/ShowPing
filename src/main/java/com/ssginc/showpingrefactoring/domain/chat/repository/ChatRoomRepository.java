@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("""
-        SELECT new com.ssginc.showpingrefactoring.chat.dto.response.ChatRoomResponseDto(
+        SELECT new com.ssginc.showpingrefactoring.domain.chat.dto.response.ChatRoomResponseDto(
             c.chatRoomNo, c.stream.streamNo
         ) FROM ChatRoom c WHERE c.stream.streamNo = :streamNo
     """)

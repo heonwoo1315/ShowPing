@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.product.service;
+package com.ssginc.showpingrefactoring.domain.order.service;
 
 import jakarta.transaction.Transactional;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
-import com.ssginc.showpingrefactoring.domain.stream.infrastructure.storage.StorageLoader;
+import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.service.HlsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;

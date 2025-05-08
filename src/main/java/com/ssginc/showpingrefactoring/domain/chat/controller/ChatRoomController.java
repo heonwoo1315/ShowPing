@@ -1,8 +1,8 @@
 package com.ssginc.showpingrefactoring.domain.chat.controller;
 
 import com.ssginc.showpingrefactoring.domain.chat.dto.response.ChatRoomResponseDto;
-//import com.ssginc.showpingrefactoring.chat.entity.ChatRoom;
-import com.ssginc.showpingrefactoring.chat.service.ChatRoomService;
+import com.ssginc.showpingrefactoring.domain.chat.entity.ChatRoom;
+import com.ssginc.showpingrefactoring.domain.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

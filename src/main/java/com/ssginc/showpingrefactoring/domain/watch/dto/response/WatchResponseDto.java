@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.domain.watch.dto.resopnse;
+package com.ssginc.showpingrefactoring.domain.watch.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

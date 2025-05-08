@@ -1,13 +1,19 @@
 package com.ssginc.showpingrefactoring.domain.order.service.implement;
 
+import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.order.dto.request.OrderRequestDto;
 import com.ssginc.showpingrefactoring.domain.order.dto.object.OrderDetailDto;
 import com.ssginc.showpingrefactoring.domain.order.dto.object.OrdersDto;
-import com.ssginc.showpingrefactoring.product.repository.MemberRepository;
+import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
+import com.ssginc.showpingrefactoring.domain.order.entity.OrderDetail;
+import com.ssginc.showpingrefactoring.domain.order.entity.OrderDetailId;
+import com.ssginc.showpingrefactoring.domain.order.entity.OrderStatus;
+import com.ssginc.showpingrefactoring.domain.order.entity.Orders;
 import com.ssginc.showpingrefactoring.domain.order.repository.OrderDetailRepository;
 import com.ssginc.showpingrefactoring.domain.order.repository.OrdersRepository;
+import com.ssginc.showpingrefactoring.domain.product.entity.Product;
 import com.ssginc.showpingrefactoring.domain.product.repository.ProductRepository;
-import com.ssginc.showpingrefactoring.product.service.OrderService;
+import com.ssginc.showpingrefactoring.domain.order.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

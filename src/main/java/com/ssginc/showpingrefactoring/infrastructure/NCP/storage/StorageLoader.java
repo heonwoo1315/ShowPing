@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.domain.stream.infrastructure.storage;
+package com.ssginc.showpingrefactoring.infrastructure.NCP.storage;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;

@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.product.service;
+package com.ssginc.showpingrefactoring.domain.cart.service;
 
 import jakarta.transaction.Transactional;
 

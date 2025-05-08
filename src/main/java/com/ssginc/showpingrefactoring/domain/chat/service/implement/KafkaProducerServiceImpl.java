@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.chat.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.chat.dto.object.ChatDto;
-import com.ssginc.showpingrefactoring.chat.service.KafkaProducerService;
+import com.ssginc.showpingrefactoring.domain.chat.service.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,7 @@ import com.ssginc.showpingrefactoring.domain.chat.entity.ChatRoom;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
 import com.ssginc.showpingrefactoring.domain.chat.repository.ChatRoomRepository;
 
-import com.ssginc.showpingrefactoring.chat.service.ChatRoomService;
+import com.ssginc.showpingrefactoring.domain.chat.service.ChatRoomService;
 import com.ssginc.showpingrefactoring.domain.stream.repository.LiveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
-    private final StreamRepository streamRepository; // 영상 정보 조회용
+    private final LiveRepository liveRepository; // 영상 정보 조회용
 
     /**
      * 스트림 번호와 최대 참가자 수를 기반으로 새 채팅방을 생성합니다.
@@ -27,7 +27,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoom createChatRoom(Long streamNo ) {
         // 영상 엔티티 조회
-        Stream stream = streamRepository.findById(streamNo)
+        Stream stream = liveRepository.findById(streamNo)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 streamNo: " + streamNo));
 
         ChatRoom chatRoom = new ChatRoom();

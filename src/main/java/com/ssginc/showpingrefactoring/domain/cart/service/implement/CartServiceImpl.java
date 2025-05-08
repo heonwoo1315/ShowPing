@@ -10,7 +10,7 @@ import com.ssginc.showpingrefactoring.domain.cart.repository.CartRepository;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.product.entity.Product;
 import com.ssginc.showpingrefactoring.domain.product.repository.ProductRepository;
-import com.ssginc.showpingrefactoring.product.service.CartService;
+import com.ssginc.showpingrefactoring.domain.cart.service.CartService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.controller;
 
 import com.ssginc.showpingrefactoring.domain.product.service.ProductService;
-import com.ssginc.showpingrefactoring.domain.stream.dto.object.ProductItemDto;
+import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductItemDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.RegisterLiveRequestDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.LiveRequestDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.GetLiveRegisterInfoResponseDto;

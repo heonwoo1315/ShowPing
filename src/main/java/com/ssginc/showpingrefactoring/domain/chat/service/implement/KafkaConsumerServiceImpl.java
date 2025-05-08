@@ -2,7 +2,7 @@ package com.ssginc.showpingrefactoring.domain.chat.service.implement;
 
 import com.ssginc.showpingrefactoring.domain.chat.dto.object.ChatDto;
 import com.ssginc.showpingrefactoring.domain.chat.repository.ChatRepository;
-import com.ssginc.showpingrefactoring.chat.service.KafkaConsumerService;
+import com.ssginc.showpingrefactoring.domain.chat.service.KafkaConsumerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

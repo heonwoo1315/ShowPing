@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.controller;
 
-import com.ssginc.showpingrefactoring.domain.chat.dto.ChatRoomResponseDto;
+import com.ssginc.showpingrefactoring.domain.chat.dto.response.ChatRoomResponseDto;
 import com.ssginc.showpingrefactoring.domain.chat.service.ChatRoomService;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.GetLiveProductInfoResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.service.LiveService;

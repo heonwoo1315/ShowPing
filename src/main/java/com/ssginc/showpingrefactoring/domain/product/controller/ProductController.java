@@ -2,7 +2,7 @@ package com.ssginc.showpingrefactoring.domain.product.controller;
 
 import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductDto;
 import com.ssginc.showpingrefactoring.domain.review.dto.object.ReviewDto;
-import com.ssginc.showpingrefactoring.product.service.ProductService;
+import com.ssginc.showpingrefactoring.domain.product.service.ProductService;
 import com.ssginc.showpingrefactoring.domain.review.service.implement.ReviewServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

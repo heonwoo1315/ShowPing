@@ -1,4 +1,4 @@
-package com.ssginc.showpingrefactoring.chat.service;
+package com.ssginc.showpingrefactoring.domain.report.service;
 
 import java.util.List;
 

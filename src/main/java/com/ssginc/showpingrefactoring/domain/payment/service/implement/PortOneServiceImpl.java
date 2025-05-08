@@ -1,6 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.payment.service.implement;
 
-import com.ssginc.showpingrefactoring.product.service.PortOneService;
+import com.ssginc.showpingrefactoring.domain.payment.service.PortOneService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;

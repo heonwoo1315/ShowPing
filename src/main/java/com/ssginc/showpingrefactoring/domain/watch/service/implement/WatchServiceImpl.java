@@ -3,7 +3,7 @@ package com.ssginc.showpingrefactoring.domain.watch.service.implement;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
-import com.ssginc.showpingrefactoring.domain.watch.dto.resopnse.WatchResponseDto;
+import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import com.ssginc.showpingrefactoring.domain.watch.repository.WatchRepository;
 import com.ssginc.showpingrefactoring.domain.watch.service.WatchService;
