@@ -33,7 +33,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public KurentoClient kurentoClient() {
-        return KurentoClient.create("ws://rapunzel.iptime.org:7000/kurento");
+        return KurentoClient.create();
     }
 
     @Bean
@@ -51,9 +51,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(liveHandler(), "/live")
-                .setAllowedOrigins("https://showping.duckdns.org");
+                .setAllowedOrigins("*");
+//                .setAllowedOrigins("https://showping.duckdns.org");
         registry.addHandler(recordHandler(), "/record")
-                .setAllowedOrigins("https://showping.duckdns.org");
+                .setAllowedOrigins("*");
+//                .setAllowedOrigins("https://showping.duckdns.org");
     }
 
 }

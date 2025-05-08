@@ -26,14 +26,14 @@ public class BatchConfig {
     /**
      * 지정된 JobRepository와 Step을 사용하여 HLS 저장 작업(Job)을 생성하는 메서드
      * @param jobRepository  JobRepository 객체
-     * @param saveHlsStep    HLS 저장 Step
+     * @param createHlsStep    HLS 저장 Step
      * @return 생성된 HLS 저장 Job
      */
     @Bean
-    public Job createHlsJob(JobRepository jobRepository, Step saveHlsStep) {
+    public Job createHlsJob(JobRepository jobRepository, Step createHlsStep) {
         return new JobBuilder("createHlsJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(saveHlsStep)
+                .start(createHlsStep)
                 .build();
     }
 
