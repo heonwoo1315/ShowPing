@@ -10,13 +10,16 @@ import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +35,10 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + memberId));
     }
 
+    @Transactional
     @Override
     public void signup(SignupRequestDto request) {
-        if (!verifiedEmailStorage.containsKey(request.getEmail()) || !verifiedEmailStorage.get(request.getEmail())) {
+        if (!verifiedEmailStorage.containsKey(request.getMemberEmail()) || !verifiedEmailStorage.get(request.getMemberEmail())) {
             throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
@@ -42,24 +46,36 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DUPLICATED_MEMBER_ID);
         }
 
-        if (memberRepository.findByMemberEmail(request.getEmail()).isPresent()) {
+        if (memberRepository.findByMemberEmail(request.getMemberEmail()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
         }
 
         Member member = Member.builder()
-                .memberId(request.getMemberId())
                 .memberName(request.getMemberName())
-                .memberPassword(passwordEncoder.encode(request.getPassword()))
-                .memberEmail(request.getEmail())
-                .memberPhone(request.getPhone())
+                .memberId(request.getMemberId())
+                .memberEmail(request.getMemberEmail())
+                .memberPassword(passwordEncoder.encode(request.getMemberPassword()))
+                .memberAddress(request.getMemberAddress())
+                .memberPhone(request.getMemberPhone())
                 .memberRole(MemberRole.ROLE_USER) // 기본 USER
-                .memberAddress(request.getAddress())
+                .streamKey(UUID.randomUUID().toString())
+                .memberPoint(0L)
                 .build();
 
         memberRepository.save(member);
 
         // 회원가입 완료 후 인증 성공 기록 삭제 (optional)
-        verifiedEmailStorage.remove(request.getEmail());
+        verifiedEmailStorage.remove(request.getMemberEmail());
+    }
+
+    @Override
+    public boolean isDuplicateId(String memberId) {
+        return memberRepository.existsByMemberId(memberId);
+    }
+
+    @Override
+    public boolean isDuplicateEmail(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
     }
 
     @Override

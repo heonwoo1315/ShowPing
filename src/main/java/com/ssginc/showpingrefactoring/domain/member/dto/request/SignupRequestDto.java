@@ -4,10 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class SignupRequestDto {
+    private Long memberNo;
     private String memberId;
     private String memberName;
-    private String password;
-    private String email;
-    private String phone;
-    private String address;
+    private String memberEmail;
+    private String memberPassword;
+    private String memberAddress;
+    private String memberPhone;
 }

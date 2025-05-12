@@ -16,4 +16,8 @@ public interface MemberService {
     void deleteMember(String memberId);
 
     Member findMemberById(String memberId);
+
+    boolean isDuplicateId(String memberId);
+
+    boolean isDuplicateEmail(String memberEmail);
 }
