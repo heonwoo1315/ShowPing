@@ -3,6 +3,8 @@ package com.ssginc.showpingrefactoring.domain.chat.controller;
 import com.ssginc.showpingrefactoring.domain.chat.dto.object.ChatDto;
 import com.ssginc.showpingrefactoring.domain.chat.repository.ChatRepository;
 import com.ssginc.showpingrefactoring.domain.chat.service.ChatService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,10 @@ import java.util.Map;
  * 채팅 관련 요청-응답 수행하는 Controller 클래스
  * <p>
  */
+@Tag(name = "Chat", description = "채팅 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("chat") // REST API의 기본 경로 설정
+@RequestMapping("api/chat") // REST API의 기본 경로 설정
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate; // WebSocket 메시지 전송
@@ -52,12 +55,20 @@ public class ChatController {
     }
 
     // streamNo(채팅방 번호) 기반으로 채팅 메시지 조회 엔드포인트
-    @GetMapping("api/messages")
+    @Operation(
+            summary = "채팅 메시지 조회",
+            description = "chatStreamNo를 기반으로 해당 채팅방의 모든 메시지 조회."
+    )
+    @GetMapping("messages")
     public List<ChatDto> getChatMessages(@RequestParam Long chatStreamNo) { // streamNo == chatRoomNo로 가정
         return chatRepository.findByChatStreamNo(chatStreamNo);
     }
 
-    @GetMapping("api/info")
+    @Operation(
+            summary = "유저 정보 조회",
+            description = "현재 로그인된 사용자의 memberId와 role 정보를 반환. 인증되지 않은 경우 401 반환."
+    )
+    @GetMapping("info")
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");

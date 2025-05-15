@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             return;
         }
-        axios.post('/report/api/updateStatus', {
+        axios.post('/api/report/updateStatus', {
             reportNo: selectedReport.reportNo
         }).then(res => {
             Swal.fire({
@@ -152,7 +152,7 @@ function loadReports() {
     const formData = new FormData(searchForm);
     const params = Object.fromEntries(formData.entries());
 
-    axios.get('/report/api/list', {params: params})
+    axios.get('/api/report/list', {params: params})
         .then((response) => {
             // 전체 신고 목록을 전역 변수에 저장하고, 페이지를 1로 초기화
             allReports = response.data;

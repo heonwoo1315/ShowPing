@@ -5,6 +5,13 @@ import com.ssginc.showpingrefactoring.domain.report.dto.request.ReportRegisterRe
 import com.ssginc.showpingrefactoring.domain.report.dto.response.ReportResponseDto;
 import com.ssginc.showpingrefactoring.domain.report.entity.Report;
 import com.ssginc.showpingrefactoring.domain.report.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +30,10 @@ import java.util.stream.Collectors;
  * @author 신고 관리 요청-응답을 수행하는 컨트롤러 클래스
  * <p>
  */
+@Tag(name = "Report", description = "신고 관리 API")
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("report")
+@RequestMapping("api/report")
 public class ReportController {
 
     private final ReportService reportService;
@@ -68,11 +76,11 @@ public class ReportController {
     }
 
     // JSON API 엔드포인트
-    @GetMapping("api/list")
-    @ResponseBody
-    public List<ReportResponseDto> getReportList(@ModelAttribute ReportDto reportDto) {
-
-        System.out.println("[DEBUG] ReportDto received #1: " + reportDto);
+    @Operation(summary = "신고 목록 조회", description = "검색 조건에 따라 신고 목록 조회.")
+    @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ReportResponseDto.class)))
+    @GetMapping("list")
+    public List<ReportResponseDto> getReportList(
+            @Parameter(description = "신고 검색 조건 (DTO)") @ModelAttribute ReportDto reportDto) {
 
         List<Report> reports;
         if (hasSearchCriteria(reportDto)) {
@@ -88,11 +96,10 @@ public class ReportController {
             reports = reportService.getAllReports();
         }
 
-        // Report 엔티티를 ReportResponseDto로 변환 (필요한 필드만 포함)
-        List<ReportResponseDto> responseDtos = reports.stream().map(report -> {
+        return reports.stream().map(report -> {
             String formattedDate = "";
             if (report.getReportCreatedAt() != null) {
-                formattedDate = report.getReportCreatedAt().toString(); // 혹은 원하는 포맷으로 변경
+                formattedDate = report.getReportCreatedAt().toString();
             }
             return new ReportResponseDto(
                     report.getReportNo(),
@@ -103,15 +110,21 @@ public class ReportController {
                     report.getReportStatus().getReportStatus()
             );
         }).collect(Collectors.toList());
-        return responseDtos;
     }
 
-    @PostMapping("api/updateStatus")
-    @ResponseBody
-    public ResponseEntity<?> updateReportStatus(@RequestBody Map<String, Object> payload) {
+    @Operation(summary = "신고 상태 업데이트", description = "신고 번호를 기반으로 상태를 업데이트.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "업데이트 성공"),
+            @ApiResponse(responseCode = "400", description = "업데이트 실패"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping("updateStatus")
+    public ResponseEntity<?> updateReportStatus(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "신고 번호", required = true,
+                    content = @Content(schema = @Schema(example = "{\"reportNo\": 1234}")))
+            @RequestBody Map<String, Object> payload) {
         try {
             Long reportNo = Long.valueOf(payload.get("reportNo").toString());
-            // 서비스에서 해당 신고의 상태를 업데이트 (미처리(PROCEEDING) -> 처리(COMPLETED))
             boolean updated = reportService.updateReportStatus(reportNo);
             if (updated) {
                 return ResponseEntity.ok("OK");
@@ -123,10 +136,18 @@ public class ReportController {
         }
     }
 
-    @PostMapping("api/register")
-    @ResponseBody
-    public ResponseEntity<?> registerReport(@RequestBody ReportRegisterRequestDto dto,
-                                            @AuthenticationPrincipal UserDetails userDetails) {
+    @Operation(summary = "신고 등록", description = "신고 정보를 등록. 인증된 사용자만 가능.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "등록 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @PostMapping("register")
+    public ResponseEntity<?> registerReport(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "신고 등록 요청 DTO", required = true)
+            @RequestBody ReportRegisterRequestDto dto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }

@@ -33,7 +33,7 @@ function getOffsetSeconds(chatTimeStr) {
 function fetchChatMessages(chatStreamNo) {
     const accessToken = sessionStorage.getItem('accessToken');
 
-    axios.get('/chat/api/messages', {
+    axios.get('/api/chat/messages', {
         params: {chatStreamNo: chatStreamNo},
         headers: {
             "Authorization": "Bearer " + accessToken
