@@ -5,13 +5,16 @@ import com.ssginc.showpingrefactoring.domain.member.dto.object.MemberDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.EmailVerifyRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.SignupRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.UpdateMemberRequestDto;
+import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +31,11 @@ public class MemberController {
     /**
      * 회원 가입
      */
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequestDto request) {
-        memberService.signup(request);
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping("/signup")
+//    public ResponseEntity<Void> signup(@RequestBody SignupRequestDto request) {
+//        memberService.signup(request);
+//        return ResponseEntity.ok().build();
+//    }
 
     /**
      * 회원 정보 조회 (내 정보)
@@ -89,4 +92,50 @@ public class MemberController {
     public boolean verifyCode(@RequestBody EmailVerifyRequestDto mailDto) {
         return mailService.verifyCode(mailDto.getEmail(), mailDto.getEmailCode());
     }
+
+    @PostMapping("/register")
+    public String registerMember(@RequestBody MemberDto memberDto, RedirectAttributes redirectAttributes) throws Exception {
+        System.out.println(memberDto.toString());
+        try {
+            // 회원가입 처리 (회원 정보 DB 저장)
+            Member member = memberService.registerMember(memberDto);
+            // 성공 시 메시지와 함께 로그인 페이지로 리다이렉트
+            redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            // 회원가입 실패 시 예외 처리
+            redirectAttributes.addFlashAttribute("message", "회원가입에 실패했습니다. 다시 시도해주세요.");
+            return "redirect:/login/signup";  // 실패 시 회원가입 페이지로 리다이렉트
+        }
+    }
+
+
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<?> checkDuplicate(@RequestParam("id") String memberId) {
+        // ID 중복 확인 로직을 추가
+        boolean isDuplicate = memberService.isDuplicateId(memberId);
+
+        // 중복 여부에 따라 응답 처리
+        if (isDuplicate) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("중복된 아이디입니다");
+        } else {
+            return ResponseEntity.ok("사용 가능한 아이디입니다.");
+        }
+    }
+
+    @GetMapping("/check-email-duplicate")
+    public ResponseEntity<?> checkEmailDuplicate(@RequestParam("email") String memberEmail) {
+        // 이메일 중복 확인 로직을 추가
+        boolean isDuplicate = memberService.isDuplicateEmail(memberEmail);
+
+        // 중복 여부에 따라 응답 처리
+        if (isDuplicate) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("중복된 이메일입니다");
+        } else {
+            return ResponseEntity.ok("사용 가능한 이메일입니다.");
+        }
+    }
+
 }

@@ -31,7 +31,7 @@ document.querySelector('.verify-code-btn').addEventListener('click', function ()
     console.log("인증 코드 확인 버튼 클릭됨!");
     console.log("보낼 데이터:", { email: email, emailCode: emailCode });
 
-    axios.post('/signup/verify-code', {
+    axios.post('/api/member/verify-code', {
         email: email,
         emailCode: emailCode
     })
@@ -128,7 +128,7 @@ document.querySelector('.signup-btn').addEventListener('click', function (event)
         return;
     }
 
-    fetch(`/check-duplicate?id=${memberId}`)
+    fetch(`/api/member/check-duplicate?id=${memberId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('중복된 아이디입니다.');
@@ -136,7 +136,7 @@ document.querySelector('.signup-btn').addEventListener('click', function (event)
             return response.text();
         })
         .then(() => {
-            return fetch(`/check-email-duplicate?email=${email}`);
+            return fetch(`/api/member/check-email-duplicate?email=${email}`);
         })
         .then(response => {
             if (!response.ok) {
@@ -145,7 +145,7 @@ document.querySelector('.signup-btn').addEventListener('click', function (event)
             return response.text();
         })
         .then(() => {
-            return axios.post('/signup/verify-code', { email: email, emailCode: emailCode });
+            return axios.post('/api/member/verify-code', { email: email, emailCode: emailCode });
         })
         .then(response => {
             if (!response.data) {
@@ -159,7 +159,7 @@ document.querySelector('.signup-btn').addEventListener('click', function (event)
                 return;
             }
 
-            return axios.post('/register', {
+            return axios.post('/api/member/register', {
                 memberId: memberId,
                 memberPassword: password,
                 memberName: name,
@@ -169,6 +169,7 @@ document.querySelector('.signup-btn').addEventListener('click', function (event)
             });
         })
         .then(response => {
+            console.log(response)
             if (response) {
                 Swal.fire({
                     icon: 'success',
@@ -204,7 +205,7 @@ document.querySelector('.verify-btn').addEventListener('click', function () {
         return;
     }
 
-    fetch('/signup/send-code', {
+    fetch('/api/member/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email })
@@ -274,7 +275,7 @@ function checkDuplicate() {
         return;
     }
 
-    fetch(`/check-duplicate?id=${memberId}`)
+    fetch(`/api/member/check-duplicate?id=${memberId}`)
         .then(response => {
             if (response.ok) {
                 return response.text();

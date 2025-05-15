@@ -7,7 +7,9 @@ import com.ssginc.showpingrefactoring.domain.member.dto.object.MemberDto;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 
 public interface MemberService {
-    void signup(SignupRequestDto request);
+//    void signup(SignupRequestDto request);
+
+    Member registerMember(MemberDto memberDto) throws Exception;
 
     MemberDto getMemberInfo(String memberId);
 
@@ -20,4 +22,6 @@ public interface MemberService {
     boolean isDuplicateId(String memberId);
 
     boolean isDuplicateEmail(String memberEmail);
+
+    Member findMember(String memberId, String password);
 }
