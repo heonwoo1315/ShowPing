@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const reasonValue = checkedReason.value;
                     // 신고 대상 채팅 내용 (reportTargetText)
                     const reportContent = document.getElementById('reportTargetText').textContent;
-                    axios.post('/report/api/register', {
+                    axios.post('/api/report/register', {
                             reportReason: reasonValue,
                             reportContent: reportContent
                         },
@@ -557,7 +557,7 @@ function uploadFileToNCP() {
 
 function createChatRoom() {
     // API 호출
-    axios.post(`/chatRoom/create`, {
+    axios.post(`/api/chatRoom/create`, {
         streamNo
     })
         .then(response => {
@@ -772,7 +772,7 @@ function getMemberInfo(){
     const accessToken = sessionStorage.getItem('accessToken');
     if (accessToken) {
         // 사용자 정보 API 호출, 응답 >> memberId
-        axios.get('/chat/api/info', {
+        axios.get('/api/chat/info', {
             headers: {
                 Authorization: 'Bearer ' + accessToken
             }
