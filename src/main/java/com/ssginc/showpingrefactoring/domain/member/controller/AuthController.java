@@ -9,6 +9,9 @@ import com.ssginc.showpingrefactoring.domain.member.dto.response.TokenResponseDt
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.AuthService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,12 @@ public class AuthController {
     /**
      * 로그인
      */
+    @Operation(summary = "회원 로그인", description = "ID와 비밀번호로 로그인 후 AccessToken과 RefreshToken을 발급합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "필수 파라미터 누락"),
+            @ApiResponse(responseCode = "401", description = "로그인 실패")
+    })
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request) {
         String memberId = request.get("memberId");
@@ -69,9 +78,8 @@ public class AuthController {
 //        return ResponseEntity.ok(response);
 //    }
 
-    /**
-     * 로그아웃
-     */
+    @Operation(summary = "회원 로그아웃", description = "AccessToken을 무효화하여 로그아웃 처리합니다.")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         // Authorization 헤더에서 AccessToken 추출

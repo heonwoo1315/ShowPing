@@ -8,6 +8,8 @@ import com.ssginc.showpingrefactoring.domain.member.dto.request.UpdateMemberRequ
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MailService;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +39,8 @@ public class MemberController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    /**
-     * 회원 정보 조회 (내 정보)
-     */
+    @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 회원 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 정보 조회 성공")
     @GetMapping("/me")
     public ResponseEntity<MemberDto> getMyInfo(HttpServletRequest request) {
         String memberId = getMemberIdFromRequest(request);
@@ -47,9 +48,8 @@ public class MemberController {
         return ResponseEntity.ok(memberDto);
     }
 
-    /**
-     * 회원 정보 수정
-     */
+    @Operation(summary = "회원 정보 수정", description = "로그인한 사용자의 정보를 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 정보 수정 성공")
     @PutMapping("/me")
     public ResponseEntity<Void> updateMyInfo(@RequestBody UpdateMemberRequestDto request, HttpServletRequest httpRequest) {
         String memberId = getMemberIdFromRequest(httpRequest);
@@ -57,9 +57,8 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * 회원 탈퇴
-     */
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
     @DeleteMapping("/me")
     public ResponseEntity<Void> deleteMyAccount(HttpServletRequest request) {
         String memberId = getMemberIdFromRequest(request);
@@ -81,13 +80,13 @@ public class MemberController {
         throw new RuntimeException("No Authorization Header Found");
     }
 
-    // 이메일 인증 코드 보내기
+    @Operation(summary = "이메일 인증 코드 전송", description = "입력한 이메일로 인증 코드를 전송합니다.")
     @PostMapping("/send-code")
     public String sendCode(@RequestBody EmailVerifyRequestDto mailDto) {
         return mailService.sendVerificationCode(mailDto.getEmail());
     }
 
-    // 인증 코드 확인하기
+    @Operation(summary = "이메일 인증 코드 검증", description = "입력한 인증 코드가 유효한지 확인합니다.")
     @PostMapping("/verify-code")
     public boolean verifyCode(@RequestBody EmailVerifyRequestDto mailDto) {
         return mailService.verifyCode(mailDto.getEmail(), mailDto.getEmailCode());
@@ -109,7 +108,7 @@ public class MemberController {
         }
     }
 
-
+    @Operation(summary = "ID 중복 확인", description = "입력한 ID가 중복되었는지 확인합니다.")
     @GetMapping("/check-duplicate")
     public ResponseEntity<?> checkDuplicate(@RequestParam("id") String memberId) {
         // ID 중복 확인 로직을 추가
@@ -124,6 +123,7 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "이메일 중복 확인", description = "입력한 이메일이 중복되었는지 확인합니다.")
     @GetMapping("/check-email-duplicate")
     public ResponseEntity<?> checkEmailDuplicate(@RequestParam("email") String memberEmail) {
         // 이메일 중복 확인 로직을 추가
