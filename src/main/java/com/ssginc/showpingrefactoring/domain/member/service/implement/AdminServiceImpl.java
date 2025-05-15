@@ -46,6 +46,6 @@ public class AdminServiceImpl implements AdminService {
 
         log.info("관리자 로그인 성공: {}", admin.getMemberId());
 
-        return new LoginResponseDto(accessToken, refreshToken);
+        return new LoginResponseDto("LOGIN_SUCCESS", accessToken, refreshToken);
     }
 }

@@ -10,13 +10,17 @@ import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,33 +37,87 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void signup(SignupRequestDto request) {
-        if (!verifiedEmailStorage.containsKey(request.getEmail()) || !verifiedEmailStorage.get(request.getEmail())) {
-            throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+    public Member findMember(String memberId, String password) {
 
-        if (memberRepository.findByMemberId(request.getMemberId()).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATED_MEMBER_ID);
-        }
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        if (memberRepository.findByMemberEmail(request.getEmail()).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
+        if (member != null) {
+            if (!passwordEncoder.matches(password, member.getMemberPassword())) {
+                throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            }
+            else {
+                return member;
+            }
+        } else {
+            return null;
         }
+    }
+
+    @Transactional
+    @Override
+    public Member registerMember(MemberDto memberDTO) throws Exception {
 
         Member member = Member.builder()
-                .memberId(request.getMemberId())
-                .memberName(request.getMemberName())
-                .memberPassword(passwordEncoder.encode(request.getPassword()))
-                .memberEmail(request.getEmail())
-                .memberPhone(request.getPhone())
-                .memberRole(MemberRole.ROLE_USER) // 기본 USER
-                .memberAddress(request.getAddress())
+                .memberName(memberDTO.getMemberName())
+                .memberId(memberDTO.getMemberId())
+                .memberEmail(memberDTO.getMemberEmail())
+                .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
+                .memberAddress(memberDTO.getMemberAddress())
+                .memberPhone(memberDTO.getMemberPhone())
+                .memberRole(MemberRole.ROLE_USER)
+                .streamKey(UUID.randomUUID().toString())
+                .memberPoint(0L)
                 .build();
 
-        memberRepository.save(member);
+        try {
+            return memberRepository.save(member);
+        } catch (Exception e) {
+            throw new Exception("회원 등록 중 오류가 발생했습니다.", e);
+        }
+    }
 
-        // 회원가입 완료 후 인증 성공 기록 삭제 (optional)
-        verifiedEmailStorage.remove(request.getEmail());
+//    @Transactional
+//    @Override
+//    public void signup(SignupRequestDto request) {
+//        if (!verifiedEmailStorage.containsKey(request.getMemberEmail()) || !verifiedEmailStorage.get(request.getMemberEmail())) {
+//            throw new CustomException(ErrorCode.EMAIL_NOT_VERIFIED);
+//        }
+//
+//        if (memberRepository.findByMemberId(request.getMemberId()).isPresent()) {
+//            throw new CustomException(ErrorCode.DUPLICATED_MEMBER_ID);
+//        }
+//
+//        if (memberRepository.findByMemberEmail(request.getMemberEmail()).isPresent()) {
+//            throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
+//        }
+//
+//        Member member = Member.builder()
+//                .memberName(request.getMemberName())
+//                .memberId(request.getMemberId())
+//                .memberEmail(request.getMemberEmail())
+//                .memberPassword(passwordEncoder.encode(request.getMemberPassword()))
+//                .memberAddress(request.getMemberAddress())
+//                .memberPhone(request.getMemberPhone())
+//                .memberRole(MemberRole.ROLE_USER) // 기본 USER
+//                .streamKey(UUID.randomUUID().toString())
+//                .memberPoint(0L)
+//                .build();
+//
+//        memberRepository.save(member);
+//
+//        // 회원가입 완료 후 인증 성공 기록 삭제 (optional)
+//        verifiedEmailStorage.remove(request.getMemberEmail());
+//    }
+
+    @Override
+    public boolean isDuplicateId(String memberId) {
+        return memberRepository.existsByMemberId(memberId);
+    }
+
+    @Override
+    public boolean isDuplicateEmail(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
     }
 
     @Override
@@ -69,6 +127,7 @@ public class MemberServiceImpl implements MemberService {
 
         return new MemberDto(
                 member.getMemberNo(),
+                member.getMemberPassword(),
                 member.getMemberId(),
                 member.getMemberName(),
                 member.getMemberEmail(),

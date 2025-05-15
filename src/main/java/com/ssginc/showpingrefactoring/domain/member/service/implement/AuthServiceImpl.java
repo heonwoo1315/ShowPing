@@ -1,6 +1,5 @@
 package com.ssginc.showpingrefactoring.domain.member.service.implement;
 
-
 import com.ssginc.showpingrefactoring.domain.member.dto.request.LoginRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.ReissueRequestDto;
@@ -28,34 +27,43 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDto login(LoginRequestDto request) {
-        Member member = memberRepository.findByMemberId(request.getMemberId())
+        String memberId = request.getMemberId();
+        String rawPassword = request.getPassword();
+
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!passwordEncoder.matches(request.getPassword(), member.getMemberPassword())) {
+        if (!passwordEncoder.matches(rawPassword, member.getMemberPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getMemberId(), member.getMemberRole().name());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getMemberId());
+        String role = member.getMemberRole().name();
 
-        redisTokenService.saveRefreshToken(member.getMemberId(), refreshToken);
+        String accessToken = jwtTokenProvider.generateAccessToken(memberId, role);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
+        redisTokenService.saveRefreshToken(memberId, refreshToken);
 
-        return new LoginResponseDto(accessToken, refreshToken);
+        // ✅ 관리자/사용자 구분 없이 바로 로그인 성공
+        return new LoginResponseDto(
+                "LOGIN_SUCCESS",
+                accessToken,
+                refreshToken
+        );
     }
 
-    @Override
-    public TokenResponseDto reissue(ReissueRequestDto request) {
-        String refreshToken = request.getRefreshToken();
-        String memberId = jwtTokenProvider.getUsername(refreshToken);
-
-        if (!redisTokenService.validateRefreshToken(memberId, refreshToken)) {
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-
-        String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, jwtTokenProvider.getRole(refreshToken));
-
-        return new TokenResponseDto(newAccessToken);
-    }
+//    @Override
+//    public TokenResponseDto reissue(ReissueRequestDto request) {
+//        String refreshToken = request.getRefreshToken();
+//        String memberId = jwtTokenProvider.getUsername(refreshToken);
+//
+//        if (!redisTokenService.validateRefreshToken(memberId, refreshToken)) {
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+//        }
+//
+//        String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, jwtTokenProvider.getRole(refreshToken));
+//
+//        return new TokenResponseDto(newAccessToken);
+//    }
 
     @Override
     public void logout(String memberId) {

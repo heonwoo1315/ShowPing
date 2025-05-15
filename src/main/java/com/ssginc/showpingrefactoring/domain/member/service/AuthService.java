@@ -7,7 +7,7 @@ import com.ssginc.showpingrefactoring.domain.member.dto.response.TokenResponseDt
 
 public interface AuthService {
     LoginResponseDto login(LoginRequestDto request);
-    TokenResponseDto reissue(ReissueRequestDto request);
+//    TokenResponseDto reissue(ReissueRequestDto request);
     void logout(String memberId);
 
     // 🔹 AccessToken에서 memberId 추출

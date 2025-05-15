@@ -48,26 +48,28 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 엔드포인트 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/**", "/css/**", "/js/**", "/img/**").permitAll()
                         // 공개 접근 가능한 URL (두 코드 블록의 permitAll 목록 통합)
-                        .requestMatchers(
-                                "/", "/login", "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
-                                "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
-                                "/api/auth/user-info", "/api/admin/login", "/product/detail/**", "/api/categories", "/category/**",
-                                "/api/products/**", "/stream/list", "/login/signup", "/check-duplicate", "/signup/send-code",
-                                "/signup/verify-code", "/check-email-duplicate", "/register", "/api/admin/verify-totp",
-                                "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
-                                "/watch/history", "/watch/vod/**", "/cart/**", "/api/carts/**", "/payment/**", "/api/orders/**", "/success/**",
-                                "/favicon.ico", "/api/auth/**", "/user/userInfo", "/webrtc/webrtc/", "/report/report/"
-                        ).permitAll()
-                        // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
-                        .requestMatchers("/admin/**", "/stream/stream")
-                        .hasRole("ADMIN")
-                        // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
-                        .requestMatchers(
-                                "/user/**", "/api/payments/**", "/api/orders/**", "/watch/vod/**"
-                        ).hasAnyRole("USER", "ADMIN")
-                        // 그 외 모든 요청은 허용
-                        .anyRequest().authenticated()
+//                        .requestMatchers(
+//                                "/", "/login", "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
+//                                "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
+//                                "/api/auth/user-info", "/api/admin/login", "/product/detail/**", "/api/categories", "/category/**",
+//                                "/api/products/**", "/stream/list", "/login/signup", "/check-duplicate", "/check-email-duplicate", "/check-duplicate/**", "/signup/send-code",
+//                                "/signup/verify-code", "/check-email-duplicate/**", "/register", "/api/admin/verify-totp",
+//                                "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
+//                                "/watch/history", "/watch/vod/**", "/cart/**", "/api/carts/**", "/payment/**", "/api/orders/**", "/success/**",
+//                                "/favicon.ico", "/api/auth/**", "/user/userInfo", "/webrtc/webrtc/", "/report/report/", "/api/member/check-duplicate",
+//                                "api/member/check-email-duplicate"
+//                        ).permitAll()
+//                        // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
+//                        .requestMatchers("/admin/**", "/stream/stream")
+//                        .hasRole("ADMIN")
+//                        // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
+//                        .requestMatchers(
+//                                "/user/**", "/api/payments/**", "/api/orders/**", "/watch/vod/**"
+//                        ).hasAnyRole("USER", "ADMIN")
+//                        // 그 외 모든 요청은 허용
+//                        .anyRequest().authenticated()
                 )
                 // 로그인, 로그아웃 기능 비활성화 (JWT 사용)
                 .formLogin(form -> form.disable())

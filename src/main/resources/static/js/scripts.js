@@ -34,20 +34,25 @@ function loadCategories() {
         });
 }
 
-function setAdminNav() {
-    const accessToken = sessionStorage.getItem('accessToken');
+function getRoleFromAccessToken() {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) return null;
 
-    axios.get('/member', {
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        }
-    })
-        .then((response) => {
-            if (response.data === 'ROLE_ADMIN') {
-                document.getElementById('admin-menu').hidden = false;
-            }
-        })
-        .catch(() => {})
+    try {
+        // JWT Payload 부분 디코딩
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.role; // 👈 role 확인 (ROLE_USER, ROLE_ADMIN)
+    } catch (e) {
+        console.error("AccessToken 디코딩 오류:", e);
+        return null;
+    }
+}
+
+function setAdminNav() {
+    const role = getRoleFromAccessToken();
+    if (role === 'ROLE_ADMIN') {
+        document.getElementById('admin-menu').hidden = false;
+    }
 }
 
 // 버튼 요소 가져오기
