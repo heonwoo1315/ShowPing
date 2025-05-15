@@ -33,7 +33,7 @@ import java.util.Map;
  * VOD 관련 요청-응답을 수행하는 컨트롤러 클래스
  * <p>
  */
-@Tag(name = "vod", description = "VOD 조회 관련 API")
+@Tag(name = "vod", description = "VOD 관련 API")
 @Controller
 @RequestMapping("/api/vod")
 @RequiredArgsConstructor
