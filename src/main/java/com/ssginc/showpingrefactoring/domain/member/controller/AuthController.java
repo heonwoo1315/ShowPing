@@ -51,7 +51,7 @@ public class AuthController {
 
             // ✅ 무조건 로그인 성공
             return ResponseEntity.ok(Map.of(
-                    "status", "LOGIN_SUCCESS",
+                    "memberRole", role,
                     "accessToken", accessToken,
                     "refreshToken", refreshToken
             ));
