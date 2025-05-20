@@ -1,5 +1,6 @@
 package com.ssginc.showpingrefactoring.common.controller;
 
+import com.ssginc.showpingrefactoring.common.swagger.BatchSpecification;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.VodTitleRequestDto;
 import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
  * 배치 작업을 처리하는 컨트롤러 클래스
  * <p>
  */
-@Tag(name = "batch", description = "Batch 작업 수행")
 @RestController
 @RequestMapping("/api/batch")
 @RequiredArgsConstructor
-public class BatchController {
+public class BatchController implements BatchSpecification {
 
     private final JobLauncher jobLauncher;
     private final Job createHlsJob;
@@ -41,30 +41,8 @@ public class BatchController {
      * @param vodTitleRequestDto 파일 요청 DTO (파일 제목 포함)
      * @return 작업 실행 ID를 포함한 ResponseEntity
      */
+    @Override
     @PostMapping("/hls/create")
-    @Operation(
-            summary = "HLS 생성 배치",
-            description = "영상 저장 후 HLS 생성을 위한 배치작업 진행"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "202",
-                    description = "HLS 생성을 위한 batch 작업 생성 완료"
-            ),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "영상 제목 정보 DTO",
-            required    = true,
-            content     = @Content(
-                    mediaType = "application/json",
-                    schema    = @Schema(
-                            type        = "object",
-                            description = "HLS 생성을 위한 영상 제목",
-                            example     = "{\"fileTitle\":\"stream_01_노트북_특가.mp4\"}"
-                    )
-            )
-    )
     public ResponseEntity<String> createHLS(@RequestBody VodTitleRequestDto vodTitleRequestDto) throws Exception {
         String title = vodTitleRequestDto.getFileTitle();
         JobParameters params = new JobParametersBuilder()
@@ -82,30 +60,8 @@ public class BatchController {
      * @param vodTitleRequestDto 파일 요청 DTO (파일 제목 포함)
      * @return 작업 실행 ID를 포함한 ResponseEntity
      */
+    @Override
     @PostMapping("/subtitle/create")
-    @Operation(
-            summary = "자막 생성 배치",
-            description = "영상 저장 후 자막생성을 위한 배치작업 진행"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "202",
-                    description = "자막 생성을 위한 batch 작업 생성 완료"
-            ),
-            @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "자막 생성을 위한 영상 제목 정보 DTO",
-            required    = true,
-            content     = @Content(
-                    mediaType = "application/json",
-                    schema    = @Schema(
-                            type        = "object",
-                            description = "자막 생성을 위한 영상 제목",
-                            example     = "{\"fileTitle\":\"stream_01_노트북_특가.mp4\"}"
-                    )
-            )
-    )
     public ResponseEntity<String> createSubtitle(@RequestBody VodTitleRequestDto vodTitleRequestDto) throws Exception {
         String title = vodTitleRequestDto.getFileTitle();
         JobParameters params = new JobParametersBuilder()
