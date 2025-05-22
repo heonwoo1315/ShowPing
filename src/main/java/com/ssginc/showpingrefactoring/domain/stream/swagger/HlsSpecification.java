@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Mono;
 
+import static com.ssginc.showpingrefactoring.common.swagger.ApiResponseDescriptions.SERVER_ERROR;
+
 @Tag(name = "hls", description = "HLS 기반 VOD 재생")
-@ApiResponse(responseCode = "500", description = ApiResponseDescriptions.SERVER_ERROR)
+@ApiResponse(responseCode = "500", description = SERVER_ERROR)
 public interface HlsSpecification {
 
     @Operation(summary = "get M3U8 ver 1", description = "HLS metadata 요청 (생성 및 fetch)")

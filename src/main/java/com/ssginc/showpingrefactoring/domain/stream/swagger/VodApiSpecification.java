@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
+import static com.ssginc.showpingrefactoring.common.swagger.ApiResponseDescriptions.SERVER_ERROR;
+
 @Tag(name = "vod", description = "VOD 관련 API")
-@ApiResponse(responseCode = "500", description = ApiResponseDescriptions.SERVER_ERROR)
+@ApiResponse(responseCode = "500", description = SERVER_ERROR)
 public interface VodApiSpecification {
 
     @Operation(

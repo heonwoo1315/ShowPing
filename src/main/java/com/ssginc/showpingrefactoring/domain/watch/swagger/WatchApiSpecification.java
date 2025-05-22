@@ -15,8 +15,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import static com.ssginc.showpingrefactoring.common.swagger.ApiResponseDescriptions.SERVER_ERROR;
+
 @Tag(name = "watch", description = "시청 관련 API")
-@ApiResponse(responseCode = "500", description = ApiResponseDescriptions.SERVER_ERROR)
+@ApiResponse(responseCode = "500", description = SERVER_ERROR)
 public interface WatchApiSpecification {
 
     @Operation(

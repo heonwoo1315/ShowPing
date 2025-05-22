@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import static com.ssginc.showpingrefactoring.common.swagger.ApiResponseDescriptions.SERVER_ERROR;
+
 @Tag(name = "batch", description = "Batch 작업 수행")
-@ApiResponse(responseCode = "500", description = ApiResponseDescriptions.SERVER_ERROR)
+@ApiResponse(responseCode = "500", description = SERVER_ERROR)
 public interface BatchSpecification {
 
     @Operation(
