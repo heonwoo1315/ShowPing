@@ -58,11 +58,11 @@ public class SecurityConfig {
                                         "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
                                         "/favicon.ico/**", "/api/auth/**",  "/api/member/check-duplicate", "/api/member/register",
                                         "/api/member/send-code/**", "/api/member/check-email-duplicate","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/batch/**", "/api/live/standby"
-                                        ,"/api/live/product/list", "/api/live/onair", "/api/live/live-info", "/api/live/active"
+                                        ,"/api/live/product/list", "/api/live/onair", "/api/live/live-info", "/api/live/active","/api/watch/insert","/api/vod/subtitle/**"
                                 ).permitAll()
                                 // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
                                 .requestMatchers("/admin/**", "/stream/stream","/api/live/stop", "/api/live/start", "/api/live/register", "/api/report/updateStatus", "/api/report/register",
-                                        "/api/report/list", "/api/chatRoom/create", "/api/vod/upload", "/api/watch/insert", "/api/void/subtitle/**")
+                                        "/api/report/list", "/api/chatRoom/create", "/api/vod/upload")
                                 .hasRole("ADMIN")
                                 // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
                                 .requestMatchers(
