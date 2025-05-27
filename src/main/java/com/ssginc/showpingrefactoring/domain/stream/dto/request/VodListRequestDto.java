@@ -15,6 +15,7 @@ public class VodListRequestDto {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private int pageNo;
 
+    @Min(value = 0)
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Long categoryNo;
 
