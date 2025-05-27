@@ -1,25 +1,23 @@
 package com.ssginc.showpingrefactoring.domain.stream.dto.request;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
-@Validated
+@AllArgsConstructor
 public class VodListRequestDto {
 
-    @Min(value = 0)
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Min(value = 0, message = "페이지 번호는 0 이상이어야 합니다.")
     private int pageNo;
 
-    @Min(value = 0)
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    @Min(value = 0, message = "카테고리 번호는 0 이상이어야 합니다.")
     private Long categoryNo = 0L;
 
-    @Schema(allowableValues = {"mostView", "recent"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Pattern(regexp = "^(mostViewed|recent)$", message = "sort는 mostViewed 또는 recent 이어야 합니다.")
     private String sort = "recent";
 
 }
