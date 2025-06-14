@@ -2,20 +2,9 @@ let memberNo = null;
 let member = null
 
 document.addEventListener("DOMContentLoaded", async function () {
-    // JWT 토큰 가져오기 (sessionStorage 사용)
-    const token = sessionStorage.getItem("accessToken");
-
-    if (!token) {
-        window.location.href = "/login"; // 로그인 페이지로 이동
-        return; // 토큰이 없으면 함수 종료
-    }
-
     try {
-        // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
         const response = await axios.get("/api/carts/info", {
-            headers: {
-                Authorization: `Bearer ${token}` // JWT 토큰을 Authorization 헤더에 포함
-            }
+            withCredentials: true // 쿠키 인증 적용
         });
 
         console.log("로그인된 사용자 정보:", response.data);
@@ -37,7 +26,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // 장바구니 데이터 불러오기 및 테이블 생성
 function loadCartItems(memberNo) {
-    axios.get(`/api/carts/${memberNo}`)
+    axios.get(`/api/carts/${memberNo}`, {
+        withCredentials: true // 쿠키 인증 적용
+    })
         .then(response => {
             const cartItems = response.data;
             const tableBody = document.querySelector(".cart-items tbody");

@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const accessToken = sessionStorage.getItem('accessToken');
     const updateBtn = document.querySelector(".update-btn");    // 업데이트 버튼
 
     updateBtn.addEventListener("click", function () {
@@ -44,14 +43,10 @@ document.addEventListener("DOMContentLoaded", function () {
             productSale: productSale
         };
 
-        const header = {
-            "Authorization": "Bearer " + accessToken
-        }
-
         // axios로 방송을 등록
         axios.post("/api/live/register",
             data, {
-            headers: header
+            withCredentials: true
             })
             .then((response) => {
                 Swal.fire({

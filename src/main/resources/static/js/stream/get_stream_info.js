@@ -1,13 +1,7 @@
 (async function() {
     try {
-        const accessToken = sessionStorage.getItem('accessToken');
-
-        const header = {
-            "Authorization": "Bearer " + accessToken,
-        }
-
         const response = await axios.get("/api/live/live-info", {
-            headers: header
+            withCredentials: true
         });
 
         const data = response.data;
