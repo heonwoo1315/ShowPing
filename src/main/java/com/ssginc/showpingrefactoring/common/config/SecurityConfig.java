@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 
 import java.util.List;
@@ -59,11 +61,11 @@ public class SecurityConfig {
                                         "/favicon.ico", "/api/auth/**",  "/api/member/check-duplicate", "/api/member/register",
                                         "/api/member/send-code/**", "/api/member/check-email-duplicate", "/api/member/check-phone-duplicate", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/batch/**", "/api/live/standby"
                                         ,"/api/live/product/list", "/api/live/onair", "/api/live/live-info", "/api/live/active", "/stream/watch/**", "/stream/list/**", "/watch/**",
-                                        "/api/watch/insert","/product/product_list/**", "/product/detail/**","/product/product_detail/**"
+                                        "/api/watch/insert","/product/product_list/**", "/product/detail/**","/product/product_detail/**","/record", "/live"
                                 ).permitAll()
                                 // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
                                 .requestMatchers("/admin/**","/api/live/stop", "/api/live/start", "/api/live/register", "/api/report/updateStatus", "/api/report/register",
-                                        "/api/report/list", "/api/chatRoom/create", "/api/vod/upload", "/api/void/subtitle/**", "/stream/stream", "/report/report", "/member")
+                                        "/api/report/report", "/api/chatRoom/create", "/api/vod/upload", "/api/void/subtitle/**", "/stream/stream", "/report/**", "/api/report/list")
                                 .hasRole("ADMIN")
                                 // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
                                 .requestMatchers(
@@ -115,5 +117,19 @@ public class SecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> response.sendRedirect("/login");
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:8080", "https://showping.duckdns.org") // 프론트엔드 도메인들
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // 중요
+            }
+        };
     }
 }
