@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Report", description = "신고 관리 API")
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("api/report")
+@RequestMapping("/api/report")
 public class ReportController {
 
     private final ReportService reportService;
@@ -49,7 +49,7 @@ public class ReportController {
      * @param model     뷰에 데이터를 전달하기 위한 Model 객체
      * @return 신고 관리 페이지 뷰 이름 (report/report)
      */
-    @GetMapping("report")
+    @GetMapping("/report")
     public String reportManagement(@ModelAttribute ReportDto reportDto, Model model, HttpServletRequest request) {
         List<Report> reports;
         if (hasSearchCriteria(reportDto)) {
@@ -78,7 +78,7 @@ public class ReportController {
     // JSON API 엔드포인트
     @Operation(summary = "신고 목록 조회", description = "검색 조건에 따라 신고 목록 조회.")
     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ReportResponseDto.class)))
-    @GetMapping("list")
+    @GetMapping("/list")
     public List<ReportResponseDto> getReportList(
             @Parameter(description = "신고 검색 조건 (DTO)") @ModelAttribute ReportDto reportDto) {
 
@@ -118,7 +118,7 @@ public class ReportController {
             @ApiResponse(responseCode = "400", description = "업데이트 실패"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("updateStatus")
+    @PostMapping("/updateStatus")
     public ResponseEntity<?> updateReportStatus(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "신고 번호", required = true,
                     content = @Content(schema = @Schema(example = "{\"reportNo\": 1234}")))
@@ -142,7 +142,7 @@ public class ReportController {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<?> registerReport(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "신고 등록 요청 DTO", required = true)
             @RequestBody ReportRegisterRequestDto dto,

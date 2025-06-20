@@ -23,5 +23,7 @@ public interface MemberService {
 
     boolean isDuplicateEmail(String memberEmail);
 
+    boolean isDuplicatePhone(String memberPhone);
+
     Member findMember(String memberId, String password);
 }

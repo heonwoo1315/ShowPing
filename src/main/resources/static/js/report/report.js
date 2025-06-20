@@ -25,8 +25,19 @@ function openReportDetailModal(report) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 페이지 로딩 시 신고 목록 호출
-    loadReports();
+
+    // 관리자 인증 체크
+    axios.get("/api/auth/user-info", {
+        withCredentials: true
+    }).then((res) => {
+        if (res.data.role !== 'ADMIN') {
+            window.location.href = '/';
+        } else {
+            loadReports();
+        }
+    }).catch(() => {
+        window.location.href = '/login';
+    });
 
     // 검색 폼 요소 선택
     const searchForm = document.getElementById("searchForm");
@@ -120,6 +131,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         axios.post('/api/report/updateStatus', {
             reportNo: selectedReport.reportNo
+        }, {
+            withCredentials: true // 쿠키 기반 인증을 위해 추가
         }).then(res => {
             Swal.fire({
                 icon: 'success',
@@ -152,7 +165,7 @@ function loadReports() {
     const formData = new FormData(searchForm);
     const params = Object.fromEntries(formData.entries());
 
-    axios.get('/api/report/list', {params: params})
+    axios.get('/api/report/list', {params: params, withCredentials: true})
         .then((response) => {
             // 전체 신고 목록을 전역 변수에 저장하고, 페이지를 1로 초기화
             allReports = response.data;

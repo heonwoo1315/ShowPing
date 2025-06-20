@@ -31,13 +31,10 @@ function getOffsetSeconds(chatTimeStr) {
 }
 
 function fetchChatMessages(chatStreamNo) {
-    const accessToken = sessionStorage.getItem('accessToken');
 
     axios.get('/api/chat/messages', {
         params: {chatStreamNo: chatStreamNo},
-        headers: {
-            "Authorization": "Bearer " + accessToken
-        }
+        withCredentials: true
     })
         .then(response => {
             chatMessages = response.data; // 전역 변수에 할당
@@ -156,7 +153,6 @@ function appendChatMessage(msg) {
 }
 
 function addWatch(streamNo) {
-    const accessToken = sessionStorage.getItem('accessToken');
     const watchTime = new Date();
 
     axios.post('/watch/insert',
@@ -164,9 +160,7 @@ function addWatch(streamNo) {
             streamNo: streamNo,
             watchTime: watchTime
         }, {
-            headers: {
-                "Authorization": "Bearer " + accessToken
-            }
+            withCredentials: true // 쿠키 인증 적용
         });
 }
 

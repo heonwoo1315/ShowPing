@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 
 import java.util.List;
@@ -48,28 +50,30 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 엔드포인트 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/**", "/css/**", "/js/**", "/img/**").permitAll()
-                        // 공개 접근 가능한 URL (두 코드 블록의 permitAll 목록 통합)
-//                        .requestMatchers(
-//                                "/", "/login", "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
-//                                "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
-//                                "/api/auth/user-info", "/api/admin/login", "/product/detail/**", "/api/categories", "/category/**",
-//                                "/api/products/**", "/stream/list", "/login/signup", "/check-duplicate", "/check-email-duplicate", "/check-duplicate/**", "/signup/send-code",
-//                                "/signup/verify-code", "/check-email-duplicate/**", "/register", "/api/admin/verify-totp",
-//                                "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
-//                                "/watch/history", "/watch/vod/**", "/cart/**", "/api/carts/**", "/payment/**", "/api/orders/**", "/success/**",
-//                                "/favicon.ico", "/api/auth/**", "/user/userInfo", "/webrtc/webrtc/", "/report/report/", "/api/member/check-duplicate",
-//                                "api/member/check-email-duplicate"
-//                        ).permitAll()
-//                        // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
-//                        .requestMatchers("/admin/**", "/stream/stream")
-//                        .hasRole("ADMIN")
-//                        // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
-//                        .requestMatchers(
-//                                "/user/**", "/api/payments/**", "/api/orders/**", "/watch/vod/**"
-//                        ).hasAnyRole("USER", "ADMIN")
-//                        // 그 외 모든 요청은 허용
-//                        .anyRequest().authenticated()
+//                                .requestMatchers("/**", "/css/**", "/js/**", "/img/**").permitAll()
+                                // 공개 접근 가능한 URL (두 코드 블록의 permitAll 목록 통합)
+                                .requestMatchers(
+                                        "/", "/login", "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
+                                        "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
+                                        "/api/auth/user-info", "/api/admin/login", "/product/detail/**", "/api/categories/**", "/category/**",
+                                        "/api/products/**", "/api/admin/verify-totp", "/login/signup/**", "/api/member/verify-code",
+                                        "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
+                                        "/favicon.ico", "/api/auth/**",  "/api/member/check-duplicate", "/api/member/register",
+                                        "/api/member/send-code/**", "/api/member/check-email-duplicate", "/api/member/check-phone-duplicate", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/batch/**", "/api/live/standby"
+                                        ,"/api/live/product/list", "/api/live/onair", "/api/live/live-info", "/api/live/active", "/stream/watch/**", "/stream/list/**", "/watch/**",
+                                        "/api/watch/insert","/product/product_list/**", "/product/detail/**","/product/product_detail/**","/record", "/live"
+                                ).permitAll()
+                                // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
+                                .requestMatchers("/admin/**","/api/live/stop", "/api/live/start", "/api/live/register", "/api/report/updateStatus", "/api/report/register",
+                                        "/api/report/report", "/api/chatRoom/create", "/api/vod/upload", "/api/void/subtitle/**", "/stream/stream", "/report/**", "/api/report/list")
+                                .hasRole("ADMIN")
+                                // USER 전용 URL (두 코드 블록의 USER 관련 URL 병합)
+                                .requestMatchers(
+                                        "/user/**","/api/carts/**", "/api/payments/**", "/api/orders/**", "/api/watch/history/**", "/api/hls/**", "/api/payments/verify",
+                                        "/api/payments/complete", "/api/vod/list/**", "/api/chat/**", "/watch/history/**", "/cart/**", "/product/product_cart", "/payment/**",
+                                        "/product/product_payment", "/success/**", "/payment/success/**"
+                                ).hasAnyRole("USER", "ADMIN")
+                                .anyRequest().authenticated()
                 )
                 // 로그인, 로그아웃 기능 비활성화 (JWT 사용)
                 .formLogin(form -> form.disable())
@@ -113,5 +117,19 @@ public class SecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> response.sendRedirect("/login");
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:8080", "https://showping.duckdns.org") // 프론트엔드 도메인들
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // 중요
+            }
+        };
     }
 }

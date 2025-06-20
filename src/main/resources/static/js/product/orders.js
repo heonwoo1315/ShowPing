@@ -2,16 +2,11 @@ let memberNo = null;
 let orders = []; // 주문 목록을 전역 변수에 저장
 
 document.addEventListener("DOMContentLoaded", async function () {
-    const token = sessionStorage.getItem("accessToken");
-    if (!token) {
-        window.location.href = "/login";
-        return;
-    }
 
     try {
         // 로그인 사용자 정보 조회
         const response = await axios.get("/api/carts/info", {
-            headers: {Authorization: `Bearer ${token}`}
+            withCredentials: true
         });
         memberNo = response.data.memberNo;
         if (!memberNo) {
@@ -80,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     } catch (error) {
         console.error("주문 정보 불러오기 실패:", error);
-        document.getElementById("order-list").innerHTML = "<p>주문 정보를 불러오는 중 오류가 발생했습니다.</p>";
+        window.location.href = "/login";
     }
 });
 

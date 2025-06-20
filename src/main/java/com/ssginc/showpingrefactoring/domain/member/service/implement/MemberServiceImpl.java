@@ -12,6 +12,7 @@ import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,24 +57,31 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public Member registerMember(MemberDto memberDTO) throws Exception {
-
-        Member member = Member.builder()
-                .memberName(memberDTO.getMemberName())
-                .memberId(memberDTO.getMemberId())
-                .memberEmail(memberDTO.getMemberEmail())
-                .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
-                .memberAddress(memberDTO.getMemberAddress())
-                .memberPhone(memberDTO.getMemberPhone())
-                .memberRole(MemberRole.ROLE_USER)
-                .streamKey(UUID.randomUUID().toString())
-                .memberPoint(0L)
-                .build();
-
+    public Member registerMember(MemberDto dto) {
         try {
-            return memberRepository.save(member);
-        } catch (Exception e) {
-            throw new Exception("회원 등록 중 오류가 발생했습니다.", e);
+            return memberRepository.save(Member.builder()
+                    .memberId(dto.getMemberId())
+                    .memberEmail(dto.getMemberEmail())
+                    .memberPhone(dto.getMemberPhone())
+                    .memberName(dto.getMemberName())
+                    .memberPassword(passwordEncoder.encode(dto.getMemberPassword()))
+                    .memberAddress(dto.getMemberAddress())
+                    .memberRole(MemberRole.ROLE_USER)
+                    .streamKey(UUID.randomUUID().toString())
+                    .memberPoint(0L)
+                    .build());
+        } catch (DataIntegrityViolationException e) {
+            String causeMessage = e.getMostSpecificCause().getMessage();
+
+            if (causeMessage.contains("member_id")) {
+                throw new CustomException(ErrorCode.DUPLICATED_MEMBER_ID);
+            } else if (causeMessage.contains("member_email")) {
+                throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
+            } else if (causeMessage.contains("member_phone")) {
+                throw new CustomException(ErrorCode.DUPLICATED_PHONE);
+            }
+
+            throw new CustomException(ErrorCode.DATABASE_ERROR); // 필요 시 추가 정의
         }
     }
 
@@ -118,6 +126,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean isDuplicateEmail(String memberEmail) {
         return memberRepository.existsByMemberEmail(memberEmail);
+    }
+
+    @Override
+    public boolean isDuplicatePhone(String memberPhone) {
+        return memberRepository.existsByMemberPhone(memberPhone);
     }
 
     @Override

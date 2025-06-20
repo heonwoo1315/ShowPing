@@ -1,20 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const accessToken = sessionStorage.getItem('accessToken');
-
-    if (!accessToken) {
-        window.location.href = '../login';
-    }
-
-    loadWatchHistory(accessToken);
+    loadWatchHistory();
 });
 
-function loadWatchHistory(accessToken) {
-    const header = {
-        'Authorization': 'Bearer ' + accessToken
-    };
-
+function loadWatchHistory() {
     axios.get(`/api/watch/history/list`, {
-        headers: header
+        withCredentials: true // 쿠키 인증 방식
     })
         .then(response => {
             const historyItems = response.data['historyList'];
@@ -64,5 +54,8 @@ function loadWatchHistory(accessToken) {
         })
         .catch(error => {
             console.error("시청 이력 데이터를 불러오는 중 오류 발생:", error);
+            if (error.response && error.response.status === 401) {
+                window.location.href = "/login"; // ❗ 로그인 만료 시 대응
+            }
         });
 }

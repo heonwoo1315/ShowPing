@@ -168,11 +168,8 @@ function setupEventListeners(productNo) {
                 return;
             }
 
-            // JWT 토큰을 Authorization 헤더에 포함시켜 API 호출
             const response = await axios.get("/api/carts/info", {
-                headers: {
-                    Authorization: `Bearer ${token}`  // JWT 토큰을 Authorization 헤더에 포함
-                }
+                withCredentials: true
             });
 
             console.log(response.data);
@@ -222,7 +219,6 @@ function setupEventListeners(productNo) {
     });
 
     directBtn.addEventListener("click", function () {
-        const token = sessionStorage.getItem("accessToken");
 
         if (!token) {
             Swal.fire({

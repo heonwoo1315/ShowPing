@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (reportForm) {
             reportForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const accessToken = sessionStorage.getItem('accessToken');
                 const checkedReason = document.querySelector('input[name="reportReason"]:checked');
                 if (checkedReason) {
                     const reasonValue = checkedReason.value;
@@ -48,12 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     axios.post('/api/report/register', {
                             reportReason: reasonValue,
                             reportContent: reportContent
-                        },
-                        {
-                            headers: {
-                                Authorization: 'Bearer ' + accessToken
-                            }
-                        })
+                        }, {
+                        withCredentials: true
+                    })
                         .then(response => {
                             console.log("신고 등록 완료:", response.data);
                             Swal.fire({
@@ -588,8 +584,7 @@ function connectToChatRoom() {
         return;
     }
 
-    const accessToken = sessionStorage.getItem('accessToken');
-    var socket = new SockJS('/ws-stomp-chat?access_token=' + accessToken, null, {
+    var socket = new SockJS('/ws-stomp-chat', null, {
         transports: ['websocket', 'xhr-streaming', 'xhr-polling']
     });
     stompClient = Stomp.over(socket);
@@ -768,28 +763,20 @@ function clearErrorMessage() {
 }
 
 function getMemberInfo(){
-    // accessToken을 sessionStorage에서 가져옴
-    const accessToken = sessionStorage.getItem('accessToken');
-    if (accessToken) {
-        // 사용자 정보 API 호출, 응답 >> memberId
-        axios.get('/api/chat/info', {
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            }
+    axios.get('/api/chat/info', {
+        withCredentials: true
+    })
+        .then(response => {
+            memberId = response.data.memberId;
+            memberRole = response.data.role;
+            console.log("[DEBUG] Retrieved memberId:", memberId);
+            console.log("[DEBUG] Retrieved memberRole:", memberRole);
         })
-            .then(response => {
-                memberId = response.data.memberId; // API에서 memberId를 반환
-                memberRole = response.data.role;
-                console.log("[DEBUG] Retrieved memberId:", memberId);
-                console.log("[DEBUG] Retrieved memberRole:", memberRole);
-            })
-            .catch(error => {
-                console.error("사용자 정보를 불러오는 중 오류:", error);
-            });
-    } else {
-        console.warn("accessToken이 존재하지 않습니다.");
-    }
+        .catch(error => {
+            console.error("사용자 정보를 불러오는 중 오류:", error);
+        });
 }
+
 
 // 인라인 에러 메시지를 표시하는 함수
 function showInlineError(errorMessage) {

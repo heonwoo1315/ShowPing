@@ -138,4 +138,16 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "전화번호 중복 확인", description = "입력한 전화번호가 중복되었는지 확인합니다.")
+    @GetMapping("/check-phone-duplicate")
+    public ResponseEntity<?> checkPhoneDuplicate(@RequestParam("phone") String phone) {
+        boolean isDuplicate = memberService.isDuplicatePhone(phone);
+        if (isDuplicate) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("중복된 전화번호입니다");
+        } else {
+            return ResponseEntity.ok("사용 가능한 전화번호입니다.");
+        }
+    }
+
 }
