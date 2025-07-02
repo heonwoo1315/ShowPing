@@ -14,7 +14,9 @@ public interface ProductService {
 
     public ProductDto getProductById(Long productId);
 
-    public List<ProductItemDto> getProducts();
+//    public List<ProductItemDto> getProducts();
+
+    public Page<ProductItemDto> getProducts(int page, int size);
 
     public List<ProductDto> getTopProductsBySaleQuantity(Long categoryNo);
 

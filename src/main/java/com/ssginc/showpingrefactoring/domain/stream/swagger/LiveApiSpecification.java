@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -103,6 +104,25 @@ public interface LiveApiSpecification {
             )
             @RequestParam(defaultValue = "0", name = "pageNo") int pageNo);
 
+//    @GetMapping("/product/list")
+//    @Operation(
+//            summary = "방송 등록 중 상품 선택",
+//            description = "방송 등록 페이지에서 상품 선택 시 상품 목록을 가져옴"
+//    )
+//    @ApiResponses({
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "상품 목록 가져오기 성공",
+//                    content = @Content(
+//                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                            array = @ArraySchema(
+//                                    schema = @Schema(implementation = ProductItemDto.class)
+//                            )
+//                    )
+//            )
+//    })
+//    ResponseEntity<List<ProductItemDto>> getProductList();
+
     @GetMapping("/product/list")
     @Operation(
             summary = "방송 등록 중 상품 선택",
@@ -114,13 +134,22 @@ public interface LiveApiSpecification {
                     description = "상품 목록 가져오기 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(
-                                    schema = @Schema(implementation = ProductItemDto.class)
-                            )
+                            schema = @Schema(implementation = PageProductItemDto.class)
                     )
             )
     })
-    ResponseEntity<List<ProductItemDto>> getProductList();
+    ResponseEntity<Page<ProductItemDto>> getProductList(
+            @Parameter(
+                    description = "조회할 페이지 번호 (0부터 시작)",
+                    schema = @Schema(type = "integer", defaultValue = "0", example = "0")
+            )
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(
+                    description = "페이지 당 조회할 개수",
+                    schema = @Schema(type = "integer", defaultValue = "20", example = "20")
+            )
+            @RequestParam(defaultValue = "20") int size);
+
 
     @PostMapping("/register")
     @Operation(

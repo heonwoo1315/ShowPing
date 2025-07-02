@@ -85,16 +85,24 @@ public class LiveApiController implements LiveApiSpecification {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    /**
-     * 방송 등록 화면에서 상품 선택을 위해 상품 목록을 반환해주는 메서드
-     * @return 상품 목록이 포함된 응답 객체
-     */
+//    /**
+//     * 방송 등록 화면에서 상품 선택을 위해 상품 목록을 반환해주는 메서드
+//     * @return 상품 목록이 포함된 응답 객체
+//     */
+//    @GetMapping("/product/list")
+//    @Override
+//    public ResponseEntity<List<ProductItemDto>> getProductList() {
+//        List<ProductItemDto> productItemDtoList = productService.getProducts();
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
+//    }
+
     @GetMapping("/product/list")
     @Override
-    public ResponseEntity<List<ProductItemDto>> getProductList() {
-        List<ProductItemDto> productItemDtoList = productService.getProducts();
+    public ResponseEntity<Page<ProductItemDto>> getProductList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        Page<ProductItemDto> result = productService.getProducts(page, size);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     /**

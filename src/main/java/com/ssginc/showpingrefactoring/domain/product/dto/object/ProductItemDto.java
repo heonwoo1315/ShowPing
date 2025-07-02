@@ -1,5 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.product.dto.object;
 
+import com.ssginc.showpingrefactoring.domain.product.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,5 +19,14 @@ public class ProductItemDto {
     private Long productPrice;
 
     private String productImg;
+
+    public static ProductItemDto fromEntity(Product product) {
+        return ProductItemDto.builder()
+                .productNo(product.getProductNo())
+                .productName(product.getProductName())
+                .productPrice(product.getProductPrice())
+                .productImg(product.getProductImg())
+                .build();
+    }
 
 }

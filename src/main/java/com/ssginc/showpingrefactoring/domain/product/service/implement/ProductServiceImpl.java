@@ -7,10 +7,7 @@ import com.ssginc.showpingrefactoring.domain.product.repository.ProductRepositor
 import com.ssginc.showpingrefactoring.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -87,30 +84,37 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public List<ProductItemDto> getProducts() {
-        try {
-            List<Product> products = productRepository.findAll();
+//    public List<ProductItemDto> getProducts() {
+//        try {
+//            List<Product> products = productRepository.findAll();
+//
+//            if (products.isEmpty()) {
+//                throw new RuntimeException("상품이 없습니다.");
+//            }
+//
+//            return products.stream().map(product -> {
+//                Long productPrice = product.getProductPrice();
+//
+//                return ProductItemDto.builder()
+//                        .productNo(product.getProductNo())
+//                        .productName(product.getProductName())
+//                        .productPrice(productPrice)
+//                        .productImg(product.getProductImg())
+//                        .build();
+//            }).toList();
+//        } catch (RuntimeException e) {
+//            log.error("Exception [Err_Msg]: {}", e.getMessage());
+//            log.error("Exception [Err_Where]: {}", e.getStackTrace()[0]);
+//
+//            return null;
+//        }
+//    }
 
-            if (products.isEmpty()) {
-                throw new RuntimeException("상품이 없습니다.");
-            }
+    public Page<ProductItemDto> getProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productNo").descending());
 
-            return products.stream().map(product -> {
-                Long productPrice = product.getProductPrice();
-
-                return ProductItemDto.builder()
-                        .productNo(product.getProductNo())
-                        .productName(product.getProductName())
-                        .productPrice(productPrice)
-                        .productImg(product.getProductImg())
-                        .build();
-            }).toList();
-        } catch (RuntimeException e) {
-            log.error("Exception [Err_Msg]: {}", e.getMessage());
-            log.error("Exception [Err_Where]: {}", e.getStackTrace()[0]);
-
-            return null;
-        }
+        return productRepository.findAll(pageable)
+                .map(ProductItemDto::fromEntity);
     }
 
     public List<ProductDto> getTopProductsBySaleQuantity(Long categoryNo) {
