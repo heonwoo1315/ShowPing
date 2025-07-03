@@ -111,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
 //    }
 
     public Page<ProductItemDto> getProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("productNo").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("productNo").ascending());
 
         return productRepository.findAll(pageable)
                 .map(ProductItemDto::fromEntity);
