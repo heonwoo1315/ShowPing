@@ -208,7 +208,3 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
 
     window.location.href = "/payment";
 });
-
-row.addEventListener('click', () => {
-    window.location.href = `/product/detail/${product.productNo}`;
-});

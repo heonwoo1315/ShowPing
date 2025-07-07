@@ -54,11 +54,18 @@ async function login(event) {
             withCredentials: true
         });
 
-        if (response.data.memberRole) {
+        if (response.data.memberRole === "ROLE_ADMIN") {
             Swal.fire({
                 icon: "success",
                 title: "로그인 성공",
-                text: `${response.data.memberRole} 권한으로 로그인됨`
+                text: "관리자 권한으로 로그인됨"
+            }).then(() => {
+                location.href = "/";
+            });
+        } else {
+            Swal.fire({
+                icon: "success",
+                title: "로그인 성공"
             }).then(() => {
                 location.href = "/";
             });
