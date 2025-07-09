@@ -54,8 +54,5 @@ function loadWatchHistory() {
         })
         .catch(error => {
             console.error("시청 이력 데이터를 불러오는 중 오류 발생:", error);
-            if (error.response && error.response.status === 401) {
-                window.location.href = "/login"; // ❗ 로그인 만료 시 대응
-            }
         });
 }
