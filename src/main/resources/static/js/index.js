@@ -553,9 +553,11 @@ function getStandBy() {
 }
 
 function getVod() {
-    axios.get('/api/vod/list/watch', {
+    axios.get('/api/vod/list', {
         params: {
-            pageNo: 0
+            pageNo: 0,
+            categoryNo: 0,
+            sort: 'mostViewed'
         }
     }).then(response => {
         const pageInfo = response.data['pageInfo'];
@@ -615,10 +617,11 @@ function getVod() {
 }
 
 function getVodByCategory(categoryNumber) {
-    axios.get('/api/vod/list/category-watch', {
+    axios.get('/api/vod/list', {
         params: {
             pageNo: 0,
-            categoryNo: categoryNumber
+            categoryNo: categoryNumber,
+            sort: 'mostViewed'
         }
     }).then(response => {
         const pageInfo = response.data['pageInfo'];

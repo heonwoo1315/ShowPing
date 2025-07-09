@@ -60,7 +60,7 @@ function setupVodFilterButtons() {
                 button.addEventListener('click', function() {
                     vodFilterOption = 'filtered';
                     categoryNumber = parseInt(category.categoryNo);
-                    loadVodByCategory(categoryNumber, 0);
+                    loadVodByCategory(0, categoryNumber);
                 });
 
                 filterButtons.appendChild(button);
@@ -289,9 +289,10 @@ function loadStandBy(pageNo) {
 
 function loadVod(pageNo) {
     // 현재 페이지의 VOD 목록 불러오기
-    axios.get('/api/vod/list/page', {
+    axios.get('/api/vod/list', {
         params: {
-            pageNo: pageNo
+            pageNo: pageNo,
+            categoryNo: 0
         }
     }).then(response => {
             const pageInfo = response.data['pageInfo'];
@@ -353,11 +354,11 @@ function loadVod(pageNo) {
         });
 }
 
-function loadVodByCategory(categoryNo, pageNo) {
-    axios.get(`/api/vod/list/category`, {
+function loadVodByCategory(pageNo, categoryNo) {
+    axios.get(`/api/vod/list`, {
         params: {
-            categoryNo: categoryNo,
             pageNo: pageNo,
+            categoryNo: categoryNo,
         }
     }).then(response => {
         const pageInfo = response.data['pageInfo'];
@@ -437,7 +438,7 @@ function renderPageContent(pageInfo, containerName) {
                     loadVod(pageNumber + 1);
                 }
                 else {
-                    loadVodByCategory(categoryNumber, pageNumber + 1);
+                    loadVodByCategory(pageNumber + 1, categoryNumber);
                 }
             }
             else if (containerName === 'live-page-container') {
