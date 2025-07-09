@@ -6,8 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -29,5 +32,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(CustomErrorResponse.of("INTERNAL_SERVER_ERROR", "알 수 없는 서버 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<CustomErrorResponse> handleBindException(BindException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity
+                .badRequest()
+                .body(CustomErrorResponse.of("VALIDATION_ERROR", errorMessage));
     }
 }
