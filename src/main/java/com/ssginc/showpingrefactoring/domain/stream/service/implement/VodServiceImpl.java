@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.repository.VodRepository;
@@ -54,6 +56,11 @@ public class VodServiceImpl implements VodService {
                 vodPage = vodRepository.findAllVod(pageable);
             }
         }
+
+        if (!vodPage.hasContent()) {
+            throw new CustomException(ErrorCode.VOD_NOT_FOUND);
+        }
+
         return vodPage;
     }
 
@@ -64,6 +71,12 @@ public class VodServiceImpl implements VodService {
      */
     @Override
     public StreamResponseDto getVodByNo(Long streamNo) {
-        return vodRepository.findVodByNo(streamNo);
+        StreamResponseDto vodDto = vodRepository.findVodByNo(streamNo);
+
+        if (vodDto == null) {
+            throw new CustomException(ErrorCode.VOD_NOT_FOUND);
+        }
+
+        return vodDto;
     }
 }

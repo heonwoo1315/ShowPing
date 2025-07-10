@@ -22,6 +22,10 @@ public enum ErrorCode {
     INVALID_TOTP_CODE(HttpStatus.UNAUTHORIZED, "M008", "잘못된 OTP 인증 코드입니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "M009", "이메일 인증이 완료되지 않았습니다."),
 
+
+    // [VOD 관련 에러 코드]
+    VOD_NOT_FOUND(HttpStatus.NOT_FOUND, "VO001", "요청한 VOD 정보가 없습니다."),
+
     //(추후 추가 가능: 이미 존재하는 이메일/아이디 등)
     ;
 
