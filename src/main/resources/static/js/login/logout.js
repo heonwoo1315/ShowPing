@@ -26,19 +26,47 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (data.role === "ADMIN" && adminMenu) {
                 adminMenu.hidden = false;
             }
+        } else if (res.status === 401) {
+            // 인증되지 않은 경우 로그인 페이지로 이동
+            handleUnauthorized();
         } else {
-            throw new Error("비로그인 상태");
+            throw new Error("서버 오류");
         }
     } catch (error) {
-        console.warn("로그인 상태 아님:", error);
+        console.warn("로그인 상태 아님 또는 요청 실패", error);
+        handleUnauthorized();
+    }
+});
 
-        // ✅ 비로그인 상태 처리
+function handleUnauthorized() {
+    const pathname = window.location.pathname;
+
+    // 로그인 페이지로 리다이렉트할 경로만 지정
+    const protectedPaths = [
+        "/watch/history",
+        "/cart",
+        "/payment",
+        "/success",
+        "/user",
+        "/admin",
+        "/product/product_payment"
+    ];
+
+    const shouldRedirect = protectedPaths.some(path => pathname.startsWith(path));
+
+    if (shouldRedirect) {
+        window.location.href = "/login";
+    } else {
+        // 로그인 상태 UI 초기화
+        const authButton = document.getElementById("auth-button");
+        const authIcon = document.getElementById("auth-icon");
+
         if (authButton && authIcon) {
             authButton.href = "/login";
             authIcon.src = "/img/icon/login.png";
         }
     }
-});
+}
 
 // 로그아웃 요청
 async function logout() {
