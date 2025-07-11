@@ -8,7 +8,6 @@ public enum ErrorCode {
 
     //[요청 파라미터 에러 코드]
     INVALID_METHOD_ARGUMENT(HttpStatus.BAD_REQUEST, "CO001", "유효하지 않은 요청 파라미터입니다."),
-    NOT_READABLE_ARGUMENT(HttpStatus.BAD_REQUEST, "CO002", "유효하지 않은 타입의 요청 파라미터입니다."),
 
     //[회원 관련 에러 코드 추가]
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
