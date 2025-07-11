@@ -59,9 +59,8 @@
     <h1 th:text="${status}">오류</h1>
     <h2 th:text="${error}">예기치 못한 오류가 발생했습니다</h2>
     <p>요청을 처리하는 동안 문제가 발생했습니다.</p>
-    <img th:src="@{/images/034.png}" alt="에러 이미지" />
-    <p>에러 코드: <span th:text="${status}"></span></p>
-    <p>메시지: <span th:text="${error}"></span></p>
+    <p>에러 코드: <span th:text="${status}">500</span></p>
+    <p>메시지: <span th:text="${error}">내부 서버 오류</span></p>
     <a th:href="@{/}">홈으로 돌아가기</a>
 </div>
 </body>
