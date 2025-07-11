@@ -15,17 +15,21 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json");
 
-        String json = """
-    {
-      "status": "UNAUTHORIZED",
-      "message": "로그인이 필요한 요청입니다."
-    }
-    """;
+        String accept = request.getHeader("Accept");
+        String requestedWith = request.getHeader("X-Requested-With");
 
-        response.getWriter().write(json);
+        boolean isApiRequest = accept != null && accept.contains("application/json") ||
+                requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest") ||
+                request.getRequestURI().startsWith("/api");
+
+        if (isApiRequest) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"message\": \"Unauthorized access. Please login.\"}");
+        } else {
+            response.sendRedirect("/login");
+        }
     }
 }
