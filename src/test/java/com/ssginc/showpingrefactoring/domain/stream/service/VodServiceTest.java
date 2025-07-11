@@ -1,6 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service;
 
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.repository.VodRepository;
 import com.ssginc.showpingrefactoring.domain.stream.service.implement.VodServiceImpl;
@@ -19,6 +20,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class VodServiceTest {
@@ -60,4 +63,36 @@ public class VodServiceTest {
         // when & then
         assertThrows(CustomException.class, () -> vodService.findVods(categoryNo, sort, pageable));
     }
+
+    // 단일 VOD 조회 성공
+    @Test
+    void getVodByNo_success() {
+        // given
+        Long streamNo = 1L;
+        StreamResponseDto expectedDto = new StreamResponseDto();
+        when(vodRepository.findVodByNo(streamNo)).thenReturn(expectedDto);
+
+        // when
+        StreamResponseDto result = vodService.getVodByNo(streamNo);
+
+        // then
+        assertThat(result).isEqualTo(expectedDto);
+        verify(vodRepository).findVodByNo(streamNo);
+    }
+
+    // 단일 VOD 조회 실패
+    @Test
+    void getVodByNo_notFound_throwsException() {
+        // given
+        Long streamNo = 999L;
+        when(vodRepository.findVodByNo(streamNo)).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> vodService.getVodByNo(streamNo))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(ErrorCode.STREAM_NOT_FOUND.getMessage());
+
+        verify(vodRepository).findVodByNo(streamNo);
+    }
+
 }
