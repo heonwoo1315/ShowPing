@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.product.repository.ProductRepository;
@@ -44,7 +46,9 @@ public class LiveServiceImpl implements LiveService {
      * @return 시청하려는 방송의 상품 정보
      */
     public GetLiveProductInfoResponseDto getStreamProductInfo(Long streamNo){
-        Stream stream = liveRepository.findById(streamNo).orElseThrow(RuntimeException::new);
+        Stream stream = liveRepository.findById(streamNo).orElseThrow(() ->
+                new CustomException(ErrorCode.STREAM_NOT_FOUND));
+
         Product product = stream.getProduct();
 
         // 상품의 원래 가격

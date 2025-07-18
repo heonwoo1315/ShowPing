@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    //[요청 파라미터 에러 코드]
+    INVALID_METHOD_ARGUMENT(HttpStatus.BAD_REQUEST, "CO001", "유효하지 않은 요청 파라미터입니다."),
+
     //[회원 관련 에러 코드 추가]
     AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A001", "로그인이 필요한 요청입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
@@ -20,6 +23,15 @@ public enum ErrorCode {
     INVALID_TOTP_CODE(HttpStatus.UNAUTHORIZED, "M009", "잘못된 OTP 인증 코드입니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "M010", "이메일 인증이 완료되지 않았습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M011", "데이터베이스 오류가 발생했습니다.");
+
+
+    // [라이브.VOD 관련 에러 코드]
+    // [공통]
+    STREAM_NOT_FOUND(HttpStatus.NOT_FOUND, "ST001", "요청한 영상 정보가 없습니다."),
+
+    // [VOD]
+    VOD_LIST_EMPTY(HttpStatus.NOT_FOUND, "VO001", "VOD 목록이 비어있습니다.")
+
 
     //(추후 추가 가능: 이미 존재하는 이메일/아이디 등)
     ;

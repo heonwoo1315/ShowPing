@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.repository.VodRepository;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -34,48 +35,33 @@ public class VodServiceImpl implements VodService {
         return storageLoader.uploadMp4File(file, fileName);
     }
 
-    /**
-     * 전체 Vod 목록을 반환해주는 메서드
-     * @return vod 목록
-     */
     @Override
-    public List<StreamResponseDto> getAllVod() {
-        return vodRepository.findAllVod();
-    }
+    public Page<StreamResponseDto> findVods(Long categoryNo, String sort, Pageable pageable) {
+        Page<StreamResponseDto> vodPage;
+        boolean isMostView = "mostViewed".equals(sort);
 
-    /**
-     * 페이징 정보가 포함된 Vod 목록을 반환해주는 메서드
-     * @param pageable 페이징 정보 객체
-     * @return 페이징 정보가 있는 vod 목록
-     */
-    @Override
-    public Page<StreamResponseDto> getAllVodByPage(Pageable pageable) {
-        return vodRepository.findAllVodByPage(pageable);
-    }
+        // 조회수 기반 정렬이 포함된 경우
+        if (isMostView) {
+            if (categoryNo > 0) {
+                vodPage = vodRepository.findByCategoryIdOrderByViewsDesc(categoryNo, pageable);
+            } else {
+                vodPage = vodRepository.findAllOrderByViewsDesc(pageable);
+            }
+        }
+        else {
+            if (categoryNo > 0) {
+                vodPage = vodRepository.findByCategory(categoryNo, pageable);
+            }
+            else {
+                vodPage = vodRepository.findAllVod(pageable);
+            }
+        }
 
-    /**
-     * 특정 카테고리의 vod 목록을 반환하는 메서드
-     * @param categoryNo 카테고리 번호
-     * @return vod 목록
-     */
-    @Override
-    public List<StreamResponseDto> getAllVodByCategory(Long categoryNo) {
-        return vodRepository.findAllVodByCategory(categoryNo);
-    }
+        if (!vodPage.hasContent()) {
+            throw new CustomException(ErrorCode.VOD_LIST_EMPTY);
+        }
 
-    @Override
-    public Page<StreamResponseDto> getAllVodByWatch(Pageable pageable) {
-        return vodRepository.findAllVodByWatch(pageable);
-    }
-
-    @Override
-    public Page<StreamResponseDto> getAllVodByCategoryAndPage(Long categoryNo, Pageable pageable) {
-        return vodRepository.findAllVodByCategoryAndPage(categoryNo, pageable);
-    }
-
-    @Override
-    public Page<StreamResponseDto> getAllVodByCatgoryAndWatch(Long categoryNo, Pageable pageable) {
-        return vodRepository.findAllVodByCategoryAndWatch(categoryNo, pageable);
+        return vodPage;
     }
 
     /**
@@ -85,6 +71,12 @@ public class VodServiceImpl implements VodService {
      */
     @Override
     public StreamResponseDto getVodByNo(Long streamNo) {
-        return vodRepository.findVodByNo(streamNo);
+        StreamResponseDto vodDto = vodRepository.findVodByNo(streamNo);
+
+        if (vodDto == null) {
+        throw new CustomException(ErrorCode.STREAM_NOT_FOUND);
+        }
+
+        return vodDto;
     }
 }

@@ -2,10 +2,12 @@ package com.ssginc.showpingrefactoring.common.handler;
 
 import com.ssginc.showpingrefactoring.common.dto.CustomErrorResponse;
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,5 +31,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(CustomErrorResponse.of("INTERNAL_SERVER_ERROR", "알 수 없는 서버 오류가 발생했습니다."));
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<CustomErrorResponse> handleBindException() {
+        ErrorCode e = ErrorCode.INVALID_METHOD_ARGUMENT;
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(CustomErrorResponse.of(e.getCode(), e.getMessage()));
     }
 }

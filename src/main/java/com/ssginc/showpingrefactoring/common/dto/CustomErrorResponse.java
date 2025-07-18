@@ -4,6 +4,7 @@ import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class CustomErrorResponse {
 

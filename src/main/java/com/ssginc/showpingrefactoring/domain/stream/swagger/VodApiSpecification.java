@@ -1,21 +1,21 @@
 package com.ssginc.showpingrefactoring.domain.stream.swagger;
 
+import com.ssginc.showpingrefactoring.domain.stream.dto.request.VodListRequestDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
+import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -39,129 +39,7 @@ public interface VodApiSpecification {
                     )
             )
     )
-    ResponseEntity<?> getVodList();
-
-
-    @Operation(
-            summary = "VOD 목록 조회 페이지네이션",
-            description = "등록된 VOD 정보를 페이지네이션하여 조회"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)
-            )
-    )
-    @Parameter(
-            name        = "pageNo",
-            in          = ParameterIn.QUERY,
-            description = "요청할 페이지 번호 (0부터 시작)",
-            required    = false,
-            schema      = @Schema(type = "integer", defaultValue = "0", minimum = "0")
-    )
-    ResponseEntity<?> getVodListByPage(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo);
-
-    @Operation(
-            summary = "VOD 목록 페이지네이션 (시청수 기준 내림차순)",
-            description = "등록된 VOD 정보를 시청수 기준으로 내림차순 정렬하여 페이지네이션 조회"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)
-            )
-    )
-    @Parameter(
-            name        = "pageNo",
-            in          = ParameterIn.QUERY,
-            description = "요청할 페이지 번호 (0부터 시작)",
-            required    = false,
-            schema      = @Schema(type = "integer", defaultValue = "0", minimum = "0")
-    )
-    ResponseEntity<?> getVodListByWatch(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo);
-
-    @Operation(
-            summary = "카테고리 별 VOD 정보 조회",
-            description = "등록된 VOD 정보를 카테고리별로 조회"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    array = @ArraySchema(
-                            schema = @Schema(implementation = StreamResponseDto.class)
-                    )
-            )
-    )
-    @Parameter(name = "categoryNo", description = "카테고리 번호", example = "0")
-    ResponseEntity<?> getVodListByCategory(@PathVariable Long categoryNo);
-
-    @Operation(
-            summary = "카테고리별 VOD 목록 페이지네이션",
-            description = "등록된 VOD 정보를 카테고리별 페이지네이션하여 조회"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)
-            )
-    )
-    @Parameters({
-            @Parameter(
-                    name        = "categoryNo",
-                    in          = ParameterIn.QUERY,
-                    description = "카테고리 번호",
-                    required    = true,
-                    schema      = @Schema(type = "long", defaultValue = "0", minimum = "0")
-            ),
-            @Parameter(
-                    name        = "pageNo",
-                    in          = ParameterIn.QUERY,
-                    description = "요청할 페이지 번호 (0부터 시작)",
-                    required    = false,
-                    schema      = @Schema(type = "integer", defaultValue = "0", minimum = "0")
-            )
-    })
-    ResponseEntity<?> getVodListByCategoryAndPage(@RequestParam(name = "categoryNo") Long categoryNo,
-                                                  @RequestParam(defaultValue = "0", name = "pageNo") int pageNo);
-
-    @Operation(
-            summary = "카테고리별 VOD 목록 시청 수 순으로 페이지네이션",
-            description = "카테고리별 VOD 목록을 시청 수 순으로 페이지네이션하여 조회"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)
-            )
-    )
-    @Parameters({
-            @Parameter(
-                    name        = "pageNo",
-                    in          = ParameterIn.QUERY,
-                    description = "요청할 페이지 번호 (0부터 시작)",
-                    required    = false,
-                    schema      = @Schema(type = "integer", defaultValue = "0", minimum = "0")
-            ),
-            @Parameter(
-                    name        = "categoryNo",
-                    in          = ParameterIn.QUERY,
-                    description = "카테고리 번호",
-                    required    = true,
-                    schema      = @Schema(type = "long", defaultValue = "0", minimum = "0")
-            )
-    })
-    ResponseEntity<?> getVodListByCategoryAndWatch(@RequestParam(defaultValue = "0", name = "pageNo") int pageNo,
-                                                   @RequestParam(name = "categoryNo") Long categoryNo);
+    ResponseEntity<?> listVod(@ParameterObject @Valid VodListRequestDto vodListRequestDto);
 
 
     @Operation(
