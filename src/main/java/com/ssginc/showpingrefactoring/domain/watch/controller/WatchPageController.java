@@ -38,7 +38,7 @@ public class WatchPageController {
      * @param model 타임리프에 전달할 Model 객체
      * @return 라이브 메인 페이지 (타임리프)
      */
-    @GetMapping("/{streamNo}")
+    @GetMapping("/vod/{streamNo}")
     public String watchVod(@AuthenticationPrincipal UserDetails userDetails,
                            @PathVariable Long streamNo,
                            Model model) {
