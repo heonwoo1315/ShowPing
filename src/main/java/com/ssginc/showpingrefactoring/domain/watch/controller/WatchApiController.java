@@ -15,7 +15,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,7 +68,7 @@ public class WatchApiController implements WatchApiSpecification {
     @Override
     @PostMapping("/insert")
     public ResponseEntity<?> insertWatchHistory(@AuthenticationPrincipal UserDetails userDetails,
-                                                @RequestBody WatchRequestDto watchRequestDto) {
+                                                @RequestBody @Valid WatchRequestDto watchRequestDto) {
         Long memberNo = null;
         if (userDetails != null) {
             Member member = memberService.findMemberById(userDetails.getUsername());
