@@ -31,7 +31,10 @@ public enum ErrorCode {
 
     // [VOD]
     VOD_LIST_EMPTY(HttpStatus.NOT_FOUND, "VO001", "VOD 목록이 비어있습니다."),
-    SUBTITLE_NOT_FOUND(HttpStatus.NOT_FOUND, "VO002", "해당 제목의 자막파일이 존재하지 않습니다.")
+    SUBTITLE_NOT_FOUND(HttpStatus.NOT_FOUND, "VO002", "해당 제목의 자막파일이 존재하지 않습니다."),
+
+    //[시청]
+    WATCH_LIST_EMPTY(HttpStatus.NOT_FOUND, "WA001", "시청 내역이 존재하지 않습니다.")
 
     //(추후 추가 가능: 이미 존재하는 이메일/아이디 등)
     ;

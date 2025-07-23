@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.watch.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
@@ -32,7 +34,12 @@ public class WatchServiceImpl implements WatchService {
      */
     @Override
     public List<WatchResponseDto> getWatchHistoryByMemberNo(Long memberNo) {
-        return watchRepository.getWatchListByMemberNo(memberNo);
+        List<WatchResponseDto> watchList = watchRepository.getWatchListByMemberNo(memberNo);
+
+        if (watchList.isEmpty()) {
+            throw new CustomException(ErrorCode.WATCH_LIST_EMPTY);
+        }
+        return watchList;
     }
 
     /**
