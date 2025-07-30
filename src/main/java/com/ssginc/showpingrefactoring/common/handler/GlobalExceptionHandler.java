@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AmazonS3Exception.class)
     public ResponseEntity<CustomErrorResponse> handleAmazonS3Exception() {
-        ErrorCode e = ErrorCode.SUBTITLE_NOT_FOUND;
+        ErrorCode e = ErrorCode.RESOURCE_NOT_FOUND;
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)

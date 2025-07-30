@@ -9,6 +9,9 @@ public enum ErrorCode {
     //[요청 파라미터 에러 코드]
     INVALID_METHOD_ARGUMENT(HttpStatus.BAD_REQUEST, "CO001", "유효하지 않은 요청 파라미터입니다."),
 
+    //[리소스 관련 에러 코드]
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "CO002", "스토리지에 해당 파일이 존재하지 않습니다."),
+
     //[회원 관련 에러 코드 추가]
     AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A001", "로그인이 필요한 요청입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
@@ -31,8 +34,7 @@ public enum ErrorCode {
 
     // [VOD]
     VOD_LIST_EMPTY(HttpStatus.NOT_FOUND, "VO001", "VOD 목록이 비어있습니다."),
-    SUBTITLE_NOT_FOUND(HttpStatus.NOT_FOUND, "VO002", "해당 제목의 자막파일이 존재하지 않습니다."),
-    HLS_CONVERSION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "VO003", "HLS 변환에 실패하였습니다."),
+    HLS_CONVERSION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "VO002", "HLS 변환에 실패하였습니다."),
 
     //[시청]
     WATCH_LIST_EMPTY(HttpStatus.NOT_FOUND, "WA001", "시청 내역이 존재하지 않습니다.")
