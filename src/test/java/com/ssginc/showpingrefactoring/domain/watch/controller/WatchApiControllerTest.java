@@ -1,6 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.watch.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssginc.showpingrefactoring.common.TestSecurityConfig;
 import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
@@ -17,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = WatchApiController.class)
 public class WatchApiControllerTest {
 
@@ -85,6 +88,14 @@ public class WatchApiControllerTest {
                 .andExpect(jsonPath("$.historyList.length()").value(mockWatchList.size()));
     }
 
+    // 비로그인 시청내역 403 에러코드 테스트
+    @Test
+    void testGetWatchHistory_AccessForbidden() throws Exception {
+        mockMvc.perform(get("/api/watch/history/list"))
+                .andExpect(status().isForbidden()); // 403
+    }
+
+    // 로그인한 사용자의 시청내역 추가 테스트
     @Test
     @WithMockUser(username = "testUser")  // 로그인된 사용자로 시뮬레이션
     public void testInsertWatchHistory_WithAuthenticatedUser_ReturnsWatch() throws Exception {
@@ -110,14 +121,14 @@ public class WatchApiControllerTest {
         // then
         mockMvc.perform(post("/api/watch/insert")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .with(csrf()))
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stream.streamNo").value(100))
                 .andExpect(jsonPath("$.member.memberNo").value(1))
                 .andExpect(jsonPath("$.watchTime").value("2025-07-30T16:00:00"));
     }
 
+    // 비로그인의 시청내역 추가 테스트
     @Test
     public void testInsertWatchHistory_WithoutAuthenticatedUser_ReturnsWatchWithNullMember() throws Exception {
         // given
@@ -136,8 +147,7 @@ public class WatchApiControllerTest {
         // then
         mockMvc.perform(post("/api/watch/insert")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .with(csrf()))
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.stream.streamNo").value(200))
                 .andExpect(jsonPath("$.member").value(nullValue()))
