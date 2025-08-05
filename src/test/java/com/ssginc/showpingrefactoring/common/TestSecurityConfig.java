@@ -7,11 +7,20 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @TestConfiguration
 public class TestSecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/watch/insert").permitAll()
+                        .requestMatchers("/api/watch/history/list", "/api/watch/history/list/**")
+                        .hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form.disable())
+                .logout(logout -> logout.disable());
+
         return http.build();
     }
 }
