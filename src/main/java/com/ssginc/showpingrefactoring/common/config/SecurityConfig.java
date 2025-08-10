@@ -48,7 +48,6 @@ public class SecurityConfig {
                     config.setAllowCredentials(true);
                     return config;
                 }))
-                // CSRF 비활성화 및 세션 관리 stateless 설정 (JWT 방식)
                 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/api/auth/login", "/api/auth/logout", "/api/csrf"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
