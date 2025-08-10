@@ -45,37 +45,41 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "로그인 실패")
     })
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request, HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request,
+                                                     HttpServletRequest httpReq,
+                                                     HttpServletResponse httpRes) {
         String memberId = request.get("memberId");
         String password = request.get("password");
-
         if (memberId == null || password == null) {
             return ResponseEntity.status(400).body(Map.of("status", "BAD_REQUEST", "message", "Missing required parameters"));
         }
 
         Member member = memberService.findMember(memberId, password);
-
-        if (member != null) {
-            String role = member.getMemberRole().name();
-            String accessToken = jwtTokenProvider.generateAccessToken(memberId, role);
-            String refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
-
-            redisTokenService.saveRefreshToken(memberId, refreshToken);
-
-            ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .sameSite("Lax")
-                    .maxAge(60 *  30)
-                    .build();
-            response.addHeader("Set-Cookie", accessCookie.toString());
-
-
-            return ResponseEntity.ok(Map.of("memberRole", role));
+        if (member == null) {
+            return ResponseEntity.status(401).body(Map.of("status", "LOGIN_FAILED"));
         }
 
-        return ResponseEntity.status(401).body(Map.of("status", "LOGIN_FAILED"));
+        String role = member.getMemberRole().name();
+        String accessToken = jwtTokenProvider.generateAccessToken(memberId, role);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
+        redisTokenService.saveRefreshToken(memberId, refreshToken);
+
+        // 로컬(http)만 secure=false, 운영(https) secure=true
+        String host = httpReq.getServerName();
+        boolean isLocal = "localhost".equalsIgnoreCase(host) || "127.0.0.1".equals(host);
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(!isLocal)          // ← 로컬은 false
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(60 * 30)
+                .build();
+
+        // ❗ addHeader 대신, ResponseEntity에 직접 헤더를 얹어 리턴
+        return ResponseEntity.ok()
+                .header("Set-Cookie", accessCookie.toString())
+                .body(Map.of("memberRole", role));
     }
 
     /**
