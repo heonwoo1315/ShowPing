@@ -2,6 +2,7 @@ package com.ssginc.showpingrefactoring.common.config;
 
 import com.ssginc.showpingrefactoring.common.exception.CustomAccessDeniedHandler;
 import com.ssginc.showpingrefactoring.common.exception.CustomAuthenticationEntryPoint;
+import com.ssginc.showpingrefactoring.common.jwt.CsrfCookieFilter;
 import com.ssginc.showpingrefactoring.common.jwt.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -41,12 +44,13 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("https://showping.duckdns.org", "http://localhost:8080"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    config.setAllowedHeaders(List.of("Authorization", "Content-Type","X-XSRF-TOKEN","X-Requested-With"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
                 // CSRF 비활성화 및 세션 관리 stateless 설정 (JWT 방식)
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/api/auth/login", "/api/auth/logout", "/api/csrf"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 엔드포인트 별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
@@ -61,7 +65,7 @@ public class SecurityConfig {
                                         "/favicon.ico", "/api/auth/**",  "/api/member/check-duplicate", "/api/member/register",
                                         "/api/member/send-code/**", "/api/member/check-email-duplicate", "/api/member/check-phone-duplicate", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/batch/**", "/api/live/standby"
                                         ,"/api/live/product/list", "/api/live/onair", "/api/live/live-info", "/api/live/active", "/stream/watch/**", "/stream/list/**", "/watch/**",
-                                        "/api/watch/insert","/product/product_list","/product/product_list/**","/product/product_detail/**","/record", "/live"
+                                        "/api/watch/insert","/product/product_list","/product/product_list/**","/product/product_detail/**","/record", "/live" , "/api/csrf"
                                 ).permitAll()
                                 // ADMIN 전용 URL (두 코드 블록의 ADMIN 관련 URL 병합)
                                 .requestMatchers("/admin/**","/api/live/stop", "/api/live/start", "/api/live/register", "/api/report/updateStatus", "/api/report/register",
@@ -84,6 +88,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
+                .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         log.info("securityConfig 적용 완료");
