@@ -1,5 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.stream.controller;
 
+import com.ssginc.showpingrefactoring.domain.product.dto.response.GetProductListResponseDto;
 import com.ssginc.showpingrefactoring.domain.product.service.ProductService;
 import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductItemDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.RegisterLiveRequestDto;
@@ -9,12 +10,6 @@ import com.ssginc.showpingrefactoring.domain.stream.dto.response.StartLiveRespon
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.StreamResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.service.LiveService;
 import com.ssginc.showpingrefactoring.domain.stream.swagger.LiveApiSpecification;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -97,10 +91,29 @@ public class LiveApiController implements LiveApiSpecification {
 //        return ResponseEntity.status(HttpStatus.OK).body(productItemDtoList);
 //    }
 
+//    /**
+//     * 방송 등록 화면에서 상품 선택을 위해 상품 목록을 반환해주는 메서드
+//     * offset 방식의 Paging 적용
+//     * @param page 조회할 페이지
+//     * @param size 조회할 개수
+//     * @return
+//     */
+//    @GetMapping("/product/list")
+//    @Override
+//    public ResponseEntity<Page<ProductItemDto>> getProductList(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "20") int size) {
+//        Page<ProductItemDto> result = productService.getProducts(page, size);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(result);
+//    }
+
     @GetMapping("/product/list")
     @Override
-    public ResponseEntity<Page<ProductItemDto>> getProductList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
-        Page<ProductItemDto> result = productService.getProducts(page, size);
+    public ResponseEntity<GetProductListResponseDto> getProductList(
+            @RequestParam(required = false) Long lastProductNo,
+            @RequestParam(defaultValue = "20") int size) {
+        GetProductListResponseDto result = productService.getProducts(lastProductNo, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

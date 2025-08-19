@@ -1,5 +1,6 @@
 package com.ssginc.showpingrefactoring.domain.product.service;
 
+import com.ssginc.showpingrefactoring.domain.product.dto.response.GetProductListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,9 @@ public interface ProductService {
 
 //    public List<ProductItemDto> getProducts();
 
-    public Page<ProductItemDto> getProducts(int page, int size);
+//    public Page<ProductItemDto> getProducts(int page, int size);
+
+    public GetProductListResponseDto getProducts(Long lastProductNo, int size);
 
     public List<ProductDto> getTopProductsBySaleQuantity(Long categoryNo);
 

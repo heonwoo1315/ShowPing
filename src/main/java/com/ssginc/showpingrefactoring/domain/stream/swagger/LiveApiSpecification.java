@@ -2,6 +2,7 @@ package com.ssginc.showpingrefactoring.domain.stream.swagger;
 
 import com.ssginc.showpingrefactoring.common.dto.CustomErrorResponse;
 import com.ssginc.showpingrefactoring.domain.product.dto.object.ProductItemDto;
+import com.ssginc.showpingrefactoring.domain.product.dto.response.GetProductListResponseDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.LiveRequestDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.request.RegisterLiveRequestDto;
 import com.ssginc.showpingrefactoring.domain.stream.dto.response.GetLiveRegisterInfoResponseDto;
@@ -123,10 +124,37 @@ public interface LiveApiSpecification {
 //    })
 //    ResponseEntity<List<ProductItemDto>> getProductList();
 
-    @GetMapping("/product/list")
+//    @GetMapping("/product/list")
+//    @Operation(
+//            summary = "방송 등록 중 상품 선택",
+//            description = "방송 등록 페이지에서 상품 선택 시 상품 목록을 가져옴, offset 방식의 Paging 적용"
+//    )
+//    @ApiResponses({
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "상품 목록 가져오기 성공",
+//                    content = @Content(
+//                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                            schema = @Schema(implementation = PageProductItemDto.class)
+//                    )
+//            )
+//    })
+//    ResponseEntity<Page<ProductItemDto>> getProductList(
+//            @Parameter(
+//                    description = "조회할 페이지 번호 (0부터 시작)",
+//                    schema = @Schema(type = "integer", defaultValue = "0", example = "0")
+//            )
+//            @RequestParam(defaultValue = "0") int page,
+//            @Parameter(
+//                    description = "페이지 당 조회할 개수",
+//                    schema = @Schema(type = "integer", defaultValue = "20", example = "20")
+//            )
+//            @RequestParam(defaultValue = "20") int size);
+
+    @GetMapping("/prodcut/list")
     @Operation(
             summary = "방송 등록 중 상품 선택",
-            description = "방송 등록 페이지에서 상품 선택 시 상품 목록을 가져옴"
+            description = "방송 등록 페이지에서 상품 선택 시 상품 목록을 가져옴, cursor 방식의 Paging 적용"
     )
     @ApiResponses({
             @ApiResponse(
@@ -138,18 +166,17 @@ public interface LiveApiSpecification {
                     )
             )
     })
-    ResponseEntity<Page<ProductItemDto>> getProductList(
+    ResponseEntity<GetProductListResponseDto> getProductList(
             @Parameter(
-                    description = "조회할 페이지 번호 (0부터 시작)",
-                    schema = @Schema(type = "integer", defaultValue = "0", example = "0")
+                    description = "이전에 조회했던 페이지의 마지막 상품 번호",
+                    schema = @Schema(type = "Long", example = "30")
             )
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Long lastProductNo,
             @Parameter(
                     description = "페이지 당 조회할 개수",
                     schema = @Schema(type = "integer", defaultValue = "20", example = "20")
             )
             @RequestParam(defaultValue = "20") int size);
-
 
     @PostMapping("/register")
     @Operation(

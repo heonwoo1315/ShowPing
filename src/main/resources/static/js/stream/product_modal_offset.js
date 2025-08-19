@@ -9,27 +9,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const endMsgEl = document.getElementById("end-msg");    // 상품 목록 끝 메세지
     const productElement = document.querySelector(".product-element");  // 선택된 상품 영역
 
+    let page = 0;
     const size = 20;
     let loading = false;
     let hasNext = true;
-    let lastProductNo = null;
 
     // 모달 닫기
     closeBtn.addEventListener("click", () => {
-        // 1) 커서 초기화 → 다음 로드 시 첫 페이지부터 조회
-        lastProductNo = null;
-        // 2) 페이징 플래그 초기화 → 추가 로드 가능 여부 리셋
-        hasNext = true;
-        // 3) 로딩 상태 초기화 (필요하다면)
-        loading = false;
-        loadingEl.style.display = 'none';
-
-        // 모달을 실제로 닫아주는 로직
-        productModal.style.display = 'none';
+        productModal.style.display = "none";
     });
 
     // 모달 열기 & 초기 데이터 로딩
     selectBtn.addEventListener("click", () => {
+        page = 0;
         hasNext = true;
         productList.innerHTML = "";
         endMsgEl.style.display = "none";
@@ -55,13 +47,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const response = await axios.get("/api/live/product/list", {
-                params: {lastProductNo, size}
+                params: {page, size}
             });
 
-            const { data, hasNext: more, nextLastProductNo } = response.data;
+            const products = response.data.content || response.data;
 
             // 상품 추가
-            data.forEach(product => {
+            products.forEach(product => {
                 const li = document.createElement("li");
                 li.className = "product-item";
                 li.id = product.productNo;
@@ -82,8 +74,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 productList.appendChild(li);
             });
 
-            hasNext = more;
-            lastProductNo = nextLastProductNo;
+            // Pageable 응답인 경우 Pageable의 last 사용
+            if (response.data.last !== undefined) {
+                hasNext = !response.data.last;
+            } else {
+                hasNext = products.length === size;
+            }
+            page++;
 
             if (!hasNext) {
                 endMsgEl.style.display = "block";

@@ -36,4 +36,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "GROUP BY p.productNo " +
             "ORDER BY p.productSale DESC")
     List<Object[]> findTopProductsBySale(@Param("categoryNo") Long categoryNo, Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Product p " +
+            "ORDER BY p.productNo ASC")
+    List<Product> findInitial(Pageable pageable);
+
+    @Query("SELECT p " +
+            "FROM Product p " +
+            "WHERE p.productNo > :lastProductNo " +
+            "ORDER BY p.productNo ASC")
+    List<Product> findNext(@Param("lastProductNo") Long lastProductNo, Pageable pageable);
+
 }
