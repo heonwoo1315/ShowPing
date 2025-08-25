@@ -1,33 +1,3 @@
-/* === CSRF auto attach (ES5 safe) === */
-(function () {
-    function getCsrfToken() {
-        var m = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
-        return m ? decodeURIComponent(m[1]) : null;
-    }
-
-    // fetch에서 필요할 때 꺼내 쓰도록 노출
-    window.__getCsrfToken = getCsrfToken;
-
-    if (typeof window !== 'undefined' && window.axios) {
-        axios.defaults.withCredentials = true; // 모든 axios 요청에 쿠키 포함
-
-        axios.interceptors.request.use(function (config) {
-            var method = (config && config.method ? String(config.method) : 'get').toLowerCase();
-            if (method === 'post' || method === 'put' || method === 'delete' || method === 'patch') {
-                var token = getCsrfToken();
-                if (token) {
-                    config.headers = config.headers || {};
-                    if (!config.headers['X-XSRF-TOKEN']) {
-                        config.headers['X-XSRF-TOKEN'] = token; // CSRF 헤더 자동 첨부
-                    }
-                }
-            }
-            return config;
-        });
-    }
-})();
-
-
 const wsProtocol = location.protocol === 'https:' ? 'wss://' : 'ws://'; // https로 실행중이면 wss로 실행하고 http로 실행하면 ws로 실행
 var ws = new WebSocket(wsProtocol + location.host + '/live');
 var rec = new WebSocket(wsProtocol + location.host + '/record');
