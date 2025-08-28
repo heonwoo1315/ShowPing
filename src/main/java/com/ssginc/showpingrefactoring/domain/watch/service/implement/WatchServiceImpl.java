@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.watch.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.stream.entity.Stream;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
@@ -11,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -32,7 +36,12 @@ public class WatchServiceImpl implements WatchService {
      */
     @Override
     public List<WatchResponseDto> getWatchHistoryByMemberNo(Long memberNo) {
-        return watchRepository.getWatchListByMemberNo(memberNo);
+        List<WatchResponseDto> watchList = watchRepository.getWatchListByMemberNo(memberNo);
+
+        if (watchList.isEmpty()) {
+            throw new CustomException(ErrorCode.WATCH_LIST_EMPTY);
+        }
+        return watchList;
     }
 
     /**
@@ -59,11 +68,14 @@ public class WatchServiceImpl implements WatchService {
                     .build();
         }
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(watchRequestDto.getWatchTime().substring(0, 19), formatter);
+
         // DB 저장을 위한 엔티티 객체 생성 (빌더 패턴)
         Watch watch = Watch.builder()
                 .stream(stream)
                 .member(member)
-                .watchTime(watchRequestDto.getWatchTime())
+                .watchTime(dateTime)
                 .build();
 
         return watchRepository.save(watch);

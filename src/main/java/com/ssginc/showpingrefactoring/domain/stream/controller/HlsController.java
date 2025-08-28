@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.controller;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.domain.stream.service.HlsService;
 import com.ssginc.showpingrefactoring.domain.stream.swagger.HlsSpecification;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +65,7 @@ public class HlsController implements HlsSpecification {
                 .map(resource -> ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
                         .body(resource))
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+                .switchIfEmpty(Mono.error(new CustomException(ErrorCode.RESOURCE_NOT_FOUND)));
     }
 
     /**
@@ -79,7 +81,7 @@ public class HlsController implements HlsSpecification {
                 .map(resource -> ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl")
                         .body(resource))
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+                .switchIfEmpty(Mono.error(new CustomException(ErrorCode.RESOURCE_NOT_FOUND)));
     }
 
     /**
@@ -97,7 +99,7 @@ public class HlsController implements HlsSpecification {
                 .map(resource -> ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
                         .body(resource))
-                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+                .switchIfEmpty(Mono.error(new CustomException(ErrorCode.RESOURCE_NOT_FOUND)));
     }
 
     /**
@@ -115,7 +117,7 @@ public class HlsController implements HlsSpecification {
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl")
                     .body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
         }
     }
 
@@ -136,7 +138,7 @@ public class HlsController implements HlsSpecification {
                     .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
                     .body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new CustomException(ErrorCode.RESOURCE_NOT_FOUND);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.ssginc.showpingrefactoring.common.handler;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.ssginc.showpingrefactoring.common.dto.CustomErrorResponse;
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
@@ -41,4 +42,14 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(CustomErrorResponse.of(e.getCode(), e.getMessage()));
     }
+
+    @ExceptionHandler(AmazonS3Exception.class)
+    public ResponseEntity<CustomErrorResponse> handleAmazonS3Exception() {
+        ErrorCode e = ErrorCode.RESOURCE_NOT_FOUND;
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(CustomErrorResponse.of(e.getCode(), e.getMessage()));
+    }
+
 }

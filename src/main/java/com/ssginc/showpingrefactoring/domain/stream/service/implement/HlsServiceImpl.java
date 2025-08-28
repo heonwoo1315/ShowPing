@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.stream.service.implement;
 
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.service.HlsService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +56,7 @@ public class HlsServiceImpl implements HlsService {
             int exitCode = process.waitFor();
 
             if (exitCode != 0) {
-                throw new RuntimeException("FFmpeg 변환 실패. Exit code: " + exitCode);
+                throw new CustomException(ErrorCode.HLS_CONVERSION_FAILED);
             }
 
             // 변환된 m3u8 파일을 Resource로 반환
@@ -98,7 +100,7 @@ public class HlsServiceImpl implements HlsService {
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            throw new RuntimeException("FFmpeg 변환 실패. Exit code: " + exitCode);
+            throw new CustomException(ErrorCode.HLS_CONVERSION_FAILED);
         }
 
         File[] files = outputDir.listFiles();
