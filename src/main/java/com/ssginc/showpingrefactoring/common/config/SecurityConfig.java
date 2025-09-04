@@ -53,7 +53,8 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 "/api/auth/login", "/api/auth/logout", "/api/csrf",
                                 "/api/live/register", "/api/live/live-info", "/api/live/start", "/api/live/stop",
-                                "/api/chat/**", "/api/chatRoom/**", "/ws-stomp-chat/**", "/chat/message"
+                                "/api/chat/**", "/api/chatRoom/**", "/ws-stomp-chat/**", "/chat/message", "/api/vod/upload",
+                                "/api/batch/**"
                         ))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 인가 규칙

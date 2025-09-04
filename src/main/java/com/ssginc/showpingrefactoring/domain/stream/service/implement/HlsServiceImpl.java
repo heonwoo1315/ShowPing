@@ -4,6 +4,7 @@ import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.common.exception.ErrorCode;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.storage.StorageLoader;
 import com.ssginc.showpingrefactoring.domain.stream.service.HlsService;
+import com.ssginc.showpingrefactoring.infrastructure.ffmpeg.HlsMaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,8 @@ public class HlsServiceImpl implements HlsService {
     private final ResourceLoader resourceLoader;
 
     private final StorageLoader storageLoader;
+
+    private final HlsMaker hlsMaker;
 
     /**
      * 영상 제목으로 HLS 생성하여 받아오는 메서드
@@ -88,10 +91,11 @@ public class HlsServiceImpl implements HlsService {
         File outputFile = new File(dirStr, title + ".m3u8");
         File outputDir = new File(dirStr);
 
+        String ffmpeg = HlsMaker.resolveFFmpegPath();
 
         // FFmpeg를 사용하여 HLS로 변환
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "ffmpeg", "-i", inputFile.getAbsolutePath(),
+                ffmpeg, "-i", inputFile.getAbsolutePath(),
                 "-codec:", "copy", "-start_number", "0",
                 "-hls_time", "10", "-hls_list_size", "0",
                 "-f", "hls", outputFile.getAbsolutePath()
