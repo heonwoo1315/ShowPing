@@ -2,8 +2,7 @@ package com.ssginc.showpingrefactoring.common.config;
 
 import com.ssginc.showpingrefactoring.common.exception.CustomAccessDeniedHandler;
 import com.ssginc.showpingrefactoring.common.exception.CustomAuthenticationEntryPoint;
-import com.ssginc.showpingrefactoring.common.jwt.CsrfCookieFilter;
-import com.ssginc.showpingrefactoring.common.jwt.JwtFilter;
+import com.ssginc.showpingrefactoring.common.jwt.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+
 
 import java.util.List;
 
@@ -38,6 +39,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        // --- CSRF 토큰 저장소 + RequestAttribute 핸들러 설정(지연 생성 보강) ---
+        var csrfRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        var csrfAttrHandler = new CsrfTokenRequestAttributeHandler();
+        csrfAttrHandler.setCsrfRequestAttributeName("_csrf"); // 명시(권장)
+
         http
                 // CORS 설정
                 .cors(cors -> cors.configurationSource(request -> {
@@ -49,13 +56,12 @@ public class SecurityConfig {
                     return config;
                 }))
                 // CSRF: 쿠키 기반 토큰 사용, 특정 엔드포인트는 제외
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(
-                                "/api/auth/login", "/api/auth/logout", "/api/csrf",
-                                "/api/live/register", "/api/live/live-info", "/api/live/start", "/api/live/stop",
-                                "/api/chat/**", "/api/chatRoom/**", "/ws-stomp-chat/**", "/chat/message", "/api/vod/upload",
-                                "/api/batch/**"
-                        ))
+                .csrf(csrf -> csrf.csrfTokenRepository(csrfRepo)
+                        .csrfTokenRequestHandler(csrfAttrHandler)
+//                        .ignoringRequestMatchers(
+//                                "/api/csrf"
+//                        )
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
@@ -104,7 +110,9 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 // CSRF 쿠키 필터 + JWT 필터
+                .addFilterAfter(new CsrfInitFilter(), CsrfFilter.class)
                 .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
+                .addFilterAfter(new CsrfDebugFilter(), CsrfFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         log.info("securityConfig 적용 완료");
