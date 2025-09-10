@@ -9,6 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+//커밋 메시지 새로 작성
 /**
  * Spring Security 6.x에서 CSRF 토큰이 지연 생성되는 문제를 보완하는 필터.
  * 매 요청마다 CsrfToken을 한 번 "터치"해서 반드시 생성/동기화되게 만든다.
