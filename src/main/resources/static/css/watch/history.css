@@ -57,3 +57,26 @@ td {
 .watch-time {
     width: 150px;
 }
+
+.load-more-container {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    margin: 20px 0;          /* 위아래 여백 */
+}
+
+#load-more-btn {
+    width: 100px;       /* 버튼 가로 크기 */
+    height: 50px;       /* 버튼 세로 크기 */
+    font-size: 16px;    /* 글자 크기 */
+    font-weight: bold;  /* 글자 굵기 */
+    color: black;       /* 글자 색상 */
+    background-color: white;  /* 배경 색상 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    border: none;       /* 테두리 없음 */
+    cursor: pointer;    /* 마우스 올렸을 때 포인터 */
+    transition: all 0.2s ease; /* hover 효과 부드럽게 */
+}
+
+#load-more-btn:hover {
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);; /* 더 어두운 파란색 */
+}

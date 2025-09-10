@@ -1,26 +1,16 @@
 let currentPage = 0;
-const pageSize = 10;
-let loading = false;
+const pageSize = 5;
 let isLast = false;
-
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            loadWatchHistory();
-        }
-    });
-}, {rootMargin: "200px"});
 
 document.addEventListener("DOMContentLoaded", function () {
     loadWatchHistory();
-    observer.observe(document.getElementById("sentinel"));
+    document.getElementById("load-more-btn").addEventListener("click", loadWatchHistory);
 });
 
 function loadWatchHistory() {
-    if (loading || isLast) {
+    if (isLast) {
         return;
     }
-    loading = true;
 
     axios.get(`/api/watch/history/list/page`, {
         params: {
@@ -75,7 +65,10 @@ function loadWatchHistory() {
 
             currentPage++;
             isLast = pageInfo.last;
-            loading = false;
+
+            if (isLast) {
+                document.getElementById("load-more-btn").style.display = "none";
+            }
         })
         .catch(error => {
             console.error("시청 이력 데이터를 불러오는 중 오류 발생:", error);
