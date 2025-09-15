@@ -22,10 +22,11 @@
           <button class="chip" role="tab" data-range="1m">1개월</button>
           <button class="chip" role="tab" data-range="3m">3개월</button>
           <button class="chip" role="tab" data-range="6m">6개월</button>
+          <button class="chip" role="tab" data-range="all">전체</button>
         </div>
 
         <!-- 직접입력 기간 폼 -->
-        <form class="filter-form" th:action="@{/watch/history}" method="get" id="history-filter-form">
+        <form class="filter-form" th:action="@{/watch/history}" method="get" id="history-filter-form" novalidate>
           <input type="hidden" name="range" id="range" th:value="${param.range != null ? param.range : 'custom'}"/>
           <label class="date-field">
             <span class="date-field__label">시작일</span>
@@ -38,7 +39,7 @@
             <input type="date" name="to" id="to"
                    th:value="${param.to}" required>
           </label>
-          <button class="btn-primary" type="submit">조회</button>
+          <button class="btn-primary" type="submit" id="search-btn">조회</button>
         </form>
 
       </section>
