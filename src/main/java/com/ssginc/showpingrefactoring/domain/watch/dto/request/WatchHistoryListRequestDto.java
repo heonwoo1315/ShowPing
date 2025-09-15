@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -21,6 +25,13 @@ public class WatchHistoryListRequestDto {
     @NotNull(message = "페이지 크기는 필수입니다.")
     @Min(value = 0, message = "페이지 크기는 0 이상이어야 합니다.")
     private int pageSize;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private OffsetDateTime fromDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @NotNull(message = "종료일은 필수입니다.")
+    private OffsetDateTime toDate;
 
     @Pattern(regexp = "^(recent)$", message = "sort는 recent 이어야 합니다.")
     private String sort = "recent";
