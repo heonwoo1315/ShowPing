@@ -4,6 +4,20 @@ if (window.axios) {
     axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
 }
 
+window.csrfRequest = async function(method, url, data) {
+    await window.ensureCsrfCookie(); // 쿠키 보장
+    // axios 인터셉터가 X-XSRF-TOKEN 자동 주입
+    try {
+        return await axios({ method, url, data });
+    } catch (err) {
+        if (err.response && err.response.status === 403) { // 403에러가 날 경우 (기대 효과 UX향상)
+            await window.ensureCsrfCookie();             // 토큰 재발급
+            return await axios({ method, url, data });   // 1회 재시도
+        }
+        throw err;
+    }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (!document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='))) {
         try { await fetch('/api/csrf', { credentials: 'include' }); } catch {}
