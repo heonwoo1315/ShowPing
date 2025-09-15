@@ -56,8 +56,9 @@ public interface WatchApiSpecification {
             )
     )
     @Parameter(hidden = true)
-    ResponseEntity<?> getWatchHistoryPage(@AuthenticationPrincipal UserDetails userDetails,
+    ResponseEntity<?> getWatchHistoryPageV1(@AuthenticationPrincipal UserDetails userDetails,
                                           @ModelAttribute @Valid WatchHistoryListRequestDto watchHistoryListRequestDto);
+
 
     @Operation(
             summary = "시청 내역 추가",
