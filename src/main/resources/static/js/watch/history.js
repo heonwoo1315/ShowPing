@@ -2,6 +2,9 @@ let currentPage = 0;
 const pageSize = 5;
 let isLast = false;
 
+let fromDate;
+let toDate = new Date().toISOString();
+
 document.addEventListener("DOMContentLoaded", function () {
     loadWatchHistory();
     setFilterButtons();
@@ -60,10 +63,12 @@ function loadWatchHistory() {
         return;
     }
 
-    axios.get(`/api/watch/history/list/page`, {
+    axios.get(`/api/watch/v1/history/list/page`, {
         params: {
             pageNo: currentPage,
             pageSize: pageSize,
+            fromDate: fromDate,
+            toDate: toDate,
             sort: "recent",
         },
         withCredentials: true // 쿠키 인증 방식
