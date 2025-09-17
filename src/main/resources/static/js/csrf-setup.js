@@ -1,3 +1,29 @@
+if (window.axios) {
+    axios.defaults.withCredentials = true;
+    axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
+    axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
+}
+
+window.csrfRequest = async function(method, url, data) {
+    await window.ensureCsrfCookie(); // 쿠키 보장
+    // axios 인터셉터가 X-XSRF-TOKEN 자동 주입
+    try {
+        return await axios({ method, url, data });
+    } catch (err) {
+        if (err.response && err.response.status === 403) { // 403에러가 날 경우 (기대 효과 UX향상)
+            await window.ensureCsrfCookie();             // 토큰 재발급
+            return await axios({ method, url, data });   // 1회 재시도
+        }
+        throw err;
+    }
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='))) {
+        try { await fetch('/api/csrf', { credentials: 'include' }); } catch {}
+    }
+});
+
 ;(function (global) {
     // --- 공통: 토큰 읽기 ---
     function getCsrfToken() {
@@ -35,9 +61,19 @@
         axiosInstance.__csrfInterceptorId = id;
     }
 
+    window.ensureCsrfCookie = async function ensureCsrfCookie() {
+        const hasCookie = document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='));
+        if (!hasCookie) {
+            // 서버에서 XSRF-TOKEN 쿠키만 발급받는 엔드포인트(permitAll)
+            await fetch('/api/csrf', { credentials: 'include' });
+        }
+    };
+
     // 전역 axios 자동 장착 (있을 때만)
-    if (typeof global !== 'undefined' && global.axios) {
-        setupCsrfOnAxios(global.axios);
+    if (typeof window !== 'undefined' && window.axios) {
+        setupCsrfOnAxios(window.axios);
+    } else {
+        window.addEventListener('load', () => window.axios && setupCsrfOnAxios(window.axios));
     }
 
     // --- fetch 유틸 (선택) ---
@@ -73,3 +109,40 @@
         define(function () { return { setupCsrfOnAxios, csrfFetch, __getCsrfToken: getCsrfToken }; });
     }
 })(typeof window !== 'undefined' ? window : this);
+
+(function () {
+    if (!window.axios || !window.setupCsrfOnAxios) return;
+
+    // 1) 기본 전역 axios에도 장착
+    window.setupCsrfOnAxios(window.axios);
+
+    // 2) axios.create로 새 인스턴스를 만들 때마다 자동 장착
+    const origCreate = window.axios.create;
+    window.axios.create = function (config) {
+        const instance = origCreate.call(window.axios, config);
+        try { window.setupCsrfOnAxios(instance); } catch (_) {}
+        return instance;
+    };
+})();
+
+// 403이면 한 번만 CSRF 쿠키를 갱신하고 재시도
+window.csrfRetry = async function csrfRetry(fn) {
+    try {
+        return await fn();
+    } catch (err) {
+        const status = err?.response?.status;
+        if (status === 403) {
+            try {
+                await window.ensureCsrfCookie();          // 새 쿠키 발급
+                return await fn();                        // 한 번만 재시도
+            } catch (e2) {
+                throw e2;
+            }
+        }
+        throw err;
+    }
+};
+
+// 편의: JSON POST 래퍼(선택)
+window.csrfPost = (url, body) =>
+    window.csrfRetry(() => axios.post(url, body));

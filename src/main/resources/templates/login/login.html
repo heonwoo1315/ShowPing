@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/csrf-setup.js"></script>
     <script defer th:src="@{/js/login/login.js}"></script> <!-- login.js 로드 -->
     <link rel="stylesheet" th:href="@{/css/login/login.css}">
     <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
@@ -115,6 +116,5 @@
         <button type="button" onclick="verifyTOTP(event)">인증</button>
     </div>
 </div>
-<script src="/static/js/csrf-setup.js"></script>
 </body>
 </html>

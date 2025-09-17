@@ -79,6 +79,7 @@ public class ReportController {
     @Operation(summary = "신고 목록 조회", description = "검색 조건에 따라 신고 목록 조회.")
     @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ReportResponseDto.class)))
     @GetMapping("/list")
+    @ResponseBody
     public List<ReportResponseDto> getReportList(
             @Parameter(description = "신고 검색 조건 (DTO)") @ModelAttribute ReportDto reportDto) {
 

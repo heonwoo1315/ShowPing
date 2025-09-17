@@ -26,6 +26,7 @@ public enum ErrorCode {
     INVALID_TOTP_CODE(HttpStatus.UNAUTHORIZED, "M009", "잘못된 OTP 인증 코드입니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "M010", "이메일 인증이 완료되지 않았습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M011", "데이터베이스 오류가 발생했습니다."),
+    AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "M012", "접근이 거부되었습니다."),
 
 
     // [라이브.VOD 관련 에러 코드]

@@ -11,7 +11,6 @@ import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 
-
 public class CsrfCookieFilter extends OncePerRequestFilter {
 
     @Override
@@ -20,8 +19,11 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Spring Security가 만들어 둔 CSRF 토큰을 요청 attribute에서 꺼냄
+        // Spring Security가 심어둔 토큰을 두 키 모두에서 시도해 가져온다.
         CsrfToken token = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        if (token == null) {
+            token = (CsrfToken) request.getAttribute("_csrf");
+        }
 
         if (token != null) {
             String newValue = token.getToken();
@@ -29,10 +31,11 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
             String oldValue = existing != null ? existing.getValue() : null;
 
             // 쿠키가 없거나 값이 바뀌었으면 재발급
+            boolean secureFlag = isSecureRequest(request);  // ← 환경 기반으로 일관 고정
             if (oldValue == null || !oldValue.equals(newValue)) {
                 ResponseCookie cookie = ResponseCookie.from("XSRF-TOKEN", newValue)
-                        .httpOnly(false)                // JS에서 읽어 헤더로 보낼 수 있어야 함
-                        .secure(request.isSecure())     // 운영 HTTPS면 true, 로컬 HTTP면 false
+                        .httpOnly(false)          // JS에서 읽어 헤더로 보낼 수 있어야 함
+                        .secure(secureFlag)       // 운영(https)=true, 로컬(http)=false
                         .sameSite("Lax")
                         .path("/")
                         .build();
@@ -41,5 +44,12 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isSecureRequest(HttpServletRequest req) {
+        // 리버스 프록시 뒤라면 X-Forwarded-Proto 기준으로 판단
+        String xfp = req.getHeader("X-Forwarded-Proto");
+        if (xfp != null) return "https".equalsIgnoreCase(xfp);
+        return req.isSecure();
     }
 }

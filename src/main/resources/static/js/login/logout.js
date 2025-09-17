@@ -71,10 +71,12 @@ function handleUnauthorized() {
 // 로그아웃 요청
 async function logout() {
     try {
-        await fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "include" // 쿠키 포함
-        });
+        // 쿠키 없으면 한 번 발급 시도
+        if (!document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='))) {
+            await fetch('/api/csrf', { credentials: 'include' });
+        }
+        const res = await csrfFetch("/api/auth/logout", {method: "POST"});
+        if (!res.ok) throw new Error("logout failed: " + res.status);
         location.href = "/";
     } catch (e) {
         console.error("로그아웃 실패:", e);

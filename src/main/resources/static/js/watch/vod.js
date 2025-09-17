@@ -151,16 +151,23 @@ function appendChatMessage(msg) {
     }, 100);
 }
 
-function addWatch(streamNo) {
+async function addWatch(streamNo) {
     const watchTime = new Date();
 
-    axios.post('/api/watch/insert',
-        {
+    try {
+        // 1) XSRF 쿠키 보장
+        await window.ensureCsrfCookie();
+
+        // 2) 403 시 자동 재시도 포함
+        await window.csrfPost('/api/watch/insert', {
             streamNo: streamNo,
             watchTime: watchTime
-        }, {
-            withCredentials: true // 쿠키 전송
         });
+
+        console.log("시청 기록 등록 완료");
+    } catch (error) {
+        console.error("시청 기록 등록 중 오류:", error);
+    }
 }
 
 // 자막을 불러오는 메서드

@@ -131,7 +131,7 @@ function setupEventListeners() {
 
     // 수량 변경 시 서버에 1초 딜레이 후 업데이트 요청 & 가격 업데이트
     document.querySelectorAll(".quantity-input").forEach(input => {
-        input.addEventListener("input", function () {
+        input.addEventListener("input", async function () {
             if (this.value < 1) this.value = 1; // 최소값 유지
             if (this.value > 50) this.value = 50; //최댓값 유지
 
@@ -148,32 +148,32 @@ function setupEventListeners() {
             updateTotalPrice(); // 총 상품 금액 업데이트
 
             clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(() => {
-                axios.put(`/api/carts/update?memberNo=${memberNo}`, {
-                    productNo: parseInt(productNo),
-                    quantity: this.value
-                })
-                    .then(response => {
-                        console.log("장바구니 수량이 서버에서 업데이트됨:", response.data);
-                    })
-                    .catch(error => {
-                        console.error("장바구니 수량 업데이트 실패:", error.response.data);
+            updateTimeout = setTimeout(async () => {
+                try {
+                    await window.ensureCsrfCookie();
+                    await window.csrfRequest('put',`/api/carts/update?memberNo=${memberNo}`, {
+                        productNo: parseInt(productNo, 10),
+                        quantity: quantity
                     });
+                    console.log("장바구니 수량 업데이트 완료");
+                } catch (err) {
+                    console.error("장바구니 수량 업데이트 실패:", err);
+                }
             }, 1000); // 1초 딜레이 후 요청 실행
         });
     });
 
     // 상품 삭제 기능
     document.querySelectorAll(".remove-btn").forEach(button => {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", async function () {
             const productNo = this.getAttribute("data-product-no");
-            axios.delete(`/api/carts/remove?memberNo=${memberNo}&productNo=${productNo}`)
-                .then(response => {
-                    location.reload()
-                })
-                .catch(error => {
-                    alert("상품 삭제 실패: " + error.response.data);
-                });
+            try {
+                await window.ensureCsrfCookie();
+                await window.csrfRequest('delete', `/api/carts/remove?memberNo=${memberNo}&productNo=${productNo}`);
+                location.reload();
+            } catch (error) {
+                alert("상품 삭제 실패: " + (error.response?.data || error));
+            }
         });
     });
 }

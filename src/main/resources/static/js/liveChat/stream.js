@@ -37,38 +37,39 @@ document.addEventListener('DOMContentLoaded', function () {
         const modalOverlay = document.getElementById('modalOverlay');
 
         if (reportForm) {
-            reportForm.addEventListener('submit', (e) => {
+            reportForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const checkedReason = document.querySelector('input[name="reportReason"]:checked');
-                if (checkedReason) {
-                    const reasonValue = checkedReason.value;
-                    // 신고 대상 채팅 내용 (reportTargetText)
-                    const reportContent = document.getElementById('reportTargetText').textContent;
-                    axios.post('/api/report/register', {
-                            reportReason: reasonValue,
-                            reportContent: reportContent
-                        }, {
-                        withCredentials: true
-                    })
-                        .then(response => {
-                            console.log("신고 등록 완료:", response.data);
-                            Swal.fire({
-                                icon: 'success',
-                                title: '신고 접수 완료',
-                                text: '신고가 접수되었습니다.'
-                            });
+                if (!checkedReason) return;
 
-                            closeReportModal();
-                        })
-                        .catch(error => {
-                            console.error("신고 등록 중 오류 발생:", error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: '신고 등록 오류',
-                                text: '신고 등록 중 오류가 발생했습니다.'
-                            });
+                const reasonValue = checkedReason.value;
+                const reportContent = document.getElementById('reportTargetText').textContent;
 
-                        });
+                try {
+                    // 1) XSRF 쿠키 보장(없으면 /api/csrf 호출)
+                    await window.ensureCsrfCookie();
+
+                    // 2) 403 시 자동 재시도까지 해주는 래퍼로 POST
+                    const response = await window.csrfPost('/api/report/register', {
+                        reportReason: reasonValue,
+                        reportContent: reportContent
+                    });
+
+                    console.log("신고 등록 완료:", response.data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: '신고 접수 완료',
+                        text: '신고가 접수되었습니다.'
+                    });
+                    closeReportModal();
+
+                } catch (error) {
+                    console.error("신고 등록 중 오류 발생:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '신고 등록 오류',
+                        text: '신고 등록 중 오류가 발생했습니다.'
+                    });
                 }
             });
         }
@@ -551,30 +552,32 @@ function uploadFileToNCP() {
         });
 }
 
-function createChatRoom() {
-    // API 호출
-    axios.post(`/api/chatRoom/create`, {
-        streamNo
-    })
-        .then(response => {
-            console.log(response.data);
-            Swal.fire({
-                icon: 'info',
-                title: '채팅방 생성 완료',
-                text: `채팅방 번호: ${response.data.chatRoomNo}`
-            });
-            chatRoomNo = response.data.chatRoomNo;
-            connectToChatRoom();
-        })
-        .catch(error => {
-            console.error('채팅방 생성 중 오류 발생:', error);
-            Swal.fire({
-                icon: 'error',
-                title: '오류',
-                text: '채팅방 생성 중 오류가 발생했습니다.'
-            });
+async function createChatRoom() {
+    try {
+        // 1) 쿠키 보장
+        await window.ensureCsrfCookie();
 
+        // 2) 403 발생 시 자동 재시도까지 하는 POST 호출
+        const response = await window.csrfPost(`/api/chatRoom/create`, { streamNo });
+
+        console.log(response.data);
+        Swal.fire({
+            icon: 'info',
+            title: '채팅방 생성 완료',
+            text: `채팅방 번호: ${response.data.chatRoomNo}`
         });
+
+        chatRoomNo = response.data.chatRoomNo;
+        connectToChatRoom();
+
+    } catch (error) {
+        console.error('채팅방 생성 중 오류 발생:', error);
+        Swal.fire({
+            icon: 'error',
+            title: '오류',
+            text: '채팅방 생성 중 오류가 발생했습니다.'
+        });
+    }
 }
 
 function connectToChatRoom() {

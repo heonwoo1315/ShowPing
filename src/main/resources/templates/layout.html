@@ -4,12 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <title>ShowPing</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/js/csrf-setup.js"></script>
+  <script>
+    if (window.axios && window.setupCsrfOnAxios) { window.setupCsrfOnAxios(window.axios); }
+  </script>
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <script defer th:src="@{/js/scripts.js}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="/static/js/csrf-setup.js"></script>
-  
+
   <script defer th:src="@{/js/login/logout.js}"></script>
 </head>
 <body>
@@ -20,7 +23,7 @@
     <div class="navbar-logo">
       <a href="/" style="color: #38A7FF">ShowPing</a>
     </div>
-    
+
     <!-- 네비게이션 메뉴 -->
     <nav class="navbar-menu">
       <ul class="menu-list">
@@ -55,7 +58,7 @@
         </li>
       </ul>
     </nav>
-    
+
     <!-- 검색 및 사용자 메뉴 -->
     <div class="navbar-right">
       <div class="icon-bar">
@@ -63,20 +66,20 @@
           <img th:src="@{/img/icon/cart.png}" style="height: 30px">
         </a>
       </div>
-      
+
       <div class="icon-bar">
         <a th:href="@{/success}">
           <img th:src="@{/img/icon/user.png}" style="height: 30px">
         </a>
       </div>
-      
+
       <div class="icon-bar">
         <a href="#" id="auth-button">
           <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
         </a>
       </div>
-    
-    
+
+
     </div>
   </div>
 </header>
@@ -97,16 +100,16 @@
       <p>대표이사: 김창훈 | 서울 강남구 삼성동 151-7</p>
       <p>호스팅 서비스: (주)신세계 아이앤씨</p>
     </div>
-    
+
     <!-- 고객센터 섹션 -->
     <div class="footer-column">
       <p><strong>고객센터</strong></p>
       <p>1800-0000 (운영시간 365일 24시간)</p>
       <p><a href="ssgfinal4@gmail.com">ssgfinal4@gmail.com</a></p>
     </div>
-  
+
   </div>
-  
+
   <!-- 하단 섹션 -->
   <div class="footer-bottom">
     <p>COPYRIGHT© SHINSEGAE LIVE SHOPPING INC. ALL RIGHTS RESERVED.</p>

@@ -121,23 +121,23 @@ function setupEventListeners(productNo) {
         quantityInput.value = quantity;
     });
 
-    // ✅ 장바구니 버튼
+    // 장바구니 버튼
     addToCartBtn.addEventListener("click", async () => {
         try {
-            const response = await axios.get("/api/carts/info", {
-                withCredentials: true
-            });
+            await window.ensureCsrfCookie(); // 쿠키 보장
 
-            const memberNo = response.data.memberNo;
+            // 로그인 정보 1회 조회
+            const { data: member } = await axios.get('/api/carts/info', { withCredentials: true });
+            const memberNo = member?.memberNo;
+            if (!memberNo) throw new Error('NO_AUTH');
 
-            if (!memberNo) {
-                throw new Error("로그인 정보 없음");
-            }
-
-            await axios.post(`/api/carts/add?memberNo=${memberNo}`, {
-                productNo: product.productNo,
-                quantity: quantity
-            });
+            // 403이면 내부에서 한 번만 토큰 갱신 후 재시도
+            await window.csrfRetry(() =>
+                axios.post(`/api/carts/add?memberNo=${memberNo}`, {
+                    productNo: product.productNo,
+                    quantity: parseInt(document.getElementById("quantity-input").value, 10) || 1
+                })
+            );
 
             Swal.fire({
                 title: '장바구니에 추가되었습니다.',
@@ -146,18 +146,16 @@ function setupEventListeners(productNo) {
                 showCancelButton: true,
                 confirmButtonText: '이동',
                 cancelButtonText: '취소'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/cart";
-                }
-            });
+            }).then((r) => { if (r.isConfirmed) location.href = '/cart'; });
+
         } catch (error) {
+            // 401/403 등 인증 실패 공통 처리
             Swal.fire({
                 title: "로그인 필요",
                 text: "장바구니를 사용하려면 로그인해야 합니다.",
                 icon: "warning",
                 confirmButtonText: "로그인"
-            }).then(() => window.location.href = "/login");
+            }).then(() => location.href = "/login");
         }
     });
 

@@ -119,36 +119,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 신고 접수 버튼 클릭 시, axios.post로 상태 업데이트
-    submitBtn.addEventListener("click", () => {
+    // 신고 접수 버튼 클릭 시, 상태 업데이트 (CSRF 유틸 적용)
+    submitBtn.addEventListener("click", async () => {
         if (!selectedReport) return;
         if (selectedReport.reportStatus !== '미처리' && selectedReport.reportStatus !== 'PROCEEDING') {
-            Swal.fire({
-                icon: 'warning',
-                title: '경고',
-                text: '이미 처리된 신고입니다.'
-            });
+            Swal.fire({icon: 'warning', title: '경고', text: '이미 처리된 신고입니다.'});
             return;
         }
-        axios.post('/api/report/updateStatus', {
-            reportNo: selectedReport.reportNo
-        }, {
-            withCredentials: true // 쿠키 기반 인증을 위해 추가
-        }).then(res => {
+
+        try {
+            // 1) XSRF 쿠키 보장
+            await window.ensureCsrfCookie();
+
+            // 2) 403 시 자동 재시도 포함
+            await window.csrfPost('/api/report/updateStatus', {
+                reportNo: selectedReport.reportNo
+            });
+
             Swal.fire({
                 icon: 'success',
                 title: '신고 처리 완료',
-                text: "신고를 접수 했습니다."
+                text: '신고를 접수 했습니다.'
             });
             closeReportDetailModal();
             loadReports();
-        }).catch(err => {
+
+        } catch (err) {
             Swal.fire({
                 icon: 'error',
                 title: '오류',
                 text: '신고 처리 중 오류가 발생했습니다.'
             });
-        });
+        }
     });
+
 
     window.addEventListener("click", (e) => {
         if (e.target === modal) {
