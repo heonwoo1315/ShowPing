@@ -171,7 +171,7 @@ async function loadWatchHistory() {
         return;
     }
 
-    axios.get(`/api/watch/v1/history/list/page`, {
+    axios.get(`/api/watch/history/list/page`, {
         params: {
             pageNo: currentPage,
             pageSize: pageSize,

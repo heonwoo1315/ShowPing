@@ -57,7 +57,7 @@ public class WatchApiController implements WatchApiSpecification {
     }
 
     @Override
-    @GetMapping("/v1/history/list/page")
+    @GetMapping("/history/list/page")
     public ResponseEntity<?> getWatchHistoryPageV1(@AuthenticationPrincipal UserDetails userDetails,
                                                    @ModelAttribute @Valid WatchHistoryListRequestDto watchHistoryListRequestDto) {
         Member member = memberService.findMemberById(userDetails.getUsername());
