@@ -43,7 +43,7 @@ public interface WatchRepository extends JpaRepository<Watch, Long> {
      * @param pageable 페이지네이션 객체
      * @return 로그인한 사용자의 시청내역 응답 객체
      */
-    @Query(value = """
+    @Query("""
         SELECT new com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto
         (w.stream.streamNo, s.streamTitle, p.productImg, p.productName, p.productPrice, MAX(w.watchTime))
         FROM Watch w JOIN Stream s ON w.stream.streamNo = s.streamNo
@@ -51,8 +51,7 @@ public interface WatchRepository extends JpaRepository<Watch, Long> {
         WHERE w.member.memberNo = :memberNo AND (:fromDate IS NULL OR w.watchTime >= :fromDate) AND w.watchTime <= :toDate
         GROUP BY w.stream.streamNo, s.streamTitle, p.productImg, p.productName, p.productPrice
         ORDER BY MAX(w.watchTime) DESC
-    """,
-    nativeQuery = true)
+    """)
     Page<WatchRowProjection> getWatchHistoryPageByMemberAndDate(@Param("memberNo") Long memberNo,
                                                                 @Param("fromDate") LocalDateTime fromDate,
                                                                 @Param("toDate") LocalDateTime toDate,
