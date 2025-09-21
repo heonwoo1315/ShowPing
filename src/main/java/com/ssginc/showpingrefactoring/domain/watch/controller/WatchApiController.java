@@ -1,9 +1,12 @@
 package com.ssginc.showpingrefactoring.domain.watch.controller;
 
 import com.ssginc.showpingrefactoring.common.dto.PageResponseDto;
+import com.ssginc.showpingrefactoring.common.dto.SliceResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
+import com.ssginc.showpingrefactoring.domain.watch.dto.object.WatchHistoryCursor;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchHistoryListRequestDto;
+import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchHistoryListScrollRequstDto;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
@@ -20,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +60,16 @@ public class WatchApiController implements WatchApiSpecification {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 로그인한 사용자의 시청내역 리스트 페이지네이션 컨트롤러 메서드
+     * @param userDetails 로그인한 사용자
+     * @param watchHistoryListRequestDto 페이지네이션 요청 객체 DTO
+     * @return 로그인한 사용자의 시청내역 응답 객체
+     */
     @Override
     @GetMapping("/history/list/page")
     public ResponseEntity<?> getWatchHistoryPage(@AuthenticationPrincipal UserDetails userDetails,
-                                                   @ModelAttribute @Valid WatchHistoryListRequestDto watchHistoryListRequestDto) {
+                                                 @ModelAttribute @Valid WatchHistoryListRequestDto watchHistoryListRequestDto) {
         Member member = memberService.findMemberById(userDetails.getUsername());
         Long memberNo = member.getMemberNo();
 
@@ -74,7 +84,34 @@ public class WatchApiController implements WatchApiSpecification {
         return ResponseEntity.ok(PageResponseDto.of(pageResult));
     }
 
-    public ResponseEntity<?> getWatchHistoryPageScroll
+    /**
+     * 로그인한 사용자의 시청내역 리스트 페이지네이션 컨트롤러 메서드 (커서기반 스크롤 페이지네이션)
+     * @param userDetails 로그인한 사용자
+     * @param watchHistoryListScrollRequstDto 스크롤 페이지네이션 요청 객체 DTO
+     * @return 로그인한 사용자의 시청내역 응답 객체
+     */
+    @GetMapping("/history/list/scroll")
+    public ResponseEntity<?> getWatchHistoryScroll(@AuthenticationPrincipal UserDetails userDetails,
+                                                   @ModelAttribute @Valid WatchHistoryListScrollRequstDto watchHistoryListScrollRequstDto) {
+        Member member = memberService.findMemberById(userDetails.getUsername());
+        Long memberNo = member.getMemberNo();
+
+        OffsetDateTime cursorTime = watchHistoryListScrollRequstDto.getCursorTime();
+        Long cursorStreamNo = watchHistoryListScrollRequstDto.getCursorStreamNo();
+
+        WatchHistoryCursor cursor = (cursorTime != null && cursorStreamNo != null)
+                ? new WatchHistoryCursor(cursorTime.toLocalDateTime(), cursorStreamNo)
+                : null;
+
+        SliceResponseDto<WatchResponseDto, WatchHistoryCursor> slice =
+                watchService.getWatchHistoryPageScroll(memberNo,
+                        watchHistoryListScrollRequstDto.getFromDate(),
+                        watchHistoryListScrollRequstDto.getToDate(),
+                        cursor,
+                        watchHistoryListScrollRequstDto.getSize());
+
+        return ResponseEntity.ok(slice);
+    }
 
     /**
      * 시청 내역 등록 컨트롤러 메서드

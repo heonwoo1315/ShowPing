@@ -1,5 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.watch.service;
 
+import com.ssginc.showpingrefactoring.common.dto.SliceResponseDto;
+import com.ssginc.showpingrefactoring.domain.watch.dto.object.WatchHistoryCursor;
 import com.ssginc.showpingrefactoring.domain.watch.dto.request.WatchRequestDto;
 import com.ssginc.showpingrefactoring.domain.watch.dto.response.WatchResponseDto;
 import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
@@ -22,4 +24,9 @@ public interface WatchService {
                                                OffsetDateTime toDate,
                                                Pageable pageable);
 
+    SliceResponseDto<WatchResponseDto, WatchHistoryCursor> getWatchHistoryPageScroll(Long memberNo,
+                                                                                     OffsetDateTime fromDate,
+                                                                                     OffsetDateTime toDate,
+                                                                                     WatchHistoryCursor cursor,
+                                                                                     int size);
 }
