@@ -1,11 +1,13 @@
-let currentPage = 0;
 const pageSize = 5;
 let isLast = false;
 let reset = false;      // 필터링으로 인한 조회내역 리셋여부
 
 let activeRange = 'all';
 let fromDate;
-let toDate = new Date().toISOString();
+let toDate = toLocalTimeString(new Date());
+
+let cursorTime;
+let cursorNo;
 
 document.addEventListener("DOMContentLoaded", async function () {
     setFilterForm();
@@ -14,6 +16,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await loadWatchHistory();
 });
+
+function toLocalTimeString(date = new Date()) {
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T` +
+        `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
 
 function setFilterButtons() {
     const chips = document.querySelectorAll('.filter-chip-group .chip');
@@ -26,7 +34,6 @@ function setFilterButtons() {
     const setPeriod = (range) => {
         // 전체 조회
         if (range === 'all') {
-            toDate = toInput.value ? new Date(toInput.value) : new Date();
             fromDate = null;
             fromInput.value = '';
             toInput.value = '';
@@ -112,10 +119,9 @@ function validateDates() {
 // input 상태 동기화
 function syncStateFromInputs() {
     const fromInput = document.getElementById('from');
-    const toInput = document.getElementById('to');
 
     fromDate = fromInput.value ? new Date(fromInput.value) : null;
-    toDate = toInput.value ? new Date(toInput.value) : new Date();
+    toDate = new Date();
 
     return true;
 }
@@ -136,8 +142,6 @@ function setFilterForm() {
 
         // 조회 리셋
         reset = true;
-        currentPage = 0;
-
         await loadWatchHistory();
     });
 }
@@ -153,6 +157,8 @@ function clearHistoryTable() {
 
     // 상태 복구
     isLast = false;
+    cursorTime = null;
+    cursorNo = null;
 
     // 더보기 버튼 모드 초기화
     const btn = document.getElementById("load-more-btn");
@@ -171,18 +177,18 @@ async function loadWatchHistory() {
         return;
     }
 
-    axios.get(`/api/watch/history/list/page`, {
+    axios.get(`/api/watch/history/list/scroll`, {
         params: {
-            pageNo: currentPage,
-            pageSize: pageSize,
             fromDate: fromDate,
             toDate: toDate,
-            sort: "recent",
+            cursorTime: cursorTime,
+            cursorStreamNo: cursorNo,
+            pageSize: pageSize
         },
         withCredentials: true // 쿠키 인증 방식
     })
         .then(response => {
-            const {content, pageInfo} = response.data;
+            const {content, hasMore, nextCursor} = response.data;
             const tableBody = document.querySelector(".history-items tbody");
 
             content.forEach(item => {
@@ -224,11 +230,14 @@ async function loadWatchHistory() {
                 });
             });
 
-            currentPage++;
-            isLast = pageInfo.last;
+            isLast = !hasMore;
 
             if (isLast) {
                 document.getElementById("load-more-btn").style.display = "none";
+            }
+            else {
+                cursorTime = nextCursor.watchTime;
+                cursorNo = nextCursor.streamNo;
             }
         })
         .catch(error => {
