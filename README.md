@@ -2,23 +2,23 @@
 
 ## 1. Overview (프로젝트 개요)
 
-ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼핑몰의 생생한 경험을 온라인으로 옮겨와 라이브 스트리밍의 상호 작용성을 더한 서비스 입니다.  
-이 플랫폼은 **실시간 상품 소개, 채팅 및 댓글을 통한 즉각적인 소통, 구매 연동 기능**을 결합하여 고객이 더 빠른 구매 결정을 내리고 판매자는 시청자 참여를 극대화할 수 있도록 돕습니다.
+ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼핑몰의 생생한 경험을 온라인으로 옮기고 **라이브 스트리밍의 상호작용성**을 더합니다.  
+이 플랫폼은 **실시간 상품 소개, 채팅 및 댓글을 통한 즉각적인 소통, 구매 연동 기능**을 결합하여 고객이 더 빠르게 구매 결정을 내리고, 판매자는 시청자 참여를 극대화할 수 있도록 돕습니다.
 
 ---
 
 ## 2. Objective (기획 의도)
 
-- **실시간 상품 소개 제공**을 통해 고객 신뢰와 몰입도를 높인다.
-- **채팅 및 댓글 기반 피드백**으로 고객 만족도를 향상시킨다.
-- **구매 연동 기능**을 통해 상품 탐색과 구매 사이의 단계를 단축한다.
-- **전자제품 카테고리**를 시작으로 수요가 높고 단가가 큰 상품군을 확대한다.
-- **오프라인 쇼핑 경험 + 실시간 소통**을 결합하여 **차세대 라이브 커머스 생태계**를 구현한다.
+- **실시간 상품 소개**를 통해 고객 신뢰와 몰입도를 높입니다.
+- **채팅 및 댓글 기반 피드백**으로 고객 만족도를 향상시킵니다.
+- **구매 연동 기능**으로 상품 탐색과 구매 사이의 단계를 단축합니다.
+- **전자제품 카테고리**를 시작으로 수요가 높고 단가가 큰 상품군을 확장합니다.
+- **오프라인 쇼핑 경험 + 실시간 소통**을 결합하여 **차세대 라이브 커머스 생태계**를 구현합니다.
 
 ---
 
 ## 3. Development Period (개발 기간)
-- 2025.04 ~
+- 2025.04 ~ 진행 
 
 ---
 
@@ -30,7 +30,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 | [김주일](https://github.com/juil1-kim)   | 스케줄러, 채팅 기능, 신고 관리 기능 |
 | [김창훈](https://github.com/C-H-Kim) | 팀장, 서버 인프라 구축, 라이브 스트리밍 기능 |
 | [박헌우](https://github.com/heonwoo1315)  | 문서화 작업, 회원 기능, 보안 기능 |
-| [조민호](https://github.com/heonwoo1315)  | ERD 관리, 상품 기능, 장바구니 기능, 결제 기능 |
+| [조민호](https://github.com/0O000)  | ERD 관리, 상품 기능, 장바구니 기능, 결제 기능 |
 
 ---
 
@@ -63,7 +63,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 
 ### 💻 Frontend
 <p>
-  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white">
+  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
   <img src="https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
   <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white">
 </p>
@@ -91,54 +91,49 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 
 ## 6. Project Architecture (프로젝트 아키텍처 구조)
 
-### 6 - 1. Service Infrastru
+### 6 - 1. Service Infrastructure Overview (서비스 인프라 개요)
 <img width="547" height="406" alt="시스템 아키텍처_라이브_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/5ad938ed-9e31-478c-a681-b963e832bce3" />
 
-- **Ubuntu Private 서버** 위에서 Docker Compose로 전체 서비스 운영  
-- **Nginx**: HTTPS Termination + Reverse Proxy  
-- **Spring Boot (Tomcat)**: 핵심 비즈니스 로직 (WebFlux, Batch 등)  
-- **Kurento Media Server**: WebRTC 기반 실시간 스트리밍 처리  
-- **AWS RDS (MySQL)**: 관계형 데이터 저장소  
-- **NCP Object Storage**: 방송 영상 저장소
+- **Ubuntu Private 서버** 위에서 Docker Compose로 전체 서비스를 운영합니다.
+- **Nginx**는 HTTPS Termination과 Reverse Proxy 역할을 수행합니다.
+- **Spring Boot (Tomcat)**이 핵심 비즈니스 로직(WebFlux, Batch 등)을 처리합니다.
+- **Kurento Media Server**가 WebRTC 기반 실시간 스트리밍을 담당합니다.
+- **AWS RDS (MySQL)**을 관계형 데이터 저장소로 사용합니다.
+- **NCP(Naver Cloud Platform) Object Storage**에 방송 영상을 저장합니다.
 
 ---
 
 ### 6 - 2. Detailed System Architecture (상세 시스템 아키텍처)
 <img width="4052" height="1802" alt="시스템 아키텍처_전체_4팀(채팅 기반 라이브 스트리밍 서비스)" src="https://github.com/user-attachments/assets/699728c5-c1c9-435c-a263-c46b531d1ae1" />
 
-- **Spring Boot 내부 구성**: Spring Security, JWT, STOMP(WebSocket), WebFlux, Batch, Gradle  
-- **Redis**: Refresh Token 저장소  
-- **Kafka + ZooKeeper**: 채팅 및 메시징 분산 처리  
-- **MongoDB**: 채팅 로그 및 금칙어 저장  
-- **외부 연동 서비스**:  
-  - AWS RDS (MySQL)  
-  - NCP (Clova, Object Storage)  
-  - Google Authenticator (TOTP 2FA)  
-  - PortOne (결제 모듈)  
-- **CI/CD**: GitHub Actions 기반 자동 배포  
-- **협업 툴 & 성능 테스트 툴**: Slack, Figma, Trello, JMeter, nGrinder 등
+- **Spring Boot 내부 구성**: Spring Security, JWT, STOMP(WebSocket), WebFlux, Batch, Gradle을 사용합니다.
+- **Redis**에 Refresh Token을 저장하여 재발급을 안전하게 처리합니다.
+- **Kafka + ZooKeeper**로 채팅 및 메시징을 분산 처리합니다.
+- **MongoDB**에 채팅 로그 및 금칙어를 저장합니다.
+- **외부 연동 서비스**: AWS RDS(MySQL), NCP Clova·Object Storage, Google Authenticator(TOTP 2FA), PortOne(결제 모듈)과 연동합니다.
+- **CI/CD**는 GitHub Actions로 자동화합니다.
+- 협업/성능 테스트 도구로 Slack, Figma, Trello, JMeter, nGrinder 등을 사용합니다.
 
 ---
 
-### 6 - 3 Chat & Messaging Flow (채팅 및 메시징 구조)
+### 6 - 3. Chat & Messaging Flow (채팅 및 메시징 구조)
 <img width="670" height="479" alt="시스템 아키텍처_채팅_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/2c7fde15-2b73-49d3-82ca-6993482d7df6" />
 
-- **Client → Nginx → Spring (JWT 기반 인증)** 요청 흐름  
-- **STOMP/WebSocket**: 클라이언트와 서버 간 실시간 통신  
-- **Kafka + ZooKeeper**: 채팅 메시지 Producer/Consumer 구조  
-- **MongoDB**: 금칙어·채팅 로그 저장  
-- **MySQL**: 회원/상품/권한 관리  
-- **JWT + Spring Security**: 사용자 인증/인가 처리 
+- **Client → Nginx → Spring (JWT 기반 인증)**의 흐름으로 요청을 처리합니다.
+- **STOMP/WebSocket**으로 클라이언트와 서버 간 실시간 통신을 제공합니다.
+- **Kafka + ZooKeeper**로 메시지를 Producer/Consumer 구조로 처리합니다.
+- **MongoDB**에 금칙어와 채팅 로그를 저장합니다.
+- **MySQL**에서 회원/상품/권한을 관리합니다.
+- **JWT + Spring Security**로 사용자 인증/인가를 수행합니다.
 
 ---
 
-### 6 - 4 4️⃣ CI/CD Pipeline (배포 파이프라인)
+### 6 - 4. CI/CD Pipeline (배포 파이프라인)
 <img width="508" height="194" alt="시스템_아키텍처_CICD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/f8114518-bc8a-452e-a6ed-7ff3e329d73c" />
 
-- **개발자 → GitHub**: 코드 Push  
-- **GitHub Actions**: CI/CD Workflow 실행  
-- **SCP 방식 배포**: Build된 `.war` 파일을 Ubuntu 서버의 Tomcat 컨테이너에 전달  
-- **자동 반영**: 컨테이너 내부에서 서비스 구동  
+- 개발자가 **GitHub**에 코드를 푸시하면 **GitHub Actions**가 CI/CD 워크플로를 실행합니다.
+- 빌드된 `.war` 파일을 **SCP**로 Ubuntu 서버의 Tomcat 컨테이너에 전달합니다.
+- 컨테이너 내부에서 서비스가 자동으로 구동되도록 구성합니다.
 
 ---
 
@@ -251,6 +246,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 ### 🔹 Login & Signup (로그인 & 회원가입)
 
 - 사용자 인증을 위한 로그인 및 회원가입 페이지입니다.
+- 아래는 로그인/회원가입 화면 예시입니다.
 
 - 로그인 화면
 <p align="center">
@@ -265,6 +261,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 ### 🔹 Live Streaming (라이브 방송)
 
 - 실시간 방송 화면과 채팅창을 함께 볼 수 있는 화면입니다.
+- 관리자/유저 화면을 구분하여 제공합니다.
 
 - 관리자 페이지
 <p align="center">
@@ -278,7 +275,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 
 ### 🔹 Watch History (시청 내역)
 
-- 방송 종료 후 다시보기 페이지입니다.
+- 방송 종료 후 다시보기 목록 및 상세를 제공합니다.
 <p align="center">
   <img width="957" height="463" alt="image" src="https://github.com/user-attachments/assets/f7d85b6d-f039-456c-9d81-f8683171193b" />
 
@@ -287,7 +284,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 
 ### 🔹 Cart & Payment (장바구니 및 결제)
 
-- 장바구니 와 결제 진행 화면입니다.
+- 장바구니와 결제를 단계별로 진행할 수 있습니다.
 <p align="center">
   <img width="958" height="456" alt="image" src="https://github.com/user-attachments/assets/5b48ea0c-7ea0-4a9c-bc20-6d8ddb73fd1f" />
   <img width="958" height="464" alt="image" src="https://github.com/user-attachments/assets/f7535f26-0a3b-4476-9ce7-cc32e9af3bad" />
@@ -298,14 +295,14 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 
 ### 🔹 Admin Dashboard (관리자 페이지)
 
-- 방송을 등록/삭제할 수 있는 관리자 화면입니다.  
+- 관리자가 방송을 등록/삭제하고 운영 기능을 사용할 수 있습니다.
 <p align="center">
   <img width="958" height="468" alt="image" src="https://github.com/user-attachments/assets/fc66d2ad-8a29-4577-93f5-f7d87452dfe0" />
 </p>
 
 ### 🔹 Report Management (신고 관리 페이지)
 
-- 사용자 신고 내역을 관리하고 처리할 수 있는 관리자 화면입니다.
+- 사용자 신고 내역을 조회·처리할 수 있는 관리자 화면입니다.
 <p align="center">
   <img width="956" height="448" alt="image" src="https://github.com/user-attachments/assets/45919db3-0d3d-4bdc-9531-d415141804e2" />
   <img width="955" height="449" alt="image" src="https://github.com/user-attachments/assets/7b3672f0-169d-4d01-98a1-f77a6a421397" />
