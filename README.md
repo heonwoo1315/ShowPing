@@ -32,6 +32,8 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 | [박헌우](https://github.com/heonwoo1315)  | 문서화 작업, 회원 기능, 보안 기능 |
 | [조민호](https://github.com/heonwoo1315)  | ERD 관리, 상품 기능, 장바구니 기능, 결제 기능 |
 
+---
+
 ## 5. Tech Stack (기술 스택)
 
 ### 🖥 Backend
@@ -85,6 +87,8 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
   <img src="https://img.shields.io/badge/Trello-0052CC?style=for-the-badge&logo=trello&logoColor=white">
 </p>
 
+---
+
 ## 6. Project Architecture (프로젝트 아키텍처 구조)
 
 ### 6 - 1. Service Infrastru
@@ -136,10 +140,14 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 - **SCP 방식 배포**: Build된 `.war` 파일을 Ubuntu 서버의 Tomcat 컨테이너에 전달  
 - **자동 반영**: 컨테이너 내부에서 서비스 구동  
 
+---
+
 ## 7. ERD & Database Design (ERD 및 데이터베이스 설계)
 
 
 <img width="1450" height="742" alt="ERD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/913547c4-b2f5-4165-90bb-27776f6bcaf6" />
+
+---
 
 ## 8. Git Convention & Collaboration (깃 컨벤션 & 협업)
 
@@ -192,6 +200,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 - GitHub Issue & PR을 중심으로 협업 강화
 
 ---
+
 ## 9. Key Features (주요 기능)
 
 - **Authentication & Authorization (인증/인가)**
@@ -227,6 +236,8 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
 - **Admin & API Docs (관리자 및 문서화)**
   - 관리자 방송 관리 기능 (등록/삭제)
   - Swagger 기반 API 문서 자동 제공
+
+---
 
 ## 10. Service Screenshots (서비스 화면 캡처)
 
@@ -301,8 +312,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로 오프라인 쇼�
   <img width="958" height="419" alt="image" src="https://github.com/user-attachments/assets/e38b8218-aca8-4813-a503-ffc81eae208f" />
 </p>
 
-
-### 
+--- 
 
 ## 11. Demo Video (시연 영상)
 [전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
