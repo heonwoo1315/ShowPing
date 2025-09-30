@@ -12,6 +12,37 @@
 <div layout:fragment="content">
   <div class="history-container">
     <div class="history-items">
+      <!-- 기간별 조회 바: 테이블 위에 위치 -->
+      <section class="history-filter" role="search" aria-label="시청내역 기간 필터">
+        <h2 class="sr-only">기간별 조회</h2>
+
+        <!-- 빠른 기간 버튼 -->
+        <div class="filter-chip-group" role="tablist" aria-label="빠른 기간 선택">
+          <button class="chip" role="tab" data-range="7d">1주일</button>
+          <button class="chip" role="tab" data-range="1m">1개월</button>
+          <button class="chip" role="tab" data-range="3m">3개월</button>
+          <button class="chip" role="tab" data-range="6m">6개월</button>
+          <button class="chip" role="tab" data-range="all">전체</button>
+        </div>
+
+        <!-- 직접입력 기간 폼 -->
+        <form class="filter-form" th:action="@{/watch/history}" method="get" id="history-filter-form" novalidate>
+          <input type="hidden" name="range" id="range" th:value="${param.range != null ? param.range : 'custom'}"/>
+          <label class="date-field">
+            <span class="date-field__label">시작일</span>
+            <input type="date" name="from" id="from"
+                   th:value="${param.from}" required>
+          </label>
+          <span class="dash" aria-hidden="true">–</span>
+          <label class="date-field">
+            <span class="date-field__label">종료일</span>
+            <input type="date" name="to" id="to"
+                   th:value="${param.to}" required>
+          </label>
+          <button class="btn-primary" type="submit" id="search-btn">조회</button>
+        </form>
+
+      </section>
       <table>
         <thead>
           <tr>
@@ -24,9 +55,11 @@
           </tr>
         </thead>
         <tbody>
-        <!-- 장바구니 데이터가 JS에서 동적으로 삽입됨 -->
         </tbody>
       </table>
+      <div class="load-more-container">
+        <button id="load-more-btn">더보기</button>
+      </div>
     </div>
   </div>
 </div>
