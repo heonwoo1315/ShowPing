@@ -1,28 +1,36 @@
 # ShowPing (Refactoring) 📦
 
-## 1. Overview (프로젝트 개요)
+**🏆 SSG I&C 5차수 부트캠프 최우수 프로젝트 선정**
 
-ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼핑몰의 생생한 경험을 온라인으로 옮기고 **라이브 스트리밍의 상호작용성**을 더합니다.  
-이 플랫폼은 **실시간 상품 소개, 채팅 및 댓글을 통한 즉각적인 소통, 구매 연동 기능**을 결합하여 고객이 더 빠르게 구매 결정을 내리고, 판매자는 시청자 참여를 극대화할 수 있도록 돕습니다.
+
+## 1. Project Introduction (프로젝트 소개)
+
+### 🔹 Motivation (개발 동기)
+
+기존 이커머스는 상세 페이지의 정적인 정보만으로는 고가의 전자제품 구매를 결정하기 어렵다는 한계가 있었습니다. 저희는 판매자와 구매자 간의 실시간 소통 부재라는 문제를 해결하고, 오프라인 매장처럼 즉각적인 질의응답과 시연이 가능한 환경을 제공하고자 ShowPing을 기획했습니다. 이를 통해 구매 전환율을 높이고 고객의 신뢰를 확보하는 것을 목표로 합니다.
+
+### 🔹 Core Concept (핵심 컨셉)
+
+ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑의 생생한 경험을 온라인으로 옮기고 라이브 스트리밍의 상호작용성을 더한 서비스입니다. 판매자는 실시간으로 상품을 시연하고 시청자와 소통하며, 고객은 궁금한 점을 즉시 해결하고 영상 속 상품을 바로 구매할 수 있습니다.
+
+### 🔹 Key Objectives (주요 목표)
+
+- **신뢰도 및 몰입감 향상**: 판매자의 실시간 상품 시연을 통해 제품 정보를 투명하게 전달합니다.
+
+- **상호작용 극대화**: 채팅과 댓글 기반의 즉각적인 피드백으로 고객 만족도를 높입니다.
+
+- **구매 경험 간소화**: 라이브 방송과 구매 기능을 연동하여 탐색부터 결제까지의 과정을 단축합니다.
+
+- **차세대 커머스 생태계 구축**: 온라인 쇼핑의 편리함과 실시간 소통의 장점을 결합하여 새로운 쇼핑 경험을 제공합니다.
 
 ---
 
-## 2. Objective (기획 의도)
-
-- **실시간 상품 소개**를 통해 고객 신뢰와 몰입도를 높입니다.
-- **채팅 및 댓글 기반 피드백**으로 고객 만족도를 향상시킵니다.
-- **구매 연동 기능**으로 상품 탐색과 구매 사이의 단계를 단축합니다.
-- **전자제품 카테고리**를 시작으로 수요가 높고 단가가 큰 상품군을 확장합니다.
-- **온라인 쇼핑 경험 + 실시간 소통**을 결합하여 **차세대 라이브 커머스 생태계**를 구현합니다.
-
----
-
-## 3. Development Period (개발 기간)
+## 2. Development Period (개발 기간)
 - 2025.05 ~ 진행 
 
 ---
 
-## 4. Roles (역할)
+## 3. Roles (역할)
 
 | 이름 | 역할 |
 |------|------|
@@ -34,7 +42,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-## 5. Tech Stack (기술 스택)
+## 4. Tech Stack (기술 스택)
 
 ### 🖥 Backend
 <p>
@@ -89,9 +97,9 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-## 6. Project Architecture (프로젝트 아키텍처 구조)
+## 5. Project Architecture (프로젝트 아키텍처 구조)
 
-### 6 - 1. Overall System Architecture (전체 아키텍처 구조)
+### 5 - 1. Overall System Architecture (전체 아키텍처 구조)
 <img width="4052" height="1802" alt="시스템 아키텍처_전체_4팀(채팅 기반 라이브 스트리밍 서비스)" src="https://github.com/user-attachments/assets/699728c5-c1c9-435c-a263-c46b531d1ae1" />
 
 - **Spring Boot 내부 구성**: Spring Security, JWT, STOMP(WebSocket), WebFlux, Batch, Gradle을 사용합니다.
@@ -104,7 +112,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-### 6 - 2. Live Service Architecture (라이브 서비스 아키텍처 구조)
+### 5 - 2. Live Service Architecture (라이브 서비스 아키텍처 구조)
 <img width="547" height="406" alt="시스템 아키텍처_라이브_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/5ad938ed-9e31-478c-a681-b963e832bce3" />
 
 - **Ubuntu Private 서버** 위에서 Docker Compose로 전체 서비스를 운영합니다.
@@ -116,7 +124,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-### 6 - 3. Chat & Messaging Flow (채팅 및 메시징 구조)
+### 5 - 3. Chat & Messaging Flow (채팅 및 메시징 구조)
 <img width="670" height="479" alt="시스템 아키텍처_채팅_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/2c7fde15-2b73-49d3-82ca-6993482d7df6" />
 
 - **Client → Nginx → Spring (JWT 기반 인증)**의 흐름으로 요청을 처리합니다.
@@ -128,7 +136,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-### 6 - 4. CI/CD Pipeline (배포 파이프라인)
+### 5 - 4. CI/CD Pipeline (배포 파이프라인)
 <img width="508" height="194" alt="시스템_아키텍처_CICD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/f8114518-bc8a-452e-a6ed-7ff3e329d73c" />
 
 - 개발자가 **GitHub**에 코드를 푸시하면 **GitHub Actions**가 CI/CD 워크플로를 실행합니다.
@@ -137,14 +145,14 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-## 7. ERD & Database Design (ERD 및 데이터베이스 설계)
+## 6. ERD & Database Design (ERD 및 데이터베이스 설계)
 
 
 <img width="1450" height="742" alt="ERD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/913547c4-b2f5-4165-90bb-27776f6bcaf6" />
 
 ---
 
-## 8. Git Convention & Collaboration (깃 컨벤션 & 협업)
+## 7. Git Convention & Collaboration (깃 컨벤션 & 협업)
 
 ### 🔹 Git Branch Naming Rules (브랜치 네이밍 규칙)
 - **Issue 기반 브랜치 생성**: 새로운 기능 추가나 버그 수정을 시작할 때 먼저 GitHub Issue를 작성하고, 해당 이슈 번호를 브랜치명에 반영
@@ -196,7 +204,7 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-## 9. Key Features (주요 기능)
+## 8. Key Features (주요 기능)
 
 - **Authentication & Authorization (인증/인가)**
   - JWT 기반 로그인/회원가입 (Access + Refresh Token, Redis 저장)
@@ -234,11 +242,12 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 ---
 
-## 10. Service Screenshots (서비스 화면 캡처)
+## 9. Service Screenshots (서비스 화면 캡처)
 
 ### 🔹 Main Page (메인 페이지)
 
 - 사용자가 접속했을 때 처음 보게 되는 메인 화면입니다.
+<details>
 <p align="center">
   <img width="1918" height="850" alt="image" src="https://github.com/user-attachments/assets/33a0920e-0665-4f0f-bdb7-b25b1d7e6fcc" />
 </p>
@@ -311,5 +320,5 @@ ShowPing은 **실시간 라이브 커머스 플랫폼**으로, 오프라인 쇼�
 
 --- 
 
-## 11. Demo Video (시연 영상)
+## 10. Demo Video (시연 영상)
 [전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
