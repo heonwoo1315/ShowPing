@@ -247,7 +247,7 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ### 🔹 Main Page (메인 페이지)
 
 - 사용자가 접속했을 때 처음 보게 되는 메인 화면입니다.
-<details>
+  
 <p align="center">
   <img width="1918" height="850" alt="image" src="https://github.com/user-attachments/assets/33a0920e-0665-4f0f-bdb7-b25b1d7e6fcc" />
 </p>
