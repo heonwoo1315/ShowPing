@@ -316,7 +316,7 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 
 - 방송 종료 후 다시보기 목록 및 상세를 제공합니다.
 <p align="center">
-  <img width="957" height="463" alt="image" src="https://github.com/user-attachments/assets/f7d85b6d-f039-456c-9d81-f8683171193b" />
+  <img width="1398" height="706" alt="image" src="https://github.com/user-attachments/assets/f18e60ba-42eb-4120-b8f0-1477aaf09d41" />
 
   <img width="958" height="465" alt="image" src="https://github.com/user-attachments/assets/0f25ef67-36dd-49bd-9171-a7d1eef59505" />
 </p>
