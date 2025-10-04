@@ -243,7 +243,6 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 
 - **Live Streaming (라이브 방송)**
   - WebRTC & Kurento 기반 실시간 방송 송출
-  - RTMP/HLS 지원 → 다양한 기기 호환성 확보
   - 방송 중 실시간 채팅 및 상품 연동
 
 - **Chat System (채팅 시스템)**
