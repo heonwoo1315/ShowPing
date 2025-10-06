@@ -1,85 +1,11 @@
-document.addEventListener("DOMContentLoaded", async () => {
-    const authButton = document.getElementById("auth-button");
-    const authIcon = document.getElementById("auth-icon");
-    const adminMenu = document.getElementById("admin-menu");
+// logout.js
+// 로그아웃 버튼 클릭 시 호출
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('logoutBtn'); // 네 버튼 id로 맞춰줘
+    if (!btn) return;
 
-    // 로그인 상태 확인을 위한 API 호출
-    try {
-        const res = await fetch("/api/auth/user-info", {
-            credentials: "include" // HttpOnly 쿠키 포함
-        });
-
-        if (res.ok) {
-            const data = await res.json();
-
-            // ✅ 로그인 상태 처리
-            if (authButton && authIcon) {
-                authButton.href = "#";
-                authIcon.src = "/img/icon/logout.png";
-                authButton.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    logout();
-                });
-            }
-
-            // ✅ 관리자 메뉴 표시
-            if (data.role === "ADMIN" && adminMenu) {
-                adminMenu.hidden = false;
-            }
-        } else if (res.status === 401) {
-            // 인증되지 않은 경우 로그인 페이지로 이동
-            handleUnauthorized();
-        } else {
-            throw new Error("서버 오류");
-        }
-    } catch (error) {
-        console.warn("로그인 상태 아님 또는 요청 실패", error);
-        handleUnauthorized();
-    }
+    btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        doLogoutOnce();
+    });
 });
-
-function handleUnauthorized() {
-    const pathname = window.location.pathname;
-
-    // 로그인 페이지로 리다이렉트할 경로만 지정
-    const protectedPaths = [
-        "/watch/history",
-        "/cart",
-        "/payment",
-        "/success",
-        "/user",
-        "/admin",
-        "/product/product_payment"
-    ];
-
-    const shouldRedirect = protectedPaths.some(path => pathname.startsWith(path));
-
-    if (shouldRedirect) {
-        window.location.href = "/login";
-    } else {
-        // 로그인 상태 UI 초기화
-        const authButton = document.getElementById("auth-button");
-        const authIcon = document.getElementById("auth-icon");
-
-        if (authButton && authIcon) {
-            authButton.href = "/login";
-            authIcon.src = "/img/icon/login.png";
-        }
-    }
-}
-
-// 로그아웃 요청
-async function logout() {
-    try {
-        // 쿠키 없으면 한 번 발급 시도
-        if (!document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='))) {
-            await fetch('/api/csrf', { credentials: 'include' });
-        }
-        const res = await csrfFetch("/api/auth/logout", {method: "POST"});
-        if (!res.ok) throw new Error("logout failed: " + res.status);
-        location.href = "/";
-    } catch (e) {
-        console.error("로그아웃 실패:", e);
-        alert("로그아웃 실패");
-    }
-}
