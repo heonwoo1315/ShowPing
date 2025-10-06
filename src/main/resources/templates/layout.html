@@ -9,6 +9,7 @@
   <script>
     if (window.axios && window.setupCsrfOnAxios) { window.setupCsrfOnAxios(window.axios); }
   </script>
+  <script defer th:src="@{/js/login/jwt.js}"></script>
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <script defer th:src="@{/js/scripts.js}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -74,7 +75,7 @@
       </div>
 
       <div class="icon-bar">
-        <a href="#" id="auth-button">
+        <a th:href="@{/login}" id="auth-button">
           <img id="auth-icon" th:src="@{/img/icon/login.png}" style="height: 30px">
         </a>
       </div>

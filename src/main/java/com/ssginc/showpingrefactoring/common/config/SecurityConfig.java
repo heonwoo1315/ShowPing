@@ -70,7 +70,7 @@ public class SecurityConfig {
                                 "/", "/login","/login/**","/error","/error/**","/error-page/**",
                                 "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
                                 "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
-                                "/api/auth/user-info", "/api/admin/login", "/product/detail/**", "/api/categories/**", "/category/**",
+                                "/api/admin/login", "/product/detail/**", "/api/categories/**", "/category/**",
                                 "/api/products/**", "/api/admin/verify-totp", "/login/signup/**", "/api/member/verify-code",
                                 "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
                                 "/favicon.ico", "/api/auth/**", "/api/member/check-duplicate", "/api/member/register",
@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/api/live/live-info", "/api/live/active", "/stream/watch/**", "/stream/list/**",
                                 "/watch/vod/**", "/api/watch/insert", "/product/product_list","/product/product_list/**",
                                 "/product/product_detail/**","/record", "/live", "/api/csrf", "/api/live/register", "/api/vod/list/**", "/api/vod/subtitle/**"
+                                ,"/api/auth/reissue"
                         ).permitAll()
                         // ADMIN
                         .requestMatchers(
@@ -96,7 +97,7 @@ public class SecurityConfig {
                                 "/api/payments/complete", "/api/chat/**",
                                 "/watch/history/**","/api/watch/history/list","/api/watch/history/list/**",
                                 "/cart/**", "/product/product_cart", "/payment/**",
-                                "/product/product_payment", "/success/**", "/payment/success/**"
+                                "/product/product_payment", "/success/**", "/payment/success/**","/api/auth/user-info"
                         ).hasAnyRole("USER", "ADMIN")
                         // 그 외
                         .anyRequest().authenticated()

@@ -1,7 +1,7 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
 import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
-import com.ssginc.showpingrefactoring.common.jwt.RedisTokenService;
+import com.ssginc.showpingrefactoring.domain.member.service.implement.RedisTokenServiceImpl;
 import com.ssginc.showpingrefactoring.common.util.EncryptionUtil;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
@@ -17,7 +17,7 @@ public class TwoFactorAuthController {
 
     private final TwoFactorAuthService twoFactorAuthService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTokenService redisTokenService;
+    private final RedisTokenServiceImpl redisTokenService;
     private final MemberRepository memberRepository;
 
 
