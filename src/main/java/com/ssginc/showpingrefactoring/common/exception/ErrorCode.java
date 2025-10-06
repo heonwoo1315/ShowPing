@@ -14,6 +14,8 @@ public enum ErrorCode {
 
     //[회원 관련 에러 코드 추가]
     AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A001", "로그인이 필요한 요청입니다."),
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "A013", "Access Token이 만료되었습니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A014", "Access Token이 유효하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "M002", "비밀번호가 일치하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "M003", "RefreshToken이 유효하지 않습니다."),
