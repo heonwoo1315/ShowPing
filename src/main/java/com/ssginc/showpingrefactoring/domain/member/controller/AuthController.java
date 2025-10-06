@@ -1,14 +1,11 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
-import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
-import com.ssginc.showpingrefactoring.common.jwt.RedisTokenService;
+import com.ssginc.showpingrefactoring.common.exception.CustomException;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.LoginRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.ReissueRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.TokenResponseDto;
-import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.service.AuthService;
-import com.ssginc.showpingrefactoring.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,7 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,94 +31,119 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTokenService redisTokenService;
 
+    // 공통 쿠키 생성 유틸리티
+    private ResponseCookie createCookie(String name, String value, long maxAge) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(false) // TODO: HTTPS 환경에서는 true로 변경
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(maxAge)
+                .build();
+    }
+
+    private void clearAuthCookies(HttpServletResponse response) {
+        response.addHeader("Set-Cookie", createCookie("accessToken", null, 0).toString());
+        response.addHeader("Set-Cookie", createCookie("refreshToken", null, 0).toString());
+
+        response.addHeader("Set-Cookie", createCookie("XSRF-TOKEN", null, 0).toString());
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookieName.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
     /**
      * 로그인
      */
-    @Operation(summary = "회원 로그인", description = "ID와 비밀번호로 로그인 후 AccessToken과 RefreshToken을 발급합니다.")
+    @Operation(summary = "로그인", description = "ID와 Password로 로그인하고 Access/Refresh Token을 HTTPOnly 쿠키로 설정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "필수 파라미터 누락"),
             @ApiResponse(responseCode = "401", description = "로그인 실패")
     })
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> request,
-                                                     HttpServletRequest httpReq,
-                                                     HttpServletResponse httpRes) {
-        String memberId = request.get("memberId");
-        String password = request.get("password");
-        if (memberId == null || password == null) {
-            return ResponseEntity.status(400).body(Map.of("status", "BAD_REQUEST", "message", "Missing required parameters"));
-        }
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request, HttpServletResponse response) {
+        Map<String, String> tokens = authService.login(request);
 
-        Member member = memberService.findMember(memberId, password);
-        if (member == null) {
-            return ResponseEntity.status(401).body(Map.of("status", "LOGIN_FAILED"));
-        }
+        String accessToken = tokens.get("accessToken");
+        String refreshToken = tokens.get("refreshToken");
 
-        String role = member.getMemberRole().name();
-        String accessToken = jwtTokenProvider.generateAccessToken(memberId, role);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(memberId);
-        redisTokenService.saveRefreshToken(memberId, refreshToken);
+        // AT/RT 쿠키 설정 (로그아웃 시 RT 쿠키를 삭제할 수 있도록 RT도 쿠키로 설정)
+        ResponseCookie accessTokenCookie = createCookie("accessToken", accessToken, 3600);
+        ResponseCookie refreshTokenCookie = createCookie("refreshToken", refreshToken, 86400);
 
-        // 로컬(http)만 secure=false, 운영(https) secure=true
-        String host = httpReq.getServerName();
-        boolean isLocal = "localhost".equalsIgnoreCase(host) || "127.0.0.1".equals(host);
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
-                .httpOnly(true)
-                .secure(!isLocal)          // ← 로컬은 false
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(60 * 30)
-                .build();
-
-        // ❗ addHeader 대신, ResponseEntity에 직접 헤더를 얹어 리턴
-        return ResponseEntity.ok()
-                .header("Set-Cookie", accessCookie.toString())
-                .body(Map.of("memberRole", role));
+        // LoginResponseDto (status만 남은 DTO)를 반환
+        return ResponseEntity.ok(new LoginResponseDto(tokens.get("status")));
     }
 
-    /**
-     * AccessToken 재발급
-     */
-//    @PostMapping("/reissue")
-//    public ResponseEntity<TokenResponseDto> reissue(@RequestBody ReissueRequestDto request) {
-//        TokenResponseDto response = authService.reissue(request);
-//        return ResponseEntity.ok(response);
-//    }
+    // (추가) 토큰 재발급 엔드포인트
+    @Operation(summary = "Access Token 재발급", description = "Refresh Token 쿠키를 이용하여 새로운 Access Token과 Refresh Token을 발급받습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
+            @ApiResponse(responseCode = "401", description = "Refresh Token 유효성 검증 실패 (재로그인 필요)")
+    })
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = extractTokenFromCookie(request, "refreshToken");
 
-    @Operation(summary = "회원 로그아웃", description = "AccessToken을 무효화하여 로그아웃 처리합니다.")
-    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+        if (refreshToken == null) {
+            clearAuthCookies(response);
+            return ResponseEntity.status(com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getStatus())
+                    .header("X-Error-Code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode())
+                    .body(Map.of("code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode()));
+        }
+
+        try {
+            // Service에서 String[] {newAccessToken, newRefreshToken} 반환
+            String[] newTokens = authService.reissue(refreshToken);
+            String newAccessToken = newTokens[0];
+            String newRefreshToken = newTokens[1];
+
+            // ✅ 새로운 AT와 RT 모두 쿠키로 설정 (RT Rotation)
+            ResponseCookie newAccessTokenCookie = createCookie("accessToken", newAccessToken, 3600);
+            ResponseCookie newRefreshTokenCookie = createCookie("refreshToken", newRefreshToken, 86400);
+
+            response.addHeader("Set-Cookie", newAccessTokenCookie.toString());
+            response.addHeader("Set-Cookie", newRefreshTokenCookie.toString());
+
+            // 토큰을 포함하지 않고 성공 상태만 반환
+            return ResponseEntity.ok(new TokenResponseDto());
+
+        } catch (CustomException e) {
+            // RT 검증 실패 시: RT 삭제 및 AT, RT 쿠키 모두 제거 (강제 로그아웃 유도)
+            clearAuthCookies(response);
+            return ResponseEntity.status(com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getStatus())
+                    .header("X-Error-Code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode())
+                    .body(Map.of(
+                            "code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode(),
+                            "message", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getMessage()
+                    ));
+        }
+    }
+
+    @Operation(summary = "로그아웃", description = "Redis에서 Refresh Token을 삭제하고, Access Token 및 Refresh Token 쿠키를 제거합니다.")
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "로그아웃 성공"))
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        // Authorization 헤더에서 AccessToken 추출
-        String token = null;
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        // refreshToken 쿠키 기준으로 Redis에서 삭제
+        String refreshToken = extractTokenFromCookie(request, "refreshToken");
+        if (refreshToken != null) {
+            authService.logoutByRefreshToken(refreshToken);
         }
 
-        if (token != null) {
-            String memberId = authService.getMemberIdFromToken(token);
-            authService.logout(memberId);
-        }
-
-        ResponseCookie cookie = ResponseCookie.from("accessToken", null)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        // ✅ AT와 RT 쿠키 모두 제거 (기존의 AT 쿠키만 제거하는 로직을 대체)
+        clearAuthCookies(response);
 
         return ResponseEntity.ok().build();
     }
@@ -130,20 +155,33 @@ public class AuthController {
     })
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    "status", "UNAUTHORIZED"
-            ));
+        // ❗인증이 없거나(=null) 익명 토큰이면 Security EntryPoint로 넘김
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new InsufficientAuthenticationException("Unauthenticated");
         }
 
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        String username = user.getUsername();
-        String role = user.getAuthorities().stream().findFirst().get().getAuthority(); // ex: ROLE_ADMIN
+        Object principal = authentication.getPrincipal();
+
+        String username = (principal instanceof UserDetails ud)
+                ? ud.getUsername()
+                : String.valueOf(principal);
+
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority) // e.g. ROLE_ADMIN
+                .findFirst()
+                .orElse(null);
+
+        String roleSimple = (role != null && role.startsWith("ROLE_"))
+                ? role.substring(5)
+                : role;
 
         return ResponseEntity.ok(Map.of(
                 "status", "SUCCESS",
                 "username", username,
-                "role", role.replace("ROLE_", "") // "ROLE_ADMIN" → "ADMIN"
+                "role", roleSimple
         ));
     }
 }
+
