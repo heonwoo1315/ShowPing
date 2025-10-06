@@ -1,0 +1,18 @@
+# show-ping-refactoring/docker-compose.yml
+
+version: '3.8'
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: showping_redis
+    # 💡 비밀번호 설정: '1234'로 설정하여 application.yml과 호환
+    command: redis-server --requirepass 1234
+    ports:
+      - "6379:6379"
+    volumes:
+      # 영속성 보장: Redis 데이터를 호스트 머신의 'redis_data' 볼륨에 저장
+      - redis_data:/data
+    restart: always
+
+volumes:
+  redis_data:
