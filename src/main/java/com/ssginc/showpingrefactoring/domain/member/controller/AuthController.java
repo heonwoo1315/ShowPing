@@ -1,9 +1,9 @@
 package com.ssginc.showpingrefactoring.domain.member.controller;
 
 import com.ssginc.showpingrefactoring.common.exception.CustomException;
+import com.ssginc.showpingrefactoring.common.util.CookieUtil;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.LoginRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
-import com.ssginc.showpingrefactoring.domain.member.dto.request.ReissueRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.TokenResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,35 +31,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-
-    // 공통 쿠키 생성 유틸리티
-    private ResponseCookie createCookie(String name, String value, long maxAge) {
-        return ResponseCookie.from(name, value)
-                .httpOnly(true)
-                .secure(false) // TODO: HTTPS 환경에서는 true로 변경
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(maxAge)
-                .build();
-    }
-
-    private void clearAuthCookies(HttpServletResponse response) {
-        response.addHeader("Set-Cookie", createCookie("accessToken", null, 0).toString());
-        response.addHeader("Set-Cookie", createCookie("refreshToken", null, 0).toString());
-
-        response.addHeader("Set-Cookie", createCookie("XSRF-TOKEN", null, 0).toString());
-    }
-
-    private String extractTokenFromCookie(HttpServletRequest request, String cookieName) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookieName.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+    private final CookieUtil cookieUtil;
     /**
      * 로그인
      */
@@ -77,8 +49,8 @@ public class AuthController {
         String refreshToken = tokens.get("refreshToken");
 
         // AT/RT 쿠키 설정 (로그아웃 시 RT 쿠키를 삭제할 수 있도록 RT도 쿠키로 설정)
-        ResponseCookie accessTokenCookie = createCookie("accessToken", accessToken, 3600);
-        ResponseCookie refreshTokenCookie = createCookie("refreshToken", refreshToken, 86400);
+        ResponseCookie accessTokenCookie = cookieUtil.createCookie("accessToken", accessToken, 3600);
+        ResponseCookie refreshTokenCookie = cookieUtil.createCookie("refreshToken", refreshToken, 86400);
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
@@ -95,10 +67,10 @@ public class AuthController {
     })
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractTokenFromCookie(request, "refreshToken");
+        String refreshToken = cookieUtil.extractTokenFromCookie(request, "refreshToken");
 
         if (refreshToken == null) {
-            clearAuthCookies(response);
+            cookieUtil.clearAuthCookies(response);
             return ResponseEntity.status(com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getStatus())
                     .header("X-Error-Code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode())
                     .body(Map.of("code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode()));
@@ -111,8 +83,8 @@ public class AuthController {
             String newRefreshToken = newTokens[1];
 
             // ✅ 새로운 AT와 RT 모두 쿠키로 설정 (RT Rotation)
-            ResponseCookie newAccessTokenCookie = createCookie("accessToken", newAccessToken, 3600);
-            ResponseCookie newRefreshTokenCookie = createCookie("refreshToken", newRefreshToken, 86400);
+            ResponseCookie newAccessTokenCookie = cookieUtil.createCookie("accessToken", newAccessToken, 3600);
+            ResponseCookie newRefreshTokenCookie = cookieUtil.createCookie("refreshToken", newRefreshToken, 86400);
 
             response.addHeader("Set-Cookie", newAccessTokenCookie.toString());
             response.addHeader("Set-Cookie", newRefreshTokenCookie.toString());
@@ -122,7 +94,7 @@ public class AuthController {
 
         } catch (CustomException e) {
             // RT 검증 실패 시: RT 삭제 및 AT, RT 쿠키 모두 제거 (강제 로그아웃 유도)
-            clearAuthCookies(response);
+            cookieUtil.clearAuthCookies(response);
             return ResponseEntity.status(com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getStatus())
                     .header("X-Error-Code", com.ssginc.showpingrefactoring.common.exception.ErrorCode.INVALID_REFRESH_TOKEN.getCode())
                     .body(Map.of(
@@ -137,13 +109,13 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         // refreshToken 쿠키 기준으로 Redis에서 삭제
-        String refreshToken = extractTokenFromCookie(request, "refreshToken");
+        String refreshToken = cookieUtil.extractTokenFromCookie(request, "refreshToken");
         if (refreshToken != null) {
             authService.logoutByRefreshToken(refreshToken);
         }
 
         // ✅ AT와 RT 쿠키 모두 제거 (기존의 AT 쿠키만 제거하는 로직을 대체)
-        clearAuthCookies(response);
+        cookieUtil.clearAuthCookies(response);
 
         return ResponseEntity.ok().build();
     }
