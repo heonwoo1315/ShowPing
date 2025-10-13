@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TokenResponseDto {
-    private String accessToken;
+    private final String status = "REISSUE_SUCCESS";
 }

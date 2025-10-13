@@ -1,85 +1,73 @@
-////////////////////////////////////////////////
-// axiosInstance.js
-// CSRF 토큰 저장 변수
-let csrfToken = "";
+// jwt.js
+// 인증 전용 axios 인스턴스 + 재발급 인터셉터 + CSRF 보장
 
-// HTTPOnly 쿠키는 자바스크립트에서 접근할 수 없지만,
-// 브라우저는 자동으로 HTTPOnly 쿠키를 모든 요청에 포함시킴.
-// 이 쿠키는 withCredentials 옵션과는 관계없이, <a> 태그나 서버로의 기본적인 HTTP 요청에서 자동으로 전송됨.
+// 1) 로그인 페이지 여부
+const IS_LOGIN_PAGE = window.location.pathname.startsWith('/login');
 
-const api = axios.create({
-    baseURL: "http://localhost:8888/auth",
-    withCredentials: true, // HTTPOnly 쿠키 포함 (자동으로 전송됨)
-    // GET /some-endpoint HTTP/1.1
-    // Host: example.com
-    // Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhdXRob3IiLCJleHBpcmVkX3VzZXIiOiJ1c2VyX2F1dGgiLCJpYXQiOjE2Mjg4NDEwMzF9.GZsM...
-    headers: {
-        "Content-Type": "application/json"
-    }
+// 2) CSRF 쿠키 보장 (최초 1회)
+let _csrfReady = false;
+window.ensureCsrfCookie = async function ensureCsrfCookie() {
+    if (_csrfReady) return;
+    try {
+        await fetch('/api/csrf', { credentials: 'include' }); // 서버가 XSRF-TOKEN 쿠키를 셋업
+        _csrfReady = true;
+    } catch (_) {}
+};
+
+// 3) 인증 전용 axios 인스턴스
+window.authApi = axios.create({
+    baseURL: '/api/auth/',
+    withCredentials: true,
+    xsrfCookieName: 'XSRF-TOKEN',     // CookieCsrfTokenRepository 기본 쿠키명
+    xsrfHeaderName: 'X-XSRF-TOKEN',   // SecurityConfig 허용 헤더와 일치
 });
 
-////////////////////////////////////////////////
-// login.js
-async function login() {
-    const username = document.getElementById("memberId").value;
-    const password = document.getElementById("memberPassword").value;
+// 4) 요청 인터셉터
+window.authApi.interceptors.request.use(async (config) => {
+    config._retry = config._retry || false;
+    if (!IS_LOGIN_PAGE) await window.ensureCsrfCookie();
+    return config;
+});
 
-    try {
-        const response = await api.post("login3", {memberId, memberPassword});
-        console.log("서버 응답 message:", response.data.message);
-        console.log("서버 응답 token:", response.data.token);
+// 5) 동시 재발급 1회 보장용
+let _refreshPromise = null;
 
-        // API 응답에 'error' 키가 포함된 경우 → 로그인 실패 처리
-        if (response.data.error) {
-            alert(response.data.error);
-            return;
+// 6) 응답 인터셉터: AT 만료(ME014)일 때만 재발급
+window.authApi.interceptors.response.use(
+    r => r,
+    async (error) => {
+        const { config, response } = error;
+        if (!response) throw error;
+
+        const isReissue = ((config.baseURL||'') + (config.url||'')).includes('/api/auth/reissue');
+        if (isReissue || config._skipRefresh) throw error;
+
+        const code = response?.data?.code || response?.headers?.['x-error-code'];
+        if (response.status === 401 && code === 'ME014' && !config._retry) {
+            try {
+                config._retry = true;
+                await window.authApi.post('reissue', {}, { _skipRefresh: true });
+                return window.authApi(config); // 원요청 1회 재시도
+            } catch (e) {
+                // 실패(ME004) → UI만 비로그인 전환 (강제 리다이렉트 X)
+                if (typeof setAsLogin === 'function') {
+                    const btn  = document.getElementById('auth-button');
+                    const icon = document.getElementById('auth-icon');
+                    setAsLogin(btn, icon);
+                }
+                throw e;
+            }
         }
-
-        // API 응답 메시지가 "로그인 성공!"이면 로그인 성공 처리
-        if (response.data.message === "성공") {
-            alert("로그인 성공!");
-            // CSRF 토큰 가져오는 부분이 필요하면 활성화
-            // await fetchCsrfToken();
-            //window.location.href = "/auth/user-info3"; // 로그인 후 사용자 정보 페이지로 이동
-        } else {
-            alert("로그인 실패! 올바른 정보를 입력했는지 확인하세요.");
-        }
-    } catch (error) {
-        alert("로그인 요청 중 오류 발생!");
-        console.error("로그인 오류:", error);
-
-        // 서버에서 403 응답을 받은 경우 (예: CSRF 문제)
-        if (error.response && error.response.status === 403) {
-            alert("403 오류: CSRF 문제가 발생했을 가능성이 있습니다. 새로고침 후 다시 시도하세요.");
-        }
+        throw error;
     }
-}
+);
 
-////////////////////////////////////////////////
-// logout.js
-async function logout() {
+// 7) 로그인 여부 확인 유틸 (헤더 UI 등에서 사용)
+window.fetchUserInfo = async () => {
     try {
-        await api.get("logout3");
-        alert("로그아웃 성공!");
-        window.location.href = "/";
-    } catch (error) {
-        alert("로그아웃 실패!");
-        console.error("로그아웃 오류:", error);
+        const res = await window.authApi.get('user-info');
+        return res.data; // {status:"SUCCESS", username, role}
+    } catch {
+        return null;
     }
-}
-
-////////////////////////////////////////////////
-// userInfo.js
-async function getUserInfo() {
-    try {
-        const response = await api.get("user-info3");
-
-        if (response.status === 200) {
-            console.log(`사용자 정보: ${response.data.username}` + "        " + response.data.role);
-            document.getElementById("user-info").innerText = `사용자 정보: ${response.data.username}` + " " + `${response.data.role}`;
-        }
-    } catch (error) {
-        alert("인증 실패! 다시 로그인하세요.");
-        console.error("사용자 정보 가져오기 오류:", error);
-    }
-}
+};

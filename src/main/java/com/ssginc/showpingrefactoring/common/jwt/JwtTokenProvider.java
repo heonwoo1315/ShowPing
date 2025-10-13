@@ -9,9 +9,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class JwtTokenProvider {
@@ -25,17 +27,17 @@ public class JwtTokenProvider {
             @Value("${jwt.access.expiration}") long accessTokenExpiration,
             @Value("${jwt.refresh.expiration}") long refreshTokenExpiration
     ) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    // 🔹 Access Token 생성
+    // Access Token 생성 (role 포함)
     public String generateAccessToken(String memberId, String role) {
         return createToken(memberId, role, accessTokenExpiration);
     }
 
-    // 🔹 Refresh Token 생성
+    // Refresh Token 생성 (role 미포함)
     public String generateRefreshToken(String memberId) {
         return createToken(memberId, null, refreshTokenExpiration);
     }
@@ -50,44 +52,55 @@ public class JwtTokenProvider {
         if (role != null) {
             builder.claim("role", role);
         }
-
         return builder.compact();
     }
 
-    // 🔹 토큰에서 Authentication 객체 생성
+    /** Authentication 생성 (role 없거나 형식 다른 경우 방어) */
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String username = getUsername(token);
-        String role = getRole(token);
-
-        UserDetails userDetails = new User(username, "", List.of(new SimpleGrantedAuthority(role)));
+        String role = normalizeRole(getRole(token)); // null/빈값/ROLE_ 접두어 처리
+        UserDetails userDetails = new User(username, "",
+                role == null ? List.of() : List.of(new SimpleGrantedAuthority(role)));
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
-    // 🔹 토큰에서 사용자명 추출
+    /** 토큰에서 subject */
     public String getUsername(String token) {
         return parseClaims(token).getSubject();
     }
 
-    // 🔹 토큰에서 역할 추출
+    /** 토큰에서 role (없으면 null) */
     public String getRole(String token) {
         Object role = parseClaims(token).get("role");
         return role != null ? role.toString() : null;
     }
 
-    // 🔹 토큰 유효성 검증
+    /** 토큰 유효성 검사 (만료면 false) */
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("JWT 만료: " + e.getMessage());
+            // 만료: 필터에서 구분 처리하므로 여기선 false만 반환
+            return false;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("JWT 검증 실패: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
-    // 🔹 Claims 파싱
+    /** (필요 시) 만료 여부만 알고 싶을 때 */
+    public boolean isExpired(String token) {
+        try {
+            parseClaims(token);
+            return false;
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    /** 내부: 클레임 파싱 */
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -95,4 +108,21 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    /** ROLE_ 접두어 통일 & 빈값 방어 */
+    private String normalizeRole(String role) {
+        if (role == null) return null;
+        String r = role.trim();
+        if (r.isEmpty()) return null;
+        return r.startsWith("ROLE_") ? r : "ROLE_" + r;
+    }
+
+    public String getUsernameAllowExpired(String token) {
+        try {
+            return getUsername(token);
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject(); // 만료된 토큰에서도 subject 추출
+        }
+    }
+
 }

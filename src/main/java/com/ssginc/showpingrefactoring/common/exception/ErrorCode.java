@@ -13,20 +13,22 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "CO002", "스토리지에 해당 파일이 존재하지 않습니다."),
 
     //[회원 관련 에러 코드 추가]
-    AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "A001", "로그인이 필요한 요청입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "M002", "비밀번호가 일치하지 않습니다."),
-    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "M003", "RefreshToken이 유효하지 않습니다."),
+    AUTH_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "ME001", "로그인이 필요한 요청입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "ME002", "회원을 찾을 수 없습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "ME003", "비밀번호가 일치하지 않습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "ME004", "RefreshToken이 유효하지 않습니다."),
 
-    DUPLICATED_MEMBER_ID(HttpStatus.CONFLICT, "M004", "이미 사용 중인 회원 ID입니다."),
-    DUPLICATED_EMAIL(HttpStatus.CONFLICT, "M005", "이미 사용 중인 이메일입니다."),
-    DUPLICATED_PHONE(HttpStatus.CONFLICT, "M006", "이미 사용 중인 전화번호입니다."),
-    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "M007", "관리자 권한이 필요합니다."),
-    TOTP_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "M008", "TOTP 등록이 완료되지 않은 사용자입니다."),
-    INVALID_TOTP_CODE(HttpStatus.UNAUTHORIZED, "M009", "잘못된 OTP 인증 코드입니다."),
-    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "M010", "이메일 인증이 완료되지 않았습니다."),
-    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M011", "데이터베이스 오류가 발생했습니다."),
-    AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "M012", "접근이 거부되었습니다."),
+    DUPLICATED_MEMBER_ID(HttpStatus.CONFLICT, "ME005", "이미 사용 중인 회원 ID입니다."),
+    DUPLICATED_EMAIL(HttpStatus.CONFLICT, "ME006", "이미 사용 중인 이메일입니다."),
+    DUPLICATED_PHONE(HttpStatus.CONFLICT, "ME007", "이미 사용 중인 전화번호입니다."),
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "ME008", "관리자 권한이 필요합니다."),
+    TOTP_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "ME009", "TOTP 등록이 완료되지 않은 사용자입니다."),
+    INVALID_TOTP_CODE(HttpStatus.UNAUTHORIZED, "ME010", "잘못된 OTP 인증 코드입니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ME011", "이메일 인증이 완료되지 않았습니다."),
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "ME012", "데이터베이스 오류가 발생했습니다."),
+    AUTH_FORBIDDEN(HttpStatus.FORBIDDEN, "ME013", "접근이 거부되었습니다."),
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ME014", "Access Token이 만료되었습니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "ME015", "Access Token이 유효하지 않습니다."),
 
 
     // [라이브.VOD 관련 에러 코드]

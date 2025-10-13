@@ -27,6 +27,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> handleException(Exception e, HttpServletRequest request) {
+        // 인증/인가 예외는 Security가 처리해야 하므로 if문을 써서 가로채지 않게 한다.
+        // 모든 예외를 이 클래스가 처리하고 있기때문에 401/403흐름까지 여기서 가로채서 제대로된 401에러를 reissue 엔드포인트가 받아들이지 못해
+        // 재발급이 제대로 되지 않고 있었다.
+        if (e instanceof org.springframework.security.core.AuthenticationException
+        || e instanceof org.springframework.security.access.AccessDeniedException
+        || e instanceof org.springframework.security.authentication.InsufficientAuthenticationException) {
+            throw (RuntimeException) e; // 그대로 전파 -> ExceptionTranslationFilter -> EntryPoint/AccessDeniedHandler
+        }
         log.error("URL : {}, Response Msg : {}", request.getRequestURI(), e.getMessage(), e);
 
         return ResponseEntity
