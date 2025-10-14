@@ -1,0 +1,279 @@
+/* 공통 스타일 초기화 */
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    line-height: 1.6;
+    background-color: #f9f9f9;
+}
+
+main {
+}
+
+.main-content {
+    max-width: 90%;
+    min-height: 600px;
+    margin: auto;
+    background-color: white;
+    border: 1px solid gainsboro;
+}
+
+/* 네비게이션 바 스타일 */
+.navbar {
+    color: black;
+    font-weight: bold;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+    border: 1px solid gainsboro;
+    background-color: white;
+}
+
+.navbar-logo a {
+    padding: 30px;
+    color: black;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-menu .menu-list {
+    display: flex;
+    list-style: none;
+    padding: 30px;
+}
+
+.menu-list .menu-item {
+    position: relative;
+    margin-left: 20px;
+}
+
+.menu-list .menu-item a {
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: color 0.3s;
+    justify-content: space-between;
+}
+
+.menu-list .menu-item a:hover {
+}
+
+/* 드롭다운 */
+
+/* 드롭다운 메뉴 */
+.dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    list-style: none;
+    padding: 10px 0;
+    border-radius: 5px;
+    z-index: 1000;
+    white-space: nowrap; /* 수정된 부분 */
+}
+
+.dropdown .dropdown-menu li {
+    display: inline-block; /* 가로 정렬 */
+    background-color: white;
+}
+
+.dropdown .dropdown-menu li a {
+    color: black;
+    padding: 5px 20px;
+    display: block;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.dropdown .dropdown-menu li a:hover {
+    background-color: #D0E4F1;
+}
+
+/* 드롭다운 메뉴 표시 */
+.dropdown:hover .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    border: 2px solid #f9f9f9;
+}
+
+/* 오른쪽 검색 및 언어 선택 */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* 버튼을 오른쪽으로 밀기 */
+}
+
+/* 검색 바 */
+
+/* 검색 바 컨테이너 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 입력 필드와 버튼 간의 간격 */
+}
+
+/* 검색 입력 필드 */
+.search-bar input[type="text"] {
+    width: 400px; /* 입력 필드 너비 */
+    height: 30px;
+    padding: 5px 10px;
+    border: 2px solid black;
+    margin-right: 50px;
+    font-size: 14px;
+    border-radius: 20px;
+}
+
+/* 검색 버튼 */
+.search-bar button {
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    padding-top: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.icon-bar {
+    padding: 10px;
+    padding-top: 10px;
+    margin-right: 80px;
+}
+
+/* 스크롤 */
+
+/* 맨 위로 올라가기 버튼 스타일 */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #E7F1F9;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 버튼 호버 효과 */
+.scroll-to-top:hover {
+    background-color: #38A7FF;
+}
+
+/* 버튼이 보일 때 */
+.scroll-to-top.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scroll-to-top.hide {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 로그인 */
+
+.login-button {
+    color: black;
+    padding: 5px 15px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    margin-left: auto;
+}
+
+.login-button:hover {
+    background-color: #E7F1F9;
+    color: #38A7FF;
+}
+
+/* 푸터 */
+
+/* Footer 스타일 */
+.footer {
+    color: black;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.footer-container {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+.footer-column {
+    flex: 1;
+    min-width: auto;
+    margin-left: 200px;
+    text-align: left; /* 내부 텍스트 왼쪽 정렬 */
+}
+
+.footer-column p {
+    margin: 5px 0;
+    font-size: 15px
+}
+
+.footer-column a {
+    text-decoration: none;
+    color: #38A7FF;
+    font-weight: bold;
+}
+
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+    font-size: 12px;
+}
+
+/* 아이콘 */
+
+/* Icon 스타일 */
+.social-icons a:hover {
+    color: black; /* 아이콘 호버 시 색상 변경 */
+}
+
+.item-name {
+    width: 300px;
+}
+
+.logout-button{
+    background-color: transparent;
+    border:white;
+}

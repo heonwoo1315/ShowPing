@@ -1,0 +1,403 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 메인 컨테이너 */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 6px;
+
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #333;
+}
+
+h2 {
+    margin-top: 20px;
+    margin-left: 40px;
+}
+
+
+/* 검색 영역 */
+.search-area {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.search-area form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+}
+
+.search-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.search-group input,
+.search-group select {
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 버튼 그룹 */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    /*align-items: flex-end;*/
+    gap: 10px;
+    /*margin-left: auto;*/
+    /*text-align: right;*/
+    margin-top: 10px;
+    margin-right: 40px;
+}
+
+.search-btn,
+.reset-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* 테이블 스타일 */
+.search-table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    /* 가운데 정렬 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.search-table th,
+.search-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.search-table th {
+    width: 120px;
+    background-color: #f9f9f9;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* 셀 내부 요소 스타일 */
+.search-table select,
+.search-table input[type="text"],
+.search-table input[type="date"] {
+    padding: 6px;
+    margin-right: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* 날짜 범위 버튼 */
+.date-btn {
+    margin-right: 5px;
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.date-btn:hover {
+    background-color: #ddd;
+}
+
+/* 라디오 버튼 간격 */
+td label {
+    margin-right: 15px;
+}
+
+.search-btn {
+    background-color: #333;
+    color: #fff;
+}
+
+.reset-btn {
+    background-color: #ddd;
+    color: #333;
+}
+
+/* 테이블 스타일 */
+.table-container {
+    /*width: 95%;*/
+    table-layout: fixed;
+    margin-top: 30px;
+    overflow-x: auto;
+    text-align: center;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 20px;
+}
+
+.table-container th,
+.table-container td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table-container table th:nth-child(1),
+.table-container table td:nth-child(1) {
+    width: 60px; /* 번호 컬럼 */
+}
+
+.table-container table th:nth-child(2),
+.table-container table td:nth-child(2) {
+    width: 130px; /* 접수일 컬럼 */
+}
+
+.table-container table th:nth-child(3),
+.table-container table td:nth-child(3) {
+    width: 150px; /* 신고 사유 컬럼 */
+}
+
+.table-container table th:nth-child(4),
+.table-container table td:nth-child(4) {
+    width: 100px; /* 피신고자 ID 컬럼 */
+}
+
+.table-container table th:nth-child(5),
+.table-container table td:nth-child(5) {
+    width: 60px; /* 처리 여부 컬럼 */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /*text-align: left;*/
+}
+
+thead {
+    background-color: #f2f2f2;
+}
+
+th,
+td {
+    padding: 12px;
+    border: 1px solid #eee;
+    font-size: 14px;
+}
+
+/* 검색 결과 개수 */
+.result-count {
+    margin-left: 40px;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* 페이지네이션 컨테이너 */
+.pagination-container {
+    text-align: center;
+    margin-bottom: 20px;
+    user-select: none; /* 텍스트 드래그 방지 (옵션) */
+}
+
+.pagination-container .pagination {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.pagination-container .pagination li {
+    display: inline-block;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.pagination-container .pagination li a {
+    text-decoration: none;
+    color: #333;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.pagination-container .pagination li a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-container .pagination li.active a {
+    background-color: #f7e35d; /* 노란색 배경 */
+    border-radius: 50%;
+}
+
+.sort-arrow {
+    font-size: 13px;
+    margin-left: 5px;
+    font-weight: bold;
+    color: #333;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+}
+
+/* 모달 전체 화면 덮는 배경 */
+.modal {
+    display: none;
+    /* 기본적으로 숨김 */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* 반투명 검정 배경 */
+}
+
+/* 모달 콘텐츠 박스 */
+.modal-content {
+    background-color: #fff;
+    width: 500px;
+    /* 모달 너비 조정 */
+    margin: 100px auto;
+    /* 화면 중앙 정렬 */
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s;
+}
+
+/* 모달 헤더 */
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* 오른쪽 상단 X 아이콘 */
+.modal-close-icon {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+/* 모달 바디 */
+.modal-body {
+    padding: 16px;
+}
+
+.modal-body h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+/* 테이블 스타일 */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.report-table th,
+.report-table td {
+    border: 1px solid #eee;
+    padding: 10px;
+    vertical-align: middle;
+    text-align: left;
+    font-size: 14px;
+}
+
+.report-table th {
+    width: 120px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+/* 모달 푸터 */
+.modal-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.submit-btn {
+    background-color: #d9534f;
+    /* 붉은색 */
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #c9302c;
+    /* 호버 시 좀 더 진한 붉은색 */
+}
+
+.close-btn {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.close-btn:hover {
+    background-color: #bbb;
+}
+
+/* 모달 팝업 페이드 인 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report-no-click {
+    cursor: pointer;
+}
+
+.report-no-click:hover {
+    color: red;
+    font-weight: bold;
+}

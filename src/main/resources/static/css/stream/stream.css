@@ -1,0 +1,176 @@
+.live-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 1개씩 한 줄 */
+    justify-items: center; /* 그리드 아이템을 가운데 정렬 */
+    gap: 15px;
+    width: 100%;
+}
+
+
+.vod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄 */
+    justify-items: center; /* 그리드 아이템을 가운데 정렬 */
+    gap: 20px;
+    width: 100%;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+}
+
+.page-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+/* 개별 상품 박스 */
+.live-item {
+    padding: 15px;
+    width: 220px; /* 상품 카드 크기 조정 */
+    height: 300px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    border: 1px solid #e0e0e0;
+}
+
+/* 개별 상품 박스 */
+.vod-item {
+    padding: 15px;
+    width: 220px; /* 상품 카드 크기 조정 */
+    max-height: 400px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    border: 1px solid #e0e0e0;
+}
+
+/* 개별 페이지 박스 */
+.page-item {
+    padding: 15px;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.live-item:hover, .vod-item:hover {
+    padding: 15px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 내부 요소 수직 정렬 */
+    align-items: center; /* 내부 요소 수평 정렬 */
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);
+}
+
+/* 이미지 스타일 */
+.live-item img, .vod-item img {
+    width: 180px; /* 이미지 크기 조정 */
+    height: 180px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.vod-list {
+    justify-content: center;
+    padding: 5%;
+}
+
+#date {
+    font-size: 15px;
+    text-align: left;
+    color: #999999;
+}
+
+#description {
+    font-size: 10px;
+}
+
+#product-price {
+    font-size: 7px;
+}
+
+.stream-img-container {
+    position: relative;
+}
+
+.live-icon {
+    position: absolute;
+    left: 150px; /* 왼쪽에서 150px 만큼 띄우기 */
+}
+
+
+.load-more {
+    width: 100px; /* 텍스트 길이에 맞게 조정 */
+    height: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    background-color: white;
+    border-radius: 8px;
+    border: none;
+}
+
+.load-more:hover {
+    box-shadow: 0px 0px 10px rgb(0, 0, 255, 0.5);; /* 더 어두운 파란색 */
+}
+
+.live-filter-options, .vod-filter-options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.live-filter-title, .vod-filter-title {
+    font-size: 18px;
+    color: #f07c8c; /* 원하는 색상으로 변경 (예: 핑크) */
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.live-filter-buttons, .vod-filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.live-filter-btn, .vod-filter-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.live-filter-btn:hover, .vod-filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.live-filter-btn.selected, .vod-filter-btn.selected {
+    color: #f07c8c;
+    border-color: #f07c8c;
+    font-weight: bold;
+}
+
+hr {
+    border: 1px solid gainsboro;
+}

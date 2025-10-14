@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/stream/stream.css}">
+    <script defer th:src="@{/js/stream/list.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<div layout:fragment="content">
+    <div class="live-content">
+        <div class="title">
+            <h1>LIVE</h1>
+        </div>
+        <div class="live-filter-options" id="live-options">
+            <div class="live-filter-buttons" id="live-buttons">
+                <button class="live-filter-btn" id="filter-all" onclick="filterAll()">ALL</button>
+                <button class="live-filter-btn" id="filter-live" onclick="filterLive()">ONAIR</button>
+                <button class="live-filter-btn" id="filter-standby" onclick="filterStandBy()">STAND BY</button>
+            </div>
+        </div>
+        <br>
+        <div class="live-grid" id="live-grid">
+        </div>
+        <div class="page-container" id="live-page-container">
+        </div>
+    </div>
+    <br>
+    <div class="vod-content" id="vod-list">
+        <div class="title">
+            <h1>VOD</h1>
+        </div>
+        <div class="vod-filter-options" id="vod-options">
+            <div class="vod-filter-buttons" id="vod-buttons">
+            </div>
+        </div>
+        <br>
+        <div class="vod-grid" id="vod-grid">
+        </div>
+        <div class="page-container" id="vod-page-container">
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>오류 발생</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .error-container h1 {
+            font-size: 8rem;
+            margin: 0;
+            color: #FF6B6B;
+        }
+
+        .error-container h2 {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .error-container p {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .error-container img {
+            margin-top: 30px;
+            max-width: 250px;
+        }
+
+        .error-container a {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background-color: #38A7FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .error-container a:hover {
+            background-color: #2d8bd5;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <h1 th:text="${status}">오류</h1>
+    <h2 th:text="${error}">예기치 못한 오류가 발생했습니다</h2>
+    <p>요청을 처리하는 동안 문제가 발생했습니다.</p>
+    <p>에러 코드: <span th:text="${status}">500</span></p>
+    <p>메시지: <span th:text="${error}">내부 서버 오류</span></p>
+    <a th:href="@{/}">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

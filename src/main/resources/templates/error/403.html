@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+<head>
+    <meta charset="UTF-8">
+    <title>403 Forbidden</title>
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .error-container h1 {
+            font-size: 8rem;
+            margin: 0;
+            color: #FF6B6B;
+        }
+
+        .error-container h2 {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .error-container p {
+            margin-bottom: 30px;
+        }
+
+        .error-container a {
+            padding: 10px 20px;
+            background-color: #38A7FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .error-container a:hover {
+            background-color: #2d8bd5;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="error-container">
+        <h1>403</h1>
+        <h2>접근이 거부되었습니다</h2>
+        <p>이 페이지를 볼 수 있는 권한이 없습니다.</p>
+        <a th:href="@{/}">메인으로 돌아가기</a>
+    </div>
+</div>
+</body>
+</html>

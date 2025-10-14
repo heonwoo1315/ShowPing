@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+
+<head>
+  <title>주문 내역 조회</title>
+  <link rel="stylesheet" th:href="@{/css/product/product.css}">
+  <script defer th:src="@{/js/product/orders.js}"></script>
+</head>
+
+<div layout:fragment="content">
+  <!-- 날짜 및 상품 검색 바 -->
+  <div id="date-search-bar">
+    <label for="start-date">날짜 조회</label>
+    <input type="date" id="start-date" />
+    <label for="end-date">~</label>
+    <input type="date" id="end-date" />
+
+    <label for="product-name">상품 이름 검색</label>
+    <input type="text" id="product-name" placeholder="상품명을 입력하세요" />
+
+    <button id="search-button">검색</button>
+    <button id="reset-button">초기화</button>
+  </div>
+
+  <!-- 주문 목록 표시 영역 -->
+  <div id="order-list"></div>
+</div>
+</html>

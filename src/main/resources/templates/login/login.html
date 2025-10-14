@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/csrf-setup.js"></script>
+    <script src="/js/login/jwt.js"></script>
+    <script src="/js/login/login.js"></script>
+    <link rel="stylesheet" th:href="@{/css/login/login.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* 🔹 로그인 폼 스타일 */
+        .login-container {
+            width: 350px;
+            margin: 100px auto;
+            padding: 30px;
+            background: #fff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        /* 🔹 입력 필드 스타일 */
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        /* 🔹 체크박스 & 링크 스타일 */
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .login-options a {
+            text-decoration: none;
+            color: #666;
+        }
+
+        /* 🔹 로그인 버튼 */
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #0954c6;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #106fb5;
+        }
+
+        /* 🔹 회원가입 버튼 */
+        .signup-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #045eae;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #0d61a5;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .signup-btn:hover {
+            background: #f3e6fa;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="login-container">
+        <a href="/" style="text-decoration: none; color: inherit;">
+            <h1 style="cursor: pointer;">ShowPing</h1>
+        </a>
+        <h2>로그인</h2>
+        <form id="loginForm" autocomplete="off">
+            <input type="text" name="memberId" id="memberId" class="login-input" placeholder="아이디를 입력해주세요" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+            <input type="password" name="memberPassword" id="memberPassword" class="login-input" placeholder="비밀번호를 입력해주세요" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+
+            <!-- 🔹 로그인 버튼 -->
+            <button type="submit" class="login-btn">로그인</button>
+        </form>
+
+        <!-- 🔹 회원가입 버튼 -->
+        <button class="signup-btn" onclick="window.location.href='/login/signup'">회원가입</button>
+    </div>
+    <!-- 2FA (TOTP) 입력 폼 (초기 상태: 숨김) -->
+    <div id="totp-form" style="display: none;">
+        <h2>2단계 인증</h2>
+        <p>아래 QR 코드를 Google Authenticator로 스캔한 후, 생성된 6자리 코드를 입력하세요.</p>
+
+        <img id="qrCodeImage" src="" alt="QR Code" width="200px" height="200px">
+
+        <input type="text" id="totpCode" placeholder="6자리 코드 입력" required>
+        <button type="button" onclick="verifyTOTP(event)">인증</button>
+    </div>
+</div>
+</body>
+</html>

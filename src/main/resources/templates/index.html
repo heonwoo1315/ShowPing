@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+<head>
+    <meta charset="UTF-8">
+    <title>라이브 커머스</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script defer th:src="@{/js/index.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- 배너 영역 -->
+    <div class="banner">
+        <!-- 이전 배너 버튼 -->
+        <button class="banner-btn prev">&lt;</button>
+        <!-- 배너 이미지 트랙 -->
+        <div class="banner-track">
+            <div class="banner-slide" th:data-url="@{/product/detail/7}" onclick="goToLink(this)">
+                <img th:src="@{/img/main/banner1.jpg}" alt="배너 1"/>
+            </div>
+            <div class="banner-slide" th:data-url="@{/product/detail/38}" onclick="goToLink(this)">
+                <img th:src="@{/img/main/banner2.jpg}" alt="배너 2"/>
+            </div>
+            <div class="banner-slide" th:data-url="@{/product/detail/83}" onclick="goToLink(this)">
+                <img th:src="@{/img/main/banner3.jpg}" alt="배너 3"/>
+            </div>
+            <div class="banner-slide" th:data-url="@{/product/detail/105}" onclick="goToLink(this)">
+                <img th:src="@{/img/main/banner4.jpg}" alt="배너 4"/>
+            </div>
+        </div>
+        
+        <!-- 다음 배너 버튼 -->
+        <button class="banner-btn next">&gt;</button>
+    </div>
+    
+    <!-- 카테고리 이동 버튼 영역 -->
+    <div class="categories">
+        <!-- '특급 혜택' 버튼 (무지개 효과 및 HOT 아이콘) -->
+        <a th:href="@{/category/0}" class="category-button special">
+            <span class="icon">🎁</span> 인기 상품
+            <span class="hot-icon">HOT</span>
+        </a>
+        <!-- 일반 카테고리 버튼들 -->
+        <a th:href="@{/category/1}" class="category-button"><span class="icon">💼</span> 노트북</a>
+        <a th:href="@{/category/2}" class="category-button"><span class="icon">🖱️</span> 마우스</a>
+        <a th:href="@{/category/3}" class="category-button"><span class="icon">💻</span> 데스크탑</a>
+        <a th:href="@{/category/4}" class="category-button"><span class="icon">🖥️</span> 모니터</a>
+        <a th:href="@{/category/5}" class="category-button"><span class="icon">🎧</span> 헤드셋</a>
+        <a th:href="@{/category/6}" class="category-button"><span class="icon">⌨️</span> 키보드</a>
+    </div>
+    
+    <hr>
+    
+    <!-- 라이브 방송 상품 영역 -->
+    <div class="live">
+        <h2>오직 지금! 라이브 혜택</h2>
+        <!-- 상태별 필터 버튼들 -->
+        <div class="live-filter-options" id="live-options">
+            <div class="filters">
+                <button class="live-filter-button" id="all" onclick="getBroadCast()">ALL</button>
+                <button class="live-filter-button" id="on-air" onclick="getLive()">ON AIR</button>
+                <button class="live-filter-button" id="stand-by" onclick="getStandBy()">STAND BY</button>
+            </div>
+        </div>
+        <!-- 방송 상품 리스트 -->
+        <div class="live-grid" id="live-grid">
+        </div>
+    </div>
+    
+    <hr>
+    
+    <!-- VOD 상품 영역 -->
+    <div class="vod">
+        <h2>라이브의 감동을 다시! VOD 시청</h2>
+        <!-- 카테고리별 필터 버튼들 -->
+        <div class="vod-filter-options" id="vod-options">
+            <div class="filters" id="vod-buttons">
+            </div>
+        </div>
+        <!-- VOD 상품 리스트 -->
+        <div class="vod-grid" id="vod-grid">
+        </div>
+    </div>
+    
+    <!-- 광고 이미지 영역 (보라색 배경) -->
+    <section id="ad-section" class="ad-section">
+        <img th:src="@{/img/main/advertisement1.jpg}" alt="광고 이미지"/>
+    </section>
+    
+    <!-- 인기 상품 영역 -->
+    <section id="popular">
+        <h2>판매량 높은 인기상품을 만나보세요!</h2>
+        <!-- 카테고리별 필터 버튼들 -->
+        <div class="filters" id="popular-option">
+            <button class="filter-button" id="all-category" data-category="0">ALL</button>
+            <button class="filter-button" id="notebook-category" data-category="1">노트북</button>
+            <button class="filter-button" id="mouse-category" data-category="2">마우스</button>
+            <button class="filter-button" id="desktop-category" data-category="3">데스크탑</button>
+            <button class="filter-button" id="monitor-category" data-category="4">모니터</button>
+            <button class="filter-button" id="headset-category" data-category="5">헤드셋</button>
+            <button class="filter-button" id="keyboard-category" data-category="6">키보드</button>
+        </div>
+        <div class="popular-items" id="popular-items">
+        </div>
+    </section>
+    
+    <hr>
+    
+    <!-- 특가 상품 영역 -->
+    <section id="sale">
+        <h2>특가 중인 현재 상품!</h2>
+        <!-- 카테고리별 필터 버튼들 -->
+        <div class="filters" id="sale-option">
+            <button class="filter-button" id="all-sale" data-sale-category="0">ALL</button>
+            <button class="filter-button" id="notebook-sale" data-sale-category="1">노트북</button>
+            <button class="filter-button" id="mouse-sale" data-sale-category="2">마우스</button>
+            <button class="filter-button" id="desktop-sale" data-sale-category="3">데스크탑</button>
+            <button class="filter-button" id="monitor-sale" data-sale-category="4">모니터</button>
+            <button class="filter-button" id="headset-sale" data-sale-category="5">헤드셋</button>
+            <button class="filter-button" id="keyboard-sale" data-sale-category="6">키보드</button>
+        </div>
+        <div class="popular-items" id="sale-items">
+        </div>
+    </section>
+</div>
+</body>
+</html>

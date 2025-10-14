@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layout.html">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/product/product.css}">
+    <script defer th:src="@{/js/product/list.js}"></script>
+</head>
+
+<div layout:fragment="content">
+    <div class="sort-options">
+        <div class="sort-buttons">
+            <button class="sort-btn" id="sort-quantity-desc">판매량 높은 순</button>
+            <button class="sort-btn" id="sort-price-asc">낮은가격</button>
+            <button class="sort-btn" id="sort-price-desc">높은가격</button>
+            <button class="sort-btn" id="sort-sale-desc">할인율</button>
+        </div>
+    </div>
+    <div class="product-list">
+        <div class="product-grid" id="product-grid">
+        </div>
+        <button id="load-more" class="load-more-btn">상품 목록 더보기</button>
+    </div>
+</div>
+</html>
