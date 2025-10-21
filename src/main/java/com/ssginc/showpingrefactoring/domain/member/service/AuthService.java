@@ -13,6 +13,4 @@ public interface AuthService {
 
     String[] reissue(String refreshToken);
 
-    // 🔹 AccessToken에서 memberId 추출
-    String getMemberIdFromToken(String token);
 }
