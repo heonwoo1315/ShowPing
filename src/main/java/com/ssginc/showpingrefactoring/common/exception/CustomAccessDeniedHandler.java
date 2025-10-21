@@ -10,33 +10,41 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException ex) throws IOException {
+                       AccessDeniedException ex) throws IOException, ServletException {
 
-        String accept = request.getHeader("Accept");
-        String requestedWith = request.getHeader("X-Requested-With");
-        boolean isApiRequest =
-                (accept != null && accept.contains("application/json")) ||
-                        (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) ||
-                        request.getRequestURI().startsWith("/api");
+        final String accept = Optional.ofNullable(request.getHeader("Accept")).orElse("");
+        final String xrw = Optional.ofNullable(request.getHeader("X-Requested-With")).orElse("");
+        final String fetchMode = Optional.ofNullable(request.getHeader("Sec-Fetch-Mode")).orElse("");
+        final String fetchDest = Optional.ofNullable(request.getHeader("Sec-Fetch-Dest")).orElse("");
+        final String uri = Optional.ofNullable(request.getRequestURI()).orElse("");
 
-        if (isApiRequest) {
-            // API: 바로 403 JSON
-            response.setStatus(403);
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(
-                    new ObjectMapper().writeValueAsString(CustomErrorResponse.of(ErrorCode.AUTH_FORBIDDEN))
-            );
+        final boolean ajax = "XMLHttpRequest".equalsIgnoreCase(xrw);
+        final boolean wantsHtml = accept.contains("text/html");
+        final boolean isNavigate = "navigate".equalsIgnoreCase(fetchMode) || "document".equalsIgnoreCase(fetchDest);
+        final boolean apiPrefix = uri.startsWith("/api");
+
+        // 📌 규칙
+        // 1) 주소창/링크로 들어온 "문서 네비게이션" + HTML 선호 => 403 HTML 페이지로 이동 (API 경로라도 예외)
+        if ((isNavigate && wantsHtml && !ajax)) {
+            response.sendRedirect("/error-page/403");
             return;
         }
 
-        // 뷰: 에러 페이지로만 포워드/리다이렉트
-        response.sendRedirect("/error-page/403");
+        // 2) 그 외(XHR/Fetch, 프로그램틱 호출) => JSON 403
+        //    - Accept: application/json
+        //    - X-Requested-With: XMLHttpRequest
+        //    - 또는 실제 API 호출 흐름
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(
+                new ObjectMapper().writeValueAsString(CustomErrorResponse.of(ErrorCode.AUTH_FORBIDDEN))
+        );
     }
-
 }
