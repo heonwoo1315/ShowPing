@@ -2,7 +2,6 @@
 
 **🏆 SSG I&C 5차수 부트캠프 최우수 프로젝트 선정**
 
-
 ## 1. Project Introduction (프로젝트 소개)
 
 ### 🔹 Motivation (개발 동기)
@@ -150,7 +149,8 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ## 6. ERD & Database Design (ERD 및 데이터베이스 설계)
 
 
-<img width="1450" height="742" alt="ERD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/913547c4-b2f5-4165-90bb-27776f6bcaf6" />
+<img width="1127" height="585" alt="image" src="https://github.com/user-attachments/assets/fb84ef5c-7474-4c6d-b0a2-1fb0a57420a9" />
+
 
 프로젝트의 데이터베이스는 주요 도메인을 기준으로 논리적으로 분리하여 설계되었습니다. 각 색상 영역은 독립적인 기능을 담당하는 도메인을 나타내며, 대용량의 비정형 데이터는 NoSQL을 활용하여 효율적으로 관리합니다.
 
@@ -168,6 +168,11 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 - **주요 테이블**: `회원(member)`
 
 - **설명**: 서비스의 핵심 주체인 회원의 기본 정보, 계정 상태를 관리합니다.
+
+⚫ **보안 도메인 (Security)**
+- **주요 테이블**: `관리자단말(admin_device)`, `회원MFA(member_mfa)`
+
+- **설명**: 보안이 요구되는 기능(예: 라이브 등록, 신고 처리 등) 접근 시 단말 인증과 MFA가 함께 적용됩니다.
 
 🟢 **라이브/VOD 도메인 (Live & VOD)**
 - **주요 테이블**: `영상(stream)`, `시청(watch)`
