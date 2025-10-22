@@ -371,4 +371,4 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 --- 
 
 ## 10. Demo Video (시연 영상)
-[전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
+[전체 시연](https://drive.google.com/file/d/1DXSHLzXLPyYCDIHj2gInK4k7pZ-bVCXQ/view?usp=drive_link)
