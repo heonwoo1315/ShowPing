@@ -291,16 +291,30 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ### 🔹 Login & Signup (로그인 & 회원가입)
 
 - 사용자 인증을 위한 로그인 및 회원가입 페이지입니다.
-- 아래는 로그인/회원가입 화면 예시입니다.
 
-- 로그인 화면
+- 로그인 페이지
 <p align="center">
   <img width="1658" height="843" alt="image" src="https://github.com/user-attachments/assets/b185e0c6-a4ed-438a-9914-f643226790dc" />
 </p>
 
-- 회원가입 화면
+- 회원가입 페이지
 <p align="center">
   <img width="1660" height="868" alt="image" src="https://github.com/user-attachments/assets/cdc0ce2f-680b-4b3a-9648-4c52745bac01" />
+</p>
+
+### 🔹 MFA & Enroll (MFA & 기기 등록)
+
+- 2차 인증을 위해 기기를 최초 1회 등록하는 페이지입니다. 등록 화면에서 받은 키값으로 Google Authenticator에 계정을 등록 할 수 있습니다.
+- 등록한 계정으로 시간 기반 TOTP(6자리 숫자)를 통해 2차인증을 통과 할 수 있습니다. 
+
+- 기기 등록 페이지
+<p align="center">
+  <img width="573" height="402" alt="image" src="https://github.com/user-attachments/assets/88e459f3-670c-4c83-9da8-cbf35264a0a2" />
+</p>
+
+- 2차 인증 페이지
+<p align="center">
+  <img width="566" height="370" alt="image" src="https://github.com/user-attachments/assets/d92e50a7-e663-4675-9dcb-beb935b5fba9" />
 </p>
 
 ### 🔹 Live Streaming (라이브 방송)
