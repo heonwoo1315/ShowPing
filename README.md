@@ -149,7 +149,7 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ## 6. ERD & Database Design (ERD 및 데이터베이스 설계)
 
 
-<img width="1127" height="585" alt="image" src="https://github.com/user-attachments/assets/fb84ef5c-7474-4c6d-b0a2-1fb0a57420a9" />
+<img width="1120" height="576" alt="image" src="https://github.com/user-attachments/assets/1ee01a75-f650-434b-93bb-d27780324798" />
 
 
 프로젝트의 데이터베이스는 주요 도메인을 기준으로 논리적으로 분리하여 설계되었습니다. 각 색상 영역은 독립적인 기능을 담당하는 도메인을 나타내며, 대용량의 비정형 데이터는 NoSQL을 활용하여 효율적으로 관리합니다.
