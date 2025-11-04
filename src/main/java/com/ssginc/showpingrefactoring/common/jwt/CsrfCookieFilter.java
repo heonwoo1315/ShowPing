@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -12,6 +13,9 @@ import org.springframework.web.util.WebUtils;
 import java.io.IOException;
 
 public class CsrfCookieFilter extends OncePerRequestFilter {
+
+    @Value("${app.is-production:false}")
+    private boolean isProduction;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -30,12 +34,10 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
             var existing = WebUtils.getCookie(request, "XSRF-TOKEN");
             String oldValue = existing != null ? existing.getValue() : null;
 
-            // 쿠키가 없거나 값이 바뀌었으면 재발급
-            boolean secureFlag = isSecureRequest(request);  // ← 환경 기반으로 일관 고정
             if (oldValue == null || !oldValue.equals(newValue)) {
                 ResponseCookie cookie = ResponseCookie.from("XSRF-TOKEN", newValue)
                         .httpOnly(false)          // JS에서 읽어 헤더로 보낼 수 있어야 함
-                        .secure(secureFlag)       // 운영(https)=true, 로컬(http)=false
+                        .secure(isProduction)       // 운영(https)=true, 로컬(http)=false
                         .sameSite("Lax")
                         .path("/")
                         .build();
