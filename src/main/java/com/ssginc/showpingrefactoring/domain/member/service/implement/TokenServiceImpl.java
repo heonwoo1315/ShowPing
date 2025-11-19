@@ -20,8 +20,7 @@ public class TokenServiceImpl implements TokenService {
     private final RedisTokenService redisTokenService;
 
     @Override
-    public void rotateRefresh(Long memberNo) {
-        String memberId = String.valueOf(memberNo);
+    public void rotateRefresh(String memberId) {
         String oldRt = redisTokenService.getRefreshToken(memberId);
         String newRt = jwtTokenProvider.generateRefreshToken(memberId);
         if (oldRt == null) {
@@ -51,16 +50,28 @@ public class TokenServiceImpl implements TokenService {
             memberId = String.valueOf(principal);
         }
 
+        // --- RT2를 가져와서 RT3로 교체하는 로직 시작 ---
+        String oldRt = redisTokenService.getRefreshToken(memberId); // RT2 가져옴
+
         Map<String,Object> claims = new HashMap<>();
         if (extraClaims != null) claims.putAll(extraClaims);
 
         String at = jwtTokenProvider.generateAccessToken(memberId, role, claims);
-        String rt = jwtTokenProvider.generateRefreshToken(memberId);
-        redisTokenService.saveRefreshToken(memberId, rt);
+        String newRt = jwtTokenProvider.generateRefreshToken(memberId); // RT3 생성
+
+        // rotateRefreshToken 로직 사용: RT2 인덱스 정리 후 RT3 갱신
+        if (oldRt == null) {
+            redisTokenService.saveRefreshToken(memberId, newRt);
+        } else {
+            boolean ok = redisTokenService.rotateRefreshToken(memberId, oldRt, newRt);
+            if (!ok) redisTokenService.saveRefreshToken(memberId, newRt);
+        }
+        // --- RT 교체 로직 끝 ---
 
         Map<String,Object> out = new HashMap<>();
         out.put("accessToken", at);
-        out.put("refreshToken", rt);
+        out.put("refreshToken", newRt); // newRt(RT3) 반환
         return out;
     }
+
 }
