@@ -48,7 +48,7 @@ public class TotpServiceImpl implements TotpService {
         byte[] enc = crypto.encrypt(secret.getBytes(StandardCharsets.US_ASCII));
         if (m == null) {
             m = new MemberMfa();
-            m.setMemberNo(memberNo);     // <-- 공유 PK 제거했으므로 이것만 세팅하면 됨
+            m.setMemberNo(memberNo);
         }
         m.setSecretEnc(enc);
         m.setEnrolledAt(Instant.now());
