@@ -8,6 +8,7 @@ import com.ssginc.showpingrefactoring.domain.member.entity.AdminDevice;
 import com.ssginc.showpingrefactoring.domain.member.entity.AdminDeviceStatus;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.repository.AdminDeviceRepository;
+import com.ssginc.showpingrefactoring.domain.member.repository.MemberMfaRepository;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.member.service.InviteService;
 import com.ssginc.showpingrefactoring.domain.member.service.TokenService;
@@ -46,6 +47,7 @@ public class MfaController {
     private final MemberRepository memberRepo;
     private final AdminDeviceRepository adminDeviceRepository;
     private final CookieUtil cookieUtil;
+    private final MemberMfaRepository memberMfaRepository;
 
     @Value("${webauthn.rp.id:localhost}")
     private String rpId;
@@ -59,6 +61,7 @@ public class MfaController {
     @Value("${mfa.mfaMaxAgeSeconds:900}")
     private long mfaMaxAgeSeconds;
 
+
     public MfaController(InviteService invite,
                          WebAuthnService webauthn,
                          TotpService totp,
@@ -68,6 +71,7 @@ public class MfaController {
                          StringRedisTemplate redis,
                          MemberRepository memberRepo,
                          AdminDeviceRepository adminDeviceRepository,
+                         MemberMfaRepository memberMfaRepository,
                          CookieUtil cookieUtil) {
         this.invite = invite;
         this.webauthn = webauthn;
@@ -78,6 +82,7 @@ public class MfaController {
         this.redis = redis;
         this.memberRepo = memberRepo;
         this.adminDeviceRepository = adminDeviceRepository;
+        this.memberMfaRepository = memberMfaRepository;
         this.cookieUtil = cookieUtil;
     }
 
@@ -224,7 +229,7 @@ public class MfaController {
             byte[] rawId = b64url(rawIdB64);
 
             AdminDevice device = new AdminDevice();
-            device.setId(UUID.randomUUID());
+            // device.setId(UUID.randomUUID());
             Member member = memberRepo.getReferenceById(me.getMemberNo());
             device.setMember(member);
             device.setCredentialId(rawId);      // VARBINARY 컬럼
@@ -234,6 +239,12 @@ public class MfaController {
             adminDeviceRepository.save(device);
 
             String secret = totp.issueSecret(me.getMemberNo());
+
+            var mfa = memberMfaRepository.findById(me.getMemberNo())
+                    .orElseThrow(() -> new IllegalStateException("MFA row not found after issueSecret"));
+            mfa.setBoundDevice(device);
+            memberMfaRepository.save(mfa);
+
             String otpauth = "otpauth://totp/ShowPing:" + me.getMemberNo()
                     + "?secret=" + secret + "&issuer=ShowPing&digits=6&period=30";
 
