@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>관리자 단말 등록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" th:href="@{/css/login/enroll_mobile.css}" href="/css/login/enroll_mobile.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:src="@{/js/csrf-setup.js}" src="/js/csrf-setup.js" defer></script>
+    <script th:src="@{/js/login/jwt.js}" src="/js/login/jwt.js" defer></script>
+    <script th:src="@{/js/login/enroll_mobile.js}" src="/js/login/enroll_mobile.js" defer></script>
+</head>
+<body>
+<main class="container">
+    <h2>관리자 단말 등록</h2>
+    <p class="caption">이 브라우저/휴대폰을 관리자 단말로 등록합니다. 완료 후 TOTP 6자리로 검증하세요.</p>
+
+    <section class="card">
+        <div class="row">
+            <button id="btnStart" class="primary">등록 시작</button>
+            <button id="btnCancel" class="ghost" type="button">취소</button>
+        </div>
+        <div id="otpauth" class="otpauth"></div>
+        <div class="row" id="verifyRow" style="display:none;">
+            <input id="totp" maxlength="6" placeholder="123456" inputmode="numeric" autocomplete="one-time-code" />
+            <button id="btnVerify" class="primary">TOTP 검증</button>
+        </div>
+        <div id="msg" class="msg"></div>
+    </section>
+</main>
+</body>
+</html>

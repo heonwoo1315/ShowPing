@@ -3,16 +3,21 @@ package com.ssginc.showpingrefactoring.common.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CookieUtil {
     // 공통 쿠키 생성 유틸리티
+
+    @Value("${app.is-production:false}")
+    private boolean isProduction;
+
      public ResponseCookie createCookie(String name, String value, long maxAge) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
-                .secure(false) // TODO: HTTPS 환경에서는 true로 변경
+                .secure(isProduction) // HTTPS 환경에서는 true로 변경
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(maxAge)

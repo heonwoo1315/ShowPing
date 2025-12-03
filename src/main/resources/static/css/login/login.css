@@ -1,4 +1,4 @@
-/* 전체 페이지 스타일 */
+/* === Base styles from your current login.css === */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f4f7;
@@ -60,9 +60,9 @@ body {
     margin-bottom: 20px;
 }
 
-/* 🔹 입력 필드 디자인 */
+/* 입력 필드 디자인 */
 .login-form input {
-    width: 100%; /* 🔹 전체 너비로 확장 */
+    width: 100%;
     padding: 12px;
     margin: 5px 0;
     border: 1px solid #ddd;
@@ -71,9 +71,9 @@ body {
     box-sizing: border-box;
 }
 
-/* 🔹 로그인 버튼 스타일 */
+/* 로그인 버튼 스타일 */
 .login-btn {
-    width: 100%; /* 🔹 버튼 크기 통일 */
+    width: 100%;
     padding: 12px;
     background: #498af0;
     color: white;
@@ -83,14 +83,14 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
-    transition: background 0.3s ease-in-out; /* 🔹 부드러운 색상 전환 */
+    transition: background 0.3s ease-in-out;
 }
 
 .login-btn:hover {
     background: #106fb5;
 }
 
-/* 🔹 회원가입 버튼 */
+/* 회원가입 버튼 */
 .signup-btn {
     width: 100%;
     padding: 12px;
@@ -109,10 +109,10 @@ body {
     background: #e8f1ff;
 }
 
-/* 🔹 로그인 옵션 (아이디 찾기 | 비밀번호 찾기) */
+/* 로그인 옵션 (아이디/비번 찾기) */
 .login-options {
     width: 100%;
-    text-align: right; /* 🔹 오른쪽 정렬 */
+    text-align: right;
     font-size: 14px;
     margin: 10px 0;
 }
@@ -122,7 +122,7 @@ body {
     color: #498af0;
 }
 
-/* 🔹 체크박스 & 라벨 정렬 */
+/* 체크박스 & 라벨 정렬 */
 .remember-me {
     display: flex;
     align-items: center;
@@ -134,7 +134,7 @@ body {
     margin-right: 5px;
 }
 
-/* 🔹 소셜 로그인 버튼 */
+/* 소셜 로그인 버튼 */
 .social-login {
     display: flex;
     gap: 10px;
@@ -160,24 +160,23 @@ body {
     opacity: 0.8;
 }
 
-/* 🔹 네이버 로그인 버튼 */
+/* 네이버/카카오 */
 .social-login .naver-login {
     background-color: #03C75A;
 }
 
-/* 🔹 카카오 로그인 버튼 */
 .social-login .kakao-login {
     background-color: #FEE500;
     color: black;
 }
 
-/* 🔹 소셜 아이콘 크기 조정 */
+/* 소셜 아이콘 */
 .social-login .social-icon {
     width: 20px;
     height: 20px;
 }
 
-/* 🔹 회원가입 링크 */
+/* 회원가입 링크 */
 .signup-link {
     margin-top: 20px;
     font-size: 14px;
@@ -188,7 +187,7 @@ body {
     text-decoration: none;
 }
 
-/* 🔹 반응형 디자인 (모바일 최적화) */
+/* 반응형 */
 @media screen and (max-width: 480px) {
     .container {
         width: 90%;
@@ -209,3 +208,47 @@ body {
         gap: 8px;
     }
 }
+
+/* === Compatibility aliases for older class names ===
+   If your HTML still uses the older classes from an inline <style>,
+   these rules keep things working without changing the HTML. */
+
+/* .login-container behaves like .container */
+.login-container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; /* older template centered text */
+}
+
+/* .login-input fields match .login-form input */
+.login-input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Keep old hover color semantics consistent */
+.login-btn:hover { background: #106fb5; }
+.signup-btn:hover { background: #e8f1ff; }
+
+/* Optional: replace any inline logo <a style="..."> with a class */
+.logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* === Paste any remaining inline-only rules below this line === */
+/* e.g., .some-inline-only-class { ... } */

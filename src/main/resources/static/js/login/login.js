@@ -1,4 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(location.search || '');
+    if (params.has('mfaCanceled') || params.has('enrollCanceled')) {
+        try {
+            if (window.ensureCsrfCookie) await window.ensureCsrfCookie();
+            if (window.authApi)        await window.authApi.post('logout');
+        } catch (e) {
+            console.warn('auto-logout on login page failed (ignored):', e);
+        } finally {
+            try { localStorage.removeItem('accessToken'); } catch {}
+            try { localStorage.removeItem('refreshToken'); } catch {}
+            // 주소창에서 쿼리 제거(새로고침해도 반복 로그아웃 방지)
+            history.replaceState(null, '', location.pathname);
+        }
+    }
+
     const form = document.getElementById('loginForm');
     if (!form) return;
 
@@ -54,12 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3) SweetAlert2: 관리자/일반 분기
             if (roleUpper === 'ADMIN' || roleUpper === 'ROLE_ADMIN') {
-                await Swal.fire({
-                    icon: 'success',
-                    title: '관리자 로그인 성공',
-                    text: '관리자 권한으로 로그인되었습니다.',
-                    confirmButtonText: '확인'
-                });
+                const ret = encodeURIComponent(location.pathname + location.search);
+                location.href = `/stepup.html?return=${ret}`;
+                return;
             } else {
                 await Swal.fire({
                     icon: 'success',
@@ -67,10 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: '정상적으로 로그인되었습니다.',
                     confirmButtonText: '확인'
                 });
+                window.location.replace('/');
             }
-
-            // 4) 홈으로 이동 (필요시 원하는 경로로 바꿔도 됨)
-            window.location.replace('/');
 
         } catch (err) {
             console.error(err);
@@ -88,4 +98,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-포인트

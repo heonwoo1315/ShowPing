@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,58 +89,31 @@ public class RedisTokenServiceImpl implements RedisTokenService {
         }
     }
 
-    /**
-     * RefreshToken 존재 및 일치 여부 검사
-     * @param memberId - 사용자 식별자
-     * @param refreshToken - 요청으로 들어온 RefreshToken
-     * @return 일치하면 true, 아니면 false
-     */
     @Override
-    public boolean validateRefreshToken(String memberId, String refreshToken) {
-        String storedToken = getRefreshToken(memberId);
-        return storedToken != null && storedToken.equals(refreshToken);
-    }
+    public void deleteAllRefreshTokens(String memberId) {
+        // member:{memberId}:rts (Set Key)
+        String setKey = keyMemberSet(memberId);
 
-    @Override
-    public void deleteRefreshTokenByRt(String refreshToken) {
-        // 1) 인덱스 기반 삭제: rt:{hash(rt)} -> memberId
-        String rtKey = keyRt(refreshToken);          // 예: "rt:" + hash(rt)
-        String memberId = redis.opsForValue().get(rtKey);
-        if (memberId != null) {
-            String rtHash = rtKey.substring(3);      // "rt:" 제거(너의 규약을 따른다면)
-            // 1-1) 사용자 세트에서 제거
-            redis.opsForSet().remove(keyMemberSet(memberId), rtHash);
-            // 1-2) 인덱스 키 삭제
-            redis.delete(rtKey);
-            // 1-3) 1인1RT 매핑(refresh:{memberId})가 이 RT라면 그것도 삭제
-            String current = redisTemplate.opsForValue().get(buildKey(memberId));
-            if (refreshToken.equals(current)) {
-                redisTemplate.delete(buildKey(memberId));
+        // 1. Set에 저장된 모든 해시값을 가져옴
+        Set<String> rtHashes = redis.opsForSet().members(setKey);
+
+        if (rtHashes != null && !rtHashes.isEmpty()) {
+            // 2. 각 해시값에 해당하는 rt:{hash} 인덱스 키 목록 생성 및 삭제
+            // (rt: 프리픽스는 set에 저장된 해시값에는 포함되어 있지 않으므로 수동으로 추가)
+            List<String> rtKeysToDelete = rtHashes.stream()
+                    .map(hash -> "rt:" + hash)
+                    .collect(Collectors.toList());
+
+            if (!rtKeysToDelete.isEmpty()) {
+                redis.delete(rtKeysToDelete); // rt:해쉬값1, rt:해쉬값2, ... 모두 삭제
             }
-            return;
         }
 
-        // 2) 폴백: 토큰에서 memberId(subject) 추출해 삭제 (만료 RT도 가능)
-        String mid = null;
-        try {
-            if (jwtTokenProvider.validateToken(refreshToken)) {
-                mid = jwtTokenProvider.getUsername(refreshToken);
-            }
-        } catch (io.jsonwebtoken.ExpiredJwtException eje) {
-            mid = eje.getClaims().getSubject();
-        } catch (Exception ignore) { /* 완전 손상 → 아무 것도 못 함 */ }
+        // 3. refresh:{memberId} 키 삭제 (현재 유효한 1인1RT 키)
+        redisTemplate.delete(buildKey(memberId));
 
-        if (mid != null) {
-            // 2-1) refresh:{memberId}가 이 RT라면 삭제
-            String current = redisTemplate.opsForValue().get(buildKey(mid));
-            if (refreshToken.equals(current)) {
-                redisTemplate.delete(buildKey(mid));
-            }
-            // 2-2) (있다면) 세트/인덱스도 정리
-            String rtHash = keyRt(refreshToken).substring(3);
-            redis.opsForSet().remove(keyMemberSet(mid), rtHash);
-            redis.delete(rtKey); // 혹시 남아 있다면
-        }
+        // 4. member:{memberId}:rts Set 자체 삭제
+        redis.delete(setKey);
     }
 
     @Override

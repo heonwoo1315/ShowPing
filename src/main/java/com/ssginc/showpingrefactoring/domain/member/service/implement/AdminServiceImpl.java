@@ -38,7 +38,6 @@ public class AdminServiceImpl implements AdminService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(admin.getMemberId(), admin.getMemberRole().name());
         String refreshToken = jwtTokenProvider.generateRefreshToken(admin.getMemberId());
 
         redisTokenService.saveRefreshToken(admin.getMemberId(), refreshToken);
