@@ -4,6 +4,7 @@ import com.ssginc.showpingrefactoring.common.exception.CustomAccessDeniedHandler
 import com.ssginc.showpingrefactoring.common.exception.CustomAuthenticationEntryPoint;
 import com.ssginc.showpingrefactoring.common.jwt.*;
 
+import com.ssginc.showpingrefactoring.common.util.MfaGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,8 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    private final MfaGuard mfaGuard;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -58,9 +61,9 @@ public class SecurityConfig {
                 // CSRF: 쿠키 기반 토큰 사용, 특정 엔드포인트는 제외
                 .csrf(csrf -> csrf.csrfTokenRepository(csrfRepo)
                         .csrfTokenRequestHandler(csrfAttrHandler)
-//                        .ignoringRequestMatchers(
-//                                "/api/csrf"
-//                        )
+                        .ignoringRequestMatchers(
+                                "/auth/mfa/**"
+                        )
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 인가 규칙
@@ -71,8 +74,7 @@ public class SecurityConfig {
                                 "/webrtc/watch", "/webrtc/watch/**", "/css/**", "/js/**", "/images/**",
                                 "/img/**", "/assets/**", "/oauth/**", "/api/register", "/api/auth/login", "/api/auth/logout",
                                 "/api/admin/login", "/product/detail/**", "/api/categories/**", "/category/**",
-                                "/api/products/**", "/api/admin/verify-totp", "/login/signup/**", "/api/member/verify-code",
-                                "/api/admin/totp-setup/**", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
+                                "/api/products/**", "/api/admin/verify-totp", "/login/signup/**", "/api/member/verify-code", "/api/auth/refresh-token-check/**", "/stream/broadcast", "/stream/vod/list/page/**",
                                 "/favicon.ico", "/api/auth/**", "/api/member/check-duplicate", "/api/member/register",
                                 "/api/member/send-code/**", "/api/member/check-email-duplicate", "/api/member/check-phone-duplicate",
                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/hls/**",
@@ -80,16 +82,17 @@ public class SecurityConfig {
                                 "/api/live/live-info", "/api/live/active", "/stream/watch/**", "/stream/list/**",
                                 "/watch/vod/**", "/api/watch/insert", "/product/product_list","/product/product_list/**",
                                 "/product/product_detail/**","/record", "/live", "/api/csrf", "/api/live/register", "/api/vod/list/**", "/api/vod/subtitle/**"
-                                ,"/api/auth/reissue"
+                                ,"/api/auth/reissue","/auth/mfa/**"
                         ).permitAll()
                         // ADMIN
                         .requestMatchers(
+                                "/api/admin/**",
                                 "/admin/**","/api/live/stop", "/api/live/start",
                                 "/api/report/updateStatus", "/api/report/register","/api/batch/**",
                                 "/api/report/report", "/api/chatRoom/create",
                                 "/api/vod/upload", "/api/vod/subtitle/**",
                                 "/stream/stream", "/report/**", "/api/report/list"
-                        ).hasRole("ADMIN")
+                        ).access((authCtx, reqCtx) -> mfaGuard.decision(authCtx.get()))
                         // USER
                         .requestMatchers(
                                 "/user/**","/api/carts/**", "/api/payments/**", "/api/orders/**",

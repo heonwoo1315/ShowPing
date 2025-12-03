@@ -105,14 +105,23 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "Redis에서 Refresh Token을 삭제하고, Access Token 및 Refresh Token 쿠키를 제거합니다.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "로그아웃 성공"))
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        // refreshToken 쿠키 기준으로 Redis에서 삭제
-        String refreshToken = cookieUtil.extractTokenFromCookie(request, "refreshToken");
-        if (refreshToken != null) {
-            authService.logoutByRefreshToken(refreshToken);
+    public ResponseEntity<?> logout(HttpServletResponse response, Authentication authentication) {
+        // [수정] HttpServletRequest 대신 Authentication 객체를 인자로 받습니다.
+
+        // 1. 인증된 사용자의 ID(memberId) 추출
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            // 인증되지 않은 사용자는 쿠키만 제거하고 종료 (토큰 삭제는 불가능)
+            cookieUtil.clearAuthCookies(response);
+            return ResponseEntity.ok().build();
         }
 
-        // ✅ AT와 RT 쿠키 모두 제거 (기존의 AT 쿠키만 제거하는 로직을 대체)
+        // memberId 추출 (UserDetails/Authentication 객체에서 ID를 가져옴)
+        String memberId = authentication.getName();
+
+        // 2. [추가] memberId를 기준으로 Redis에 저장된 모든 세션/토큰을 삭제
+        authService.deleteAllSessions(memberId);
+
+        // 3. AT와 RT 쿠키 모두 제거 (클라이언트 측 정리)
         cookieUtil.clearAuthCookies(response);
 
         return ResponseEntity.ok().build();

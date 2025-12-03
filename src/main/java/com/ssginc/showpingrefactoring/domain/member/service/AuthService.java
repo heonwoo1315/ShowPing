@@ -8,11 +8,9 @@ import java.util.Map;
 
 public interface AuthService {
     Map<String, String> login(LoginRequestDto request);
-//    TokenResponseDto reissue(ReissueRequestDto request);
-    void logoutByRefreshToken(String refreshToken);
+
+    void deleteAllSessions(String memberId);
 
     String[] reissue(String refreshToken);
 
-    // 🔹 AccessToken에서 memberId 추출
-    String getMemberIdFromToken(String token);
 }

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8" />
+    <title>관리자 2차 인증</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 분리된 CSS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/login/stepup.css}" href="/css/login/stepup.css" />
+    <!-- (있다면) 프로젝트 공통 CSRF/토큰 유틸 -->
+    <script th:src="@{/js/csrf-setup.js}" src="/js/csrf-setup.js" defer></script>
+    <!-- step-up 전용 JS -->
+    <script th:src="@{/js/login/stepup.js}" src="/js/login/stepup.js" defer></script>
+</head>
+<body>
+<main class="container">
+    <h2>관리자 2차 인증</h2>
+    <p class="caption">등록된 관리자 단말(WebAuthn) 확인 후, Google Authenticator의 TOTP 6자리를 입력하세요.</p>
+
+    <section class="card">
+        <label for="totp" class="label">TOTP 코드</label>
+        <input id="totp" maxlength="6" placeholder="123456" inputmode="numeric" autocomplete="one-time-code" />
+        <div class="row">
+            <button id="btnVerify" class="primary">2차 인증</button>
+            <button id="btnCancel" class="ghost" type="button">취소</button>
+            <button id="btnEnrollStart" class="ghost">관리자 단말 등록</button>
+            <script src="/js/login/stepup_enroll.js" defer></script>
+        </div>
+        <div id="msg" class="msg"></div>
+    </section>
+</main>
+</body>
+</html>

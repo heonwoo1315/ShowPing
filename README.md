@@ -1,7 +1,6 @@
-# ShowPing (Refactoring) 📦
+# ShowPing 📦
 
 **🏆 SSG I&C 5차수 부트캠프 최우수 프로젝트 선정**
-
 
 ## 1. Project Introduction (프로젝트 소개)
 
@@ -51,6 +50,7 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
   <img src="https://img.shields.io/badge/Spring%20Security-6.x-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white">
   <img src="https://img.shields.io/badge/JPA-Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white">
+  <img src="https://img.shields.io/badge/TOTP%202FA-RFC%206238-4285F4?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Spring%20WebFlux-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
 </p>
 
@@ -102,45 +102,46 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ### 5 - 1. Overall System Architecture (전체 아키텍처 구조)
 <img width="4052" height="1802" alt="시스템 아키텍처_전체_4팀(채팅 기반 라이브 스트리밍 서비스)" src="https://github.com/user-attachments/assets/699728c5-c1c9-435c-a263-c46b531d1ae1" />
 
-- **Spring Boot 내부 구성**: Spring Security, JWT, STOMP(WebSocket), WebFlux, Batch, Gradle을 사용합니다.
-- **Redis**에 Refresh Token을 저장하여 재발급을 안전하게 처리합니다.
-- **Kafka + ZooKeeper**로 채팅 및 메시징을 분산 처리합니다.
-- **MongoDB**에 채팅 로그 및 금칙어를 저장합니다.
-- **외부 연동 서비스**: AWS RDS(MySQL), NCP Clova·Object Storage, Google Authenticator(TOTP 2FA), PortOne(결제 모듈)과 연동합니다.
-- **CI/CD**는 GitHub Actions로 자동화합니다.
-- 협업/성능 테스트 도구로 Slack, Figma, Trello, JMeter, nGrinder 등을 사용합니다.
+- <strong>Spring Boot 내부 구성</strong>: Spring Security, JWT, STOMP(WebSocket), WebFlux, Batch, Gradle을 사용합니다.
+- <strong>Redis</strong>에 Refresh Token을 저장하여 재발급을 안전하게 처리합니다.
+- <strong>TOTP 기반 MFA(Multi-Factor Authentication)</strong>를 도입하여 관리자 및 민감 기능 접근 시 2단계 인증을 수행합니다.
+- <strong>Kafka + ZooKeeper</strong>로 채팅 및 메시징을 분산 처리합니다.
+- <strong>MongoDB</strong>에 채팅 로그 및 금칙어를 저장합니다.
+- <strong>외부 연동 서비스</strong>: AWS RDS(MySQL), NCP Clova·Object Storage, Google Authenticator(TOTP 2FA), PortOne(결제 모듈)과 연동합니다.
+- <strong>CI/CD</strong>는 GitHub Actions로 자동화합니다.
+- 협업/성능 테스트 도구로 Slack, Figma, Trello, JMeter, nGrinder 등을 사용합니다. 
 
 ---
 
 ### 5 - 2. Live Service Architecture (라이브 서비스 아키텍처 구조)
-<img width="547" height="406" alt="시스템 아키텍처_라이브_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/5ad938ed-9e31-478c-a681-b963e832bce3" />
+<img width="547" height="406" alt="시스템 아키텍처_라이브_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/5ad938ed-9e31-478c-a681-b963e832bce3" />
 
-- **Ubuntu Private 서버** 위에서 Docker Compose로 전체 서비스를 운영합니다.
-- **Nginx**는 HTTPS Termination과 Reverse Proxy 역할을 수행합니다.
-- **Spring Boot (Tomcat)**이 핵심 비즈니스 로직(WebFlux, Batch 등)을 처리합니다.
-- **Kurento Media Server**가 WebRTC 기반 실시간 스트리밍을 담당합니다.
-- **AWS RDS (MySQL)**을 관계형 데이터 저장소로 사용합니다.
-- **NCP(Naver Cloud Platform) Object Storage**에 방송 영상을 저장합니다.
+- <strong>Ubuntu Private 서버</strong> 위에서 Docker Compose로 전체 서비스를 운영합니다.
+- <strong>Nginx</strong>는 HTTPS Termination과 Reverse Proxy 역할을 수행합니다.
+- <strong>Spring Boot (Tomcat)</strong>이 핵심 비즈니스 로직(WebFlux, Batch 등)을 처리합니다.
+- <strong>Kurento Media Server</strong>가 WebRTC 기반 실시간 스트리밍을 담당합니다.
+- <strong>AWS RDS (MySQL)</strong>을 관계형 데이터 저장소로 사용합니다.
+- <strong>NCP(Naver Cloud Platform) Object Storage</strong>에 방송 영상을 저장합니다.
 
 ---
 
 ### 5 - 3. Chat & Messaging Flow (채팅 및 메시징 구조)
-<img width="670" height="479" alt="시스템 아키텍처_채팅_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/2c7fde15-2b73-49d3-82ca-6993482d7df6" />
+<img width="670" height="479" alt="시스템 아키텍처_채팅_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/2c7fde15-2b73-49d3-82ca-6993482d7df6" />
 
-- **Client → Nginx → Spring (JWT 기반 인증)**의 흐름으로 요청을 처리합니다.
-- **STOMP/WebSocket**으로 클라이언트와 서버 간 실시간 통신을 제공합니다.
-- **Kafka + ZooKeeper**로 메시지를 Producer/Consumer 구조로 처리합니다.
-- **MongoDB**에 금칙어와 채팅 로그를 저장합니다.
-- **MySQL**에서 회원/상품/권한을 관리합니다.
-- **JWT + Spring Security**로 사용자 인증/인가를 수행합니다.
+- <strong>Client → Nginx → Spring (JWT 기반 인증)</strong>의 흐름으로 요청을 처리합니다.
+- <strong>STOMP/WebSocket</strong>으로 클라이언트와 서버 간 실시간 통신을 제공합니다.
+- <strong>Kafka + ZooKeeper</strong>로 메시지를 Producer/Consumer 구조로 처리합니다.
+- <strong>MongoDB</strong>에 금칙어와 채팅 로그를 저장합니다.
+- <strong>MySQL</strong>에서 회원/상품/권한을 관리합니다.
+- <strong>JWT + Spring Security</strong>로 사용자 인증/인가를 수행합니다.
 
 ---
 
 ### 5 - 4. CI/CD Pipeline (배포 파이프라인)
-<img width="508" height="194" alt="시스템_아키텍처_CICD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/f8114518-bc8a-452e-a6ed-7ff3e329d73c" />
+<img width="508" height="194" alt="시스템_아키텍처_CICD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/f8114518-bc8a-452e-a6ed-7ff3e329d73c" />
 
-- 개발자가 **GitHub**에 코드를 푸시하면 **GitHub Actions**가 CI/CD 워크플로를 실행합니다.
-- 빌드된 `.war` 파일을 **SCP**로 Ubuntu 서버의 Tomcat 컨테이너에 전달합니다.
+- 개발자가 <strong>GitHub</strong>에 코드를 푸시하면 <strong>GitHub Actions</strong>가 CI/CD 워크플로를 실행합니다.
+- 빌드된 <code>.war</code> 파일을 <strong>SCP</strong>로 Ubuntu 서버의 Tomcat 컨테이너에 전달합니다.
 - 컨테이너 내부에서 서비스가 자동으로 구동되도록 구성합니다.
 
 ---
@@ -148,7 +149,8 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ## 6. ERD & Database Design (ERD 및 데이터베이스 설계)
 
 
-<img width="1450" height="742" alt="ERD_4팀(채팅 기반 라이브 커머스 서비스)" src="https://github.com/user-attachments/assets/913547c4-b2f5-4165-90bb-27776f6bcaf6" />
+<img width="1025" height="513" alt="image" src="https://github.com/user-attachments/assets/22dd8526-785e-4ed8-b36c-32cf5a9d2187" />
+
 
 프로젝트의 데이터베이스는 주요 도메인을 기준으로 논리적으로 분리하여 설계되었습니다. 각 색상 영역은 독립적인 기능을 담당하는 도메인을 나타내며, 대용량의 비정형 데이터는 NoSQL을 활용하여 효율적으로 관리합니다.
 
@@ -166,6 +168,11 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 - **주요 테이블**: `회원(member)`
 
 - **설명**: 서비스의 핵심 주체인 회원의 기본 정보, 계정 상태를 관리합니다.
+
+⚫ **보안 도메인 (Security)**
+- **주요 테이블**: `관리자단말(admin_device)`, `회원MFA(member_mfa)`
+
+- **설명**: 보안이 요구되는 기능(예: 라이브 등록, 신고 처리 등) 접근 시 단말 인증과 MFA가 함께 적용됩니다.
 
 🟢 **라이브/VOD 도메인 (Live & VOD)**
 - **주요 테이블**: `영상(stream)`, `시청(watch)`
@@ -284,16 +291,30 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 ### 🔹 Login & Signup (로그인 & 회원가입)
 
 - 사용자 인증을 위한 로그인 및 회원가입 페이지입니다.
-- 아래는 로그인/회원가입 화면 예시입니다.
 
-- 로그인 화면
+- 로그인 페이지
 <p align="center">
   <img width="1658" height="843" alt="image" src="https://github.com/user-attachments/assets/b185e0c6-a4ed-438a-9914-f643226790dc" />
 </p>
 
-- 회원가입 화면
+- 회원가입 페이지
 <p align="center">
   <img width="1660" height="868" alt="image" src="https://github.com/user-attachments/assets/cdc0ce2f-680b-4b3a-9648-4c52745bac01" />
+</p>
+
+### 🔹 MFA & Enroll (MFA & 기기 등록)
+
+- 2차 인증을 위해 기기를 최초 1회 등록하는 페이지입니다. 등록 화면에서 받은 키값으로 Google Authenticator에 계정을 등록 할 수 있습니다.
+- 등록한 계정으로 시간 기반 TOTP(6자리 숫자)를 통해 2차인증을 통과 할 수 있습니다. 
+
+- 기기 등록 페이지
+<p align="center">
+  <img width="573" height="402" alt="image" src="https://github.com/user-attachments/assets/88e459f3-670c-4c83-9da8-cbf35264a0a2" />
+</p>
+
+- 2차 인증 페이지
+<p align="center">
+  <img width="566" height="370" alt="image" src="https://github.com/user-attachments/assets/d92e50a7-e663-4675-9dcb-beb935b5fba9" />
 </p>
 
 ### 🔹 Live Streaming (라이브 방송)
@@ -350,4 +371,4 @@ ShowPing은 실시간 라이브 커머스 플랫폼으로, 오프라인 쇼핑�
 --- 
 
 ## 10. Demo Video (시연 영상)
-[전체 시연](https://drive.google.com/file/d/1qRfUPvz5sc0aGOEi5frr-GHMHEO6eOMj/view?usp=drive_link)
+[전체 시연](https://drive.google.com/file/d/1Ks4gLVGLtBj8AzyBiuPCooFrwcmNZn0Y/view?usp=drive_link)
