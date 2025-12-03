@@ -237,7 +237,7 @@ public class MfaController {
             invite.validate(me.getMemberNo(), inviteId);
 
             // 1. 클라이언트가 보낸 clientDataJSON(Base64URL) 추출
-            String clientDataJSONB64 = Objects.toString(req.get("clientDataJSONB64"), null);
+            String clientDataJSONB64 = Objects.toString(req.get("clientDataJSON"), null);
             if (clientDataJSONB64 == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("code", "BAD_REQUEST", "message", "clientDataJSON 없음"));
