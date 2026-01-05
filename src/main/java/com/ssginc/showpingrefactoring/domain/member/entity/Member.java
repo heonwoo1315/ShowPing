@@ -11,7 +11,12 @@ import com.ssginc.showpingrefactoring.domain.watch.entity.Watch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +26,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화
 @Table(name = "member")
 public class Member {
 
@@ -66,6 +72,25 @@ public class Member {
     @NotNull
     @Column(name = "member_address")
     private String memberAddress;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_status")
+    private MemberStatus memberStatus; // 활성/정지/탈퇴 상태
+
+    // 최근 로그인
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt; // 최근 로그인 시각(정렬 최적화용)
+
+    // 생성일 (가입일) - Auditing 적용
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt; // 계정 생성일 (범위 검색/정렬용)
+
+    // 수정일 - Auditing 적용
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt; // 정보 수정일
 
     // =========== 관계 연결 ===========
 
@@ -127,6 +152,9 @@ public class Member {
         }
         if (this.memberPoint == null) {
             this.memberPoint = 0L; // 포인트 기본값 설정
+        }
+        if (this.memberStatus == null) {
+            this.memberStatus = MemberStatus.ACTIVE;
         }
     }
 }
