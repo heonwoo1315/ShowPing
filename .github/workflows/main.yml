@@ -49,7 +49,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~
-            # 기존 .env 삭제 후 시크릿 목록을 바탕으로 새로 생성
+            # .env 파일 생성 (모든 Secrets 포함)
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
             echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
             echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> .env
@@ -62,7 +62,7 @@ jobs:
             echo "JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}" >> .env
             echo "SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}" >> .env
             echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "MAIL_PASSWORD=\"${{ secrets.MAIL_PASSWORD }}\"" >> .env
             echo "NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }}" >> .env
             echo "NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }}" >> .env
             echo "NCP_CLOVA_API_KEY=${{ secrets.NCP_CLOVA_API_KEY }}" >> .env
@@ -74,13 +74,16 @@ jobs:
             echo "MONGO_HOST=${{ secrets.MONGO_HOST }}" >> .env
             echo "MONGO_PORT=${{ secrets.MONGO_PORT }}" >> .env
             echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
+            echo "REDIS_HOST=redis" >> .env
+            echo "REDIS_PORT=6379" >> .env
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
             echo "UPLOAD_PATH=${{ secrets.UPLOAD_PATH }}" >> .env
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
             
-            # 컨테이너 갱신 및 실행
+            # 컨테이너 갱신
             docker-compose down || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/showping
+            docker-compose pull
             docker-compose up -d
