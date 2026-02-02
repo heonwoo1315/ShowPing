@@ -1,5 +1,4 @@
 services:
-  # 1. Redis
   redis:
     image: redis:7.0-alpine
     container_name: redis
@@ -12,9 +11,9 @@ services:
         limits:
           memory: 64M
 
-  # 2. Zookeeper (확인된 3.9.3 버전 적용)
+  # Zookeeper: 가장 범용적인 3.8 태그 사용
   zookeeper:
-    image: bitnami/zookeeper:3.9.3
+    image: bitnami/zookeeper:3.8
     container_name: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -25,9 +24,9 @@ services:
         limits:
           memory: 128M
 
-  # 3. Kafka (확인된 3.9.0 버전 적용)
+  # Kafka: 3.7 버전이 t3.micro(x86_64) 환경에서 매우 안정적입니다
   kafka:
-    image: bitnami/kafka:3.9.0
+    image: bitnami/kafka:3.7
     container_name: kafka
     ports:
       - "9092:9092"
@@ -46,7 +45,6 @@ services:
         limits:
           memory: 256M
 
-  # 4. Kurento Media Server
   kms:
     image: kurento/kurento-media-server:latest
     container_name: kms
@@ -59,13 +57,12 @@ services:
         limits:
           memory: 256M
 
-  # 5. ShowPing Application
   showping:
     image: ${DOCKER_USERNAME}/showping:latest
     container_name: showping
     ports:
       - "8080:8080"
-    env_file: .env  # main.yml에서 생성한 .env를 읽습니다.
+    env_file: .env
     depends_on:
       - redis
       - kafka
