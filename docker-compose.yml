@@ -11,9 +11,9 @@ services:
         limits:
           memory: 64M
 
-  # Zookeeper: 가장 범용적인 3.8 태그 사용
+  # Zookeeper: 3.9 계열 중 가장 최신을 자동으로 가져오는 태그
   zookeeper:
-    image: bitnami/zookeeper:3.8
+    image: bitnami/zookeeper:3.9
     container_name: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -24,9 +24,9 @@ services:
         limits:
           memory: 128M
 
-  # Kafka: 3.7 버전이 t3.micro(x86_64) 환경에서 매우 안정적입니다
+  # Kafka: 3.9 계열 중 가장 최신을 자동으로 가져오는 태그
   kafka:
-    image: bitnami/kafka:3.7
+    image: bitnami/kafka:3.9
     container_name: kafka
     ports:
       - "9092:9092"
