@@ -2,7 +2,7 @@ name: ShowPing CI/CD
 
 on:
   push:
-    branches: [ "main" ] # main 브랜치에 푸시될 때 실행
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
@@ -30,6 +30,17 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/showping .
           docker push ${{ secrets.DOCKER_USERNAME }}/showping
 
+      # 1. docker-compose.yml 파일을 EC2로 전송
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "~/"
+
+      # 2. EC2 접속 후 .env 생성 및 배포 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -37,39 +48,39 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            cd ~
+            # 기존 .env 삭제 후 시크릿 목록을 바탕으로 새로 생성
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+            echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
+            echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> .env
+            echo "RDS_PORT=${{ secrets.RDS_PORT }}" >> .env
+            echo "RDS_DB_NAME=${{ secrets.RDS_DB_NAME }}" >> .env
+            echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
+            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "AES_GCM_KEY_B64=${{ secrets.AES_GCM_KEY_B64 }}" >> .env
+            echo "JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}" >> .env
+            echo "SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}" >> .env
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }}" >> .env
+            echo "NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }}" >> .env
+            echo "NCP_CLOVA_API_KEY=${{ secrets.NCP_CLOVA_API_KEY }}" >> .env
+            echo "NCP_CLOVA_API_URL=${{ secrets.NCP_CLOVA_API_URL }}" >> .env
+            echo "PORTONE_API_KEY=${{ secrets.PORTONE_API_KEY }}" >> .env
+            echo "PORTONE_SECRET_KEY=${{ secrets.PORTONE_SECRET_KEY }}" >> .env
+            echo "PORTONE_STORE_ID=${{ secrets.PORTONE_STORE_ID }}" >> .env
+            echo "PORTONE_CHANNEL_KEY=${{ secrets.PORTONE_CHANNEL_KEY }}" >> .env
+            echo "MONGO_HOST=${{ secrets.MONGO_HOST }}" >> .env
+            echo "MONGO_PORT=${{ secrets.MONGO_PORT }}" >> .env
+            echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
+            echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+            echo "UPLOAD_PATH=${{ secrets.UPLOAD_PATH }}" >> .env
+            echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
+            echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
+            echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
+            
+            # 컨테이너 갱신 및 실행
+            docker-compose down || true
             docker pull ${{ secrets.DOCKER_USERNAME }}/showping
-            docker stop showping || true
-            docker rm showping || true
-            # 모든 환경변수를 -e 옵션으로 주입합니다.
-            docker run -d --name showping -p 8080:8080 \
-              -v /home/ec2-user/video:/app/video \
-              -e RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }} \
-              -e RDS_PORT=${{ secrets.RDS_PORT }} \
-              -e RDS_DB_NAME=${{ secrets.RDS_DB_NAME }} \
-              -e RDS_USERNAME=${{ secrets.RDS_USERNAME }} \
-              -e RDS_PASSWORD=${{ secrets.RDS_PASSWORD }} \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }} \
-              -e NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }} \
-              -e NCP_CLOVA_API_KEY=${{ secrets.NCP_CLOVA_API_KEY }} \
-              -e NCP_CLOVA_API_URL=${{ secrets.NCP_CLOVA_API_URL }} \
-              -e PORTONE_SECRET_KEY=${{ secrets.PORTONE_SECRET_KEY }} \
-              -e PORTONE_API_KEY=${{ secrets.PORTONE_API_KEY }} \
-              -e PORTONE_STORE_ID=${{ secrets.PORTONE_STORE_ID }} \
-              -e PORTONE_CHANNEL_KEY=${{ secrets.PORTONE_CHANNEL_KEY }} \
-              -e MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
-              -e MAIL_PASSWORD="${{ secrets.MAIL_PASSWORD }}" \
-              -e WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }} \
-              -e WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }} \
-              -e AES_GCM_KEY_B64=${{ secrets.AES_GCM_KEY_B64 }} \
-              -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
-              -e REDIS_PORT=${{ secrets.REDIS_PORT }} \
-              -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
-              -e MONGO_HOST=${{ secrets.MONGO_HOST }} \
-              -e MONGO_PORT=${{ secrets.MONGO_PORT }} \
-              -e MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }} \
-              -e KAFKA_BOOTSTRAP_SERVERS=${{ secrets.KAFKA_BOOTSTRAP_SERVERS }} \
-              -e SERVER_PORT=${{ secrets.SERVER_PORT }} \
-              -e UPLOAD_PATH=${{ secrets.UPLOAD_PATH }} \
-              -e DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }} \
-              ${{ secrets.DOCKER_USERNAME }}/showping
+            docker-compose up -d
