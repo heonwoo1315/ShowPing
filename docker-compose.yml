@@ -12,9 +12,9 @@ services:
         limits:
           memory: 64M
 
-  # 2. Zookeeper
+  # 2. Zookeeper (태그를 latest에서 3.9로 변경)
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: bitnami/zookeeper:3.9
     container_name: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -25,9 +25,9 @@ services:
         limits:
           memory: 128M
 
-  # 3. Kafka (태그를 latest로 변경하여 에러 해결)
+  # 3. Kafka (태그를 latest에서 3.9로 변경)
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.9
     container_name: kafka
     ports:
       - "9092:9092"
