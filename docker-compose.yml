@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - showping-net
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - showping-net
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  kafka:
+    image: bitnami/kafka:3.9.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    networks:
+      - showping-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  kms:
+    image: kurento/kurento-media-server:latest
+    container_name: kms
+    ports:
+      - "8888:8888"
+    networks:
+      - showping-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  showping:
+    image: ${DOCKER_USERNAME}/showping:latest
+    container_name: showping
+    ports:
+      - "8080:8080"
+    env_file: .env  # 위에서 만든 .env 파일을 통째로 읽어옵니다.
+    depends_on:
+      - redis
+      - kafka
+      - kms
+    environment:
+      # 컨테이너 간 통신을 위한 호스트 설정 (Secrets의 값보다 우선순위가 높습니다)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    volumes:
+      - /home/ec2-user/video:/app/video
+    networks:
+      - showping-net
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+networks:
+  showping-net:
+    driver: bridge
