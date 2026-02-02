@@ -1,3 +1,4 @@
+# docker-compose.legacy.yml  (임시 해결용: bitnamilegacy + 태그 고정)
 services:
   redis:
     image: redis:7.0-alpine
@@ -11,9 +12,8 @@ services:
         limits:
           memory: 64M
 
-  # Zookeeper: 3.9 계열 중 가장 최신을 자동으로 가져오는 태그
   zookeeper:
-    image: bitnami/zookeeper:3.9
+    image: bitnamilegacy/zookeeper:3.9.3-debian-12-r22
     container_name: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -24,9 +24,8 @@ services:
         limits:
           memory: 128M
 
-  # Kafka: 3.9 계열 중 가장 최신을 자동으로 가져오는 태그
   kafka:
-    image: bitnami/kafka:3.9
+    image: bitnamilegacy/kafka:3.9.0
     container_name: kafka
     ports:
       - "9092:9092"
