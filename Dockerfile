@@ -9,7 +9,7 @@ COPY . .
 RUN ./gradlew clean build -x test
 
 # 2단계: Run stage
-FROM openjdk:17-slim
+FROM eclipse-temurin:17-jre-focal
 WORKDIR /app
 # 빌드된 jar 파일 복사
 COPY --from=build /app/build/libs/*.jar app.jar
