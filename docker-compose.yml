@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # 1. Redis
   redis:
     image: redis:7.0-alpine
     container_name: redis
@@ -13,6 +12,7 @@ services:
         limits:
           memory: 64M
 
+  # 2. Zookeeper
   zookeeper:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
@@ -25,8 +25,9 @@ services:
         limits:
           memory: 128M
 
+  # 3. Kafka (태그를 latest로 변경하여 에러 해결)
   kafka:
-    image: bitnami/kafka:3.9.0
+    image: bitnami/kafka:latest
     container_name: kafka
     ports:
       - "9092:9092"
@@ -45,6 +46,7 @@ services:
         limits:
           memory: 256M
 
+  # 4. Kurento Media Server
   kms:
     image: kurento/kurento-media-server:latest
     container_name: kms
@@ -57,18 +59,18 @@ services:
         limits:
           memory: 256M
 
+  # 5. ShowPing Application
   showping:
     image: ${DOCKER_USERNAME}/showping:latest
     container_name: showping
     ports:
       - "8080:8080"
-    env_file: .env  # 위에서 만든 .env 파일을 통째로 읽어옵니다.
+    env_file: .env
     depends_on:
       - redis
       - kafka
       - kms
     environment:
-      # 컨테이너 간 통신을 위한 호스트 설정 (Secrets의 값보다 우선순위가 높습니다)
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
