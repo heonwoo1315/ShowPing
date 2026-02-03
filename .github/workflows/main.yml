@@ -81,14 +81,16 @@ jobs:
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
             
-            # 컨테이너 실행 환경 고정
-            echo "COMPOSE_PROJECT_NAME=showping" >> .env
-
+            # 1. 기존 컨테이너와 네트워크 정리
             docker-compose down --remove-orphans || true
             
-            # [추가] 8888 포트를 혹시나 물고 있는 프로세스가 있다면 강제 종료 (보험)
-            sudo fuser -k 8888/tcp || true
-            sudo fuser -k 8080/tcp || true
+            # 2. 8888 포트를 잡고 있는 모든 프로세스를 강제로 즉시 종료 (-k: kill, -9: SIGKILL)
+            sudo fuser -k -9 -n tcp 8888 || true
+            sudo fuser -k -9 -n tcp 8080 || true
             
+            # 3. 포트가 완전히 릴리즈될 때까지 3초간 대기 (안정성 확보)
+            sleep 3
+
+            # 4. 이미지 갱신 및 실행
             docker-compose pull
             docker-compose up -d
