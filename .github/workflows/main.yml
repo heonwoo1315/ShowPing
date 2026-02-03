@@ -80,6 +80,7 @@ jobs:
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
+            echo "KMS_URL=ws://kms:8888/kurento" >> .env
             echo "COMPOSE_PROJECT_NAME=showping" >> .env
             
             # 1. 강력한 청소 (핵심 조치)

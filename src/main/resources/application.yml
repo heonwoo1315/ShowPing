@@ -117,6 +117,9 @@ management:
       exposure:
         include: '*'
 
+kurento:
+  url: ${KMS_URL:ws://127.0.0.1:8888/kurento}
+
 server:
   port: ${SERVER_PORT}
 

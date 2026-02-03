@@ -10,6 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import org.springframework.beans.factory.annotation.Value;
 
 
 /**
@@ -20,6 +21,9 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
+
+    @Value("${kurento.url}")
+    private String kmsUrl;
 
     @Bean
     public LiveHandler liveHandler() {
@@ -33,7 +37,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public KurentoClient kurentoClient() {
-        return KurentoClient.create();
+        return KurentoClient.create(kmsUrl);
     }
 
     @Bean
