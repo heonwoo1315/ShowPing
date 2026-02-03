@@ -47,7 +47,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~
-            # .env 파일 생성
+            # .env 파일 생성 로직
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
             echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
             echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> .env
@@ -80,17 +80,20 @@ jobs:
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
+            echo "COMPOSE_PROJECT_NAME=showping" >> .env
             
-            # 1. 기존 컨테이너 정리 및 사용하지 않는 이미지 삭제 (용량 확보)
-            docker-compose down --remove-orphans || true
-            docker system prune -f
+            # 1. 강력한 청소 (핵심 조치)
+            # 모든 컨테이너 강제 중지 및 삭제 (이름 충돌 방지)
+            docker rm -f $(docker ps -aq) || true 
+            # 사용하지 않는 모든 도커 리소스 삭제 (용량 확보)
+            docker system prune -af --volumes || true 
             
-            # 2. 모든 주요 포트 청소 (8888, 8080, 27017)
+            # 2. 포트 강제 종료 (SIGKILL)
             sudo fuser -k -9 -n tcp 8888 || true
             sudo fuser -k -9 -n tcp 8080 || true
             sudo fuser -k -9 -n tcp 27017 || true
-            sleep 3
-
+            sleep 5
+            
             # 3. 배포 실행
             docker-compose pull
             docker-compose up -d
