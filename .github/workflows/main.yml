@@ -84,6 +84,11 @@ jobs:
             # 컨테이너 실행 환경 고정
             echo "COMPOSE_PROJECT_NAME=showping" >> .env
 
-            docker-compose down || true
+            docker-compose down --remove-orphans || true
+            
+            # [추가] 8888 포트를 혹시나 물고 있는 프로세스가 있다면 강제 종료 (보험)
+            sudo fuser -k 8888/tcp || true
+            sudo fuser -k 8080/tcp || true
+            
             docker-compose pull
             docker-compose up -d
