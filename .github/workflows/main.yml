@@ -30,7 +30,6 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/showping .
           docker push ${{ secrets.DOCKER_USERNAME }}/showping
 
-      # 1. docker-compose.yml 전송 (중요!)
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
         with:
@@ -40,7 +39,6 @@ jobs:
           source: "docker-compose.yml"
           target: "~/"
 
-      # 2. EC2 배포 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -71,19 +69,21 @@ jobs:
             echo "PORTONE_SECRET_KEY=${{ secrets.PORTONE_SECRET_KEY }}" >> .env
             echo "PORTONE_STORE_ID=${{ secrets.PORTONE_STORE_ID }}" >> .env
             echo "PORTONE_CHANNEL_KEY=${{ secrets.PORTONE_CHANNEL_KEY }}" >> .env
-            echo "MONGO_HOST=${{ secrets.MONGO_HOST }}" >> .env
-            echo "MONGO_PORT=${{ secrets.MONGO_PORT }}" >> .env
+            echo "MONGO_HOST=mongo" >> .env
+            echo "MONGO_PORT=27017" >> .env
             echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
+            echo "REDIS_HOST=redis" >> .env
+            echo "REDIS_PORT=6379" >> .env
             echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
             echo "UPLOAD_PATH=${{ secrets.UPLOAD_PATH }}" >> .env
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
-            echo "REDIS_HOST=redis" >> .env
-            echo "REDIS_PORT=6379" >> .env
-            echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
+            
+            # 컨테이너 실행 환경 고정
+            echo "COMPOSE_PROJECT_NAME=showping" >> .env
 
-            # 컨테이너 실행
             docker-compose down || true
             docker-compose pull
             docker-compose up -d
