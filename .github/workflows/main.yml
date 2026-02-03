@@ -79,6 +79,9 @@ jobs:
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
             echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
+            echo "REDIS_HOST=redis" >> .env
+            echo "REDIS_PORT=6379" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
 
             # 컨테이너 실행
             docker-compose down || true
