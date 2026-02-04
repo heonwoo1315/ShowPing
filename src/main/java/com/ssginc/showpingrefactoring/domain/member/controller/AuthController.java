@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -34,11 +33,6 @@ public class AuthController {
     /**
      * 로그인
      */
-
-    // [추가] 현재 활성화된 프로필 확인 (기본값 local)
-    @Value("${spring.profiles.active:local}")
-    private String activeProfile;
-
     @Operation(summary = "로그인", description = "ID와 Password로 로그인하고 Access/Refresh Token을 HTTPOnly 쿠키로 설정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -51,12 +45,6 @@ public class AuthController {
 
         String accessToken = tokens.get("accessToken");
         String refreshToken = tokens.get("refreshToken");
-        String status = tokens.get("status"); // [추가] 상태값 추출
-
-        // [수정] 배포 환경(prod)이고 MFA가 필요한 상황이라면, 강제로 SUCCESS 처리하여 2차 인증 페이지 이동 방지
-        if ("prod".equals(activeProfile) && "MFA_REQUIRED".equals(status)) {
-            status = "SUCCESS";
-        }
 
         // AT/RT 쿠키 설정 (로그아웃 시 RT 쿠키를 삭제할 수 있도록 RT도 쿠키로 설정)
         ResponseCookie accessTokenCookie = cookieUtil.createCookie("accessToken", accessToken, 3600);
@@ -66,10 +54,7 @@ public class AuthController {
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         // LoginResponseDto (status만 남은 DTO)를 반환
-//        return ResponseEntity.ok(new LoginResponseDto(tokens.get("status")));
-
-        // [수정] 변환된 status를 반환
-        return ResponseEntity.ok(new LoginResponseDto(status));
+        return ResponseEntity.ok(new LoginResponseDto(tokens.get("status")));
     }
 
     // (추가) 토큰 재발급 엔드포인트
