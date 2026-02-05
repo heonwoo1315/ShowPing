@@ -171,9 +171,18 @@ public class MfaController {
         redis.opsForValue().set(redisPrefix + "webauthn:regchal:" + me.getMemberNo(),
                 chal, Duration.ofSeconds(120));
 
+        // rp 설정 수정
+        Map<String, Object> rp = new HashMap<>();
+        rp.put("name", "ShowPing Admin MFA");
+
+        // rpId가 IP 주소 형식이 아닐 때만(즉, 도메인일 때만) id를 명시적으로 전달
+        if (rpId != null && !rpId.matches("^(\\d{1,3}\\.){3}\\d{1,3}$")) {
+            rp.put("id", rpId);
+        }
+
         return Map.of(
                 "challenge", chal,
-                "rp", Map.of("id", rpId, "name", "ShowPing Admin MFA"),
+                "rp", rp,
                 "user", Map.of(
                         "id", Base64.getUrlEncoder().withoutPadding()
                                 .encodeToString(String.valueOf(me.getMemberNo()).getBytes(StandardCharsets.UTF_8)),
