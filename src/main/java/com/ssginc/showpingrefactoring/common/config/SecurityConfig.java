@@ -52,7 +52,7 @@ public class SecurityConfig {
                 // CORS 설정
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://showping.duckdns.org", "http://localhost:8080"));
+                    config.setAllowedOrigins(List.of("https://showping.duckdns.org", "http://localhost:8080", "http://showping.local:8080"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN", "X-Requested-With"));
                     config.setAllowCredentials(true);
@@ -154,7 +154,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8080", "https://showping.duckdns.org")
+                        .allowedOrigins("http://localhost:8080", "https://showping.duckdns.org", "http://showping.local:8080")
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
