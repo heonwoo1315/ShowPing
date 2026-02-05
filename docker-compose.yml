@@ -37,13 +37,15 @@ services:
     networks:
       - showping-net
 
-  # Kurento Media Server: WebRTC 성능과 NAT 우회를 위해 host 모드 사용
+  # docker-compose.yml 수정본
   kms:
     image: kurento/kurento-media-server:latest
     restart: always
-    network_mode: "host" # 호스트 네트워크 사용 (UDP 포트 무제한 개방 효과)
+    network_mode: "host"
     volumes:
       - ./kurento_conf/WebRtcEndpoint.conf.ini:/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini
+      # [추가] KMS 컨테이너도 같은 폴더를 바라보게 해야 영상을 여기에 저장
+      - /home/ec2-user/video:/app/video
     deploy:
       resources:
         limits:
