@@ -83,6 +83,7 @@ jobs:
             echo "KMS_URL=ws://kms:8888/kurento" >> .env
             echo "COMPOSE_PROJECT_NAME=showping" >> .env
             echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
+            echo "IS_PRODUCTION=${{ secrets.IS_PRODUCTION }}" >> .env
             
             # 1. 강력한 청소 (핵심 조치)
             # 모든 컨테이너 강제 중지 및 삭제 (이름 충돌 방지)

@@ -200,3 +200,6 @@ redis:
 
 admin:
   password: ${ADMIN_PASSWORD:default_password}
+
+app:
+  is-production: ${IS_PRODUCTION:false} # 환경변수가 없으면 기본값 false (로컬용)
