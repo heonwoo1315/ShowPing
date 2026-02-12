@@ -128,29 +128,25 @@ public interface WatchRepository extends JpaRepository<Watch, Long> {
                      ORDER BY w.watch_time DESC
                    ) AS rn
             FROM watch w
-            WHERE w.member_no = :memberNo
-              AND (:fromDate IS NULL OR w.watch_time >= :fromDate)
-              AND (:toDate   IS NULL OR w.watch_time <  :toDate)
+            WHERE w.member_no = ?1
+              AND (?2 IS NULL OR w.watch_time >= ?2)
+              AND (?3 IS NULL OR w.watch_time <  ?3)
         ) w
         JOIN stream s  ON s.stream_no = w.stream_no
         JOIN product p ON p.product_no = s.product_no
         WHERE w.rn = 1
           AND (
-            (:cursorTime IS NULL AND :cursorStreamNo IS NULL)
-            OR w.watch_time < :cursorTime
-            OR (w.watch_time = :cursorTime AND w.stream_no < :cursorStreamNo)
+            (?4 IS NULL AND ?5 IS NULL)
+            OR w.watch_time < ?4
+            OR (w.watch_time = ?4 AND w.stream_no < ?5)
           )
         ORDER BY w.watch_time DESC, w.stream_no DESC
-        LIMIT :limitPlusOne
+        LIMIT ?6
         """,
             nativeQuery = true)
     List<WatchRowProjection> getWatchHistoryPageScrollV2(
-            @Param("memberNo")        Long memberNo,
-            @Param("fromDate")        LocalDateTime fromDate,
-            @Param("toDate")          LocalDateTime toDate,
-            @Param("cursorTime")      LocalDateTime cursorTime,
-            @Param("cursorStreamNo")  Long cursorStreamNo,
-            @Param("limitPlusOne")    int limitPlusOne
+            Long memberNo, LocalDateTime fromDate, LocalDateTime toDate,
+            LocalDateTime cursorTime, Long cursorNo, int limit
     );
 
 }
