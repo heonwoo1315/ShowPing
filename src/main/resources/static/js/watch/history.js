@@ -28,7 +28,11 @@ function setFilterButtons() {
     const fromInput = document.getElementById('from');
     const toInput = document.getElementById('to');
 
-    const formatDate = (d) => d.toISOString().slice(0, 10);
+    const formatDate = (d) => {
+        const offset = d.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(d - offset)).toISOString().slice(0, 10);
+        return localISOTime; // 로컬 날짜 문자열 반환
+    };
 
     // range 값을 기준으로 시작일/종료일 계산
     const setPeriod = (range) => {
@@ -179,8 +183,8 @@ async function loadWatchHistory() {
 
     axios.get(`/api/watch/history/list/scroll`, {
         params: {
-            fromDate: fromDate,
-            toDate: toDate,
+            fromDate: toLocalTimeString(fromDate),
+            toDate: toLocalTimeString(toDate),
             cursorTime: cursorTime,
             cursorStreamNo: cursorNo,
             pageSize: pageSize
