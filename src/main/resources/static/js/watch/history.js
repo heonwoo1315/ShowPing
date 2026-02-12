@@ -181,15 +181,22 @@ async function loadWatchHistory() {
         return;
     }
 
+    // 파라미터 정제
+    const params = {
+        pageSize: pageSize,
+        cursorTime: cursorTime,
+        cursorStreamNo: cursorNo,
+        // 종료일은 해당 날짜의 가장 마지막 시각(23:59:59)으로 설정하는 것이 안전
+        toDate: toDate ? toLocalTimeString(new Date(new Date(toDate).setHours(23,59,59))) : toLocalTimeString(new Date())
+    };
+
+    // 시작일이 있을 때만 추가 (전체 조회 대응)
+    if (fromDate) {
+        params.fromDate = toLocalTimeString(new Date(new Date(fromDate).setHours(0,0,0)));
+    }
+
     axios.get(`/api/watch/history/list/scroll`, {
-        params: {
-            fromDate: toLocalTimeString(fromDate),
-            toDate: toLocalTimeString(toDate),
-            cursorTime: cursorTime,
-            cursorStreamNo: cursorNo,
-            pageSize: pageSize
-        },
-        withCredentials: true // 쿠키 인증 방식
+        params, withCredentials: true // 쿠키 인증 방식
     })
         .then(response => {
             const {content, hasMore, nextCursor} = response.data;
