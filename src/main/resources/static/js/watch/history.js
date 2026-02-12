@@ -123,9 +123,10 @@ function validateDates() {
 // input 상태 동기화
 function syncStateFromInputs() {
     const fromInput = document.getElementById('from');
+    const toInput = document.getElementById('to');
 
     fromDate = fromInput.value ? new Date(fromInput.value) : null;
-    toDate = new Date();
+    toDate = toInput.value ? new Date(toInput.value) : new Date();
 
     return true;
 }
