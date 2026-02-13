@@ -9,19 +9,21 @@
         if (typeof data !== "undefined" && data !== "") {
             streamInfo = true;
             streamNo = data.streamNo;
-            // 기등록된 방송 제목
-            document.getElementById("broadcastTitle").value = data.streamTitle;
-            // 기등록된 방송 설명
-            document.getElementById("broadcastDesc").value = data.streamDescription;
+            // [수정] 요소가 존재할 때만 value 설정 (Optional Chaining 방식)
+            const titleEl = document.getElementById("broadcastTitle");
+            if (titleEl) titleEl.value = data.streamTitle;
 
-            // 기등록된 방송 상품
-            document.querySelector(".product-img").src = data.productImg;
-            document.querySelector(".product-info").id = data.productNo;
-            document.querySelector(".product-name").textContent = data.productName;
-            document.querySelector(".product-origin-price").textContent = data.productPrice;
+            const descEl = document.getElementById("broadcastDesc");
+            if (descEl) descEl.value = data.streamDescription;
 
-            // 기등록된 상품 할인율
-            document.getElementById("discountRate").value = data.productSale;
+            const imgEl = document.querySelector(".product-img");
+            if (imgEl) imgEl.src = data.productImg;
+
+            const infoEl = document.querySelector(".product-info");
+            if (infoEl) infoEl.id = data.productNo;
+
+            const discountEl = document.getElementById("discountRate");
+            if (discountEl) discountEl.value = data.productSale;
         } else {
             document.getElementById("broadcastTitle").value = "";
             document.getElementById("broadcastDesc").value = "";
