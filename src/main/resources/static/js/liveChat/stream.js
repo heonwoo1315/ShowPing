@@ -581,18 +581,23 @@ async function createChatRoom() {
 }
 
 function connectToChatRoom() {
-    // 이미 stompClient가 연결되어 있으면 재연결하지 않음
-    if (stompClient && stompClient.connected) {
-        console.log('이미 채팅방에 연결되어 있습니다.');
-        return;
-    }
+    // 이미 연결되어 있으면 중복 연결 방지
+    if (stompClient && stompClient.connected) return;
 
-    var socket = new SockJS('/ws-stomp-chat', null, {
-        transports: ['websocket', 'xhr-streaming', 'xhr-polling']
-    });
+    // 1. 쿠키에서 JWT 토큰 가져오기 (getCookie 함수가 필요)
+    const token = getCookie('accessToken');
+
+    const socket = new SockJS('/ws-stomp-chat');
     stompClient = Stomp.over(socket);
 
-    stompClient.connect({}, onConnected, onChatError);
+    // 2. [핵심] 첫 번째 인자에 Authorization 헤더를 반드시 포함
+    const headers = {};
+    if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+    }
+
+    // 3. 헤더를 포함하여 연결 시도
+    stompClient.connect(headers, onConnected, onChatError);
 }
 
 // 연결 성공 콜백
