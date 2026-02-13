@@ -56,7 +56,9 @@ spring:
   # NoSQL 및 Cache 설정
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB_NAME}?authSource=admin
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB_NAME:showping}
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
