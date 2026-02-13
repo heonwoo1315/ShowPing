@@ -41,15 +41,29 @@ public class ForbiddenWordFilterServiceImpl implements ForbiddenWordFilterServic
      * <p>
      * 24시간마다 금칙어 목록을 불러와 현재 Trie 업데이트.
      */
-    @Scheduled(fixedRate = 86400000)  // 24시간마다 실행
+    @Scheduled(fixedRate = 300000)  // 24시간마다 실행
     public void rebuildTrie() {
-        List<String> forbiddenWords = forbiddenWordRepository.findAll().stream()
+        List<ForbiddenWord> words = forbiddenWordRepository.findAll();
+
+        // [추가] DB에서 단어를 제대로 가져왔는지 확인하는 로그
+        System.out.println("★ [금칙어 필터] DB에서 불러온 단어 개수: " + (words != null ? words.size() : 0));
+
+        if (words == null || words.isEmpty()) {
+            System.out.println("⚠ [경고] 금칙어 목록이 비어 있습니다. 필터가 작동하지 않습니다.");
+            this.trie = Trie.builder().build(); // 빈 트라이 생성
+            return;
+        }
+
+        List<String> slangs = words.stream()
                 .map(ForbiddenWord::getSlang)
                 .collect(Collectors.toList());
+
         this.trie = Trie.builder()
-                .ignoreCase()  // 대소문자 구분 없이 매칭
-                .addKeywords(forbiddenWords)
+                .ignoreCase()
+                .ignoreOverlaps()
+                .addKeywords(slangs)
                 .build();
+        System.out.println("★ [금칙어 필터] Trie 빌드 완료!");
     }
 
     /**
@@ -61,12 +75,7 @@ public class ForbiddenWordFilterServiceImpl implements ForbiddenWordFilterServic
     @Override
     public boolean containsForbiddenWord(String text) {
         Collection<Emit> emits = trie.parseText(text);
-        for (Emit emit : emits) {
-            if (isIsolatedMatch(text, emit)) {
-                return true;
-            }
-        }
-        return false;
+        return !emits.isEmpty(); // isIsolatedMatch 체크를 제거하여 '포함'만 되어도 차단
     }
 
     /**
@@ -79,7 +88,7 @@ public class ForbiddenWordFilterServiceImpl implements ForbiddenWordFilterServic
     public List<String> getForbiddenWords(String text) {
         Collection<Emit> emits = trie.parseText(text);
         return emits.stream()
-                .filter(emit -> isIsolatedMatch(text, emit))
+                // .filter(emit -> isIsolatedMatch(text, emit)) // 이 부분을 주석 처리하거나 제거
                 .map(Emit::getKeyword)
                 .distinct()
                 .collect(Collectors.toList());
