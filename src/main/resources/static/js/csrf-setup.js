@@ -1,4 +1,18 @@
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 if (window.axios) {
+    axios.interceptors.request.use(config => {
+        const token = getCookie('accessToken');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    });
+
     axios.defaults.withCredentials = true;
     axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
     axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
