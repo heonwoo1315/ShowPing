@@ -78,8 +78,6 @@ jobs:
             echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
             echo "UPLOAD_PATH=${{ secrets.UPLOAD_PATH }}" >> .env
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
-            echo "WEBAUTHN_RP_ID=${{ secrets.WEBAUTHN_RP_ID }}" >> .env
-            echo "WEBAUTHN_ORIGIN=${{ secrets.WEBAUTHN_ORIGIN }}" >> .env
             echo "KMS_URL=ws://${{ secrets.KMS_PRIVATE_IP }}:8888/kurento" >> .env
             echo "COMPOSE_PROJECT_NAME=showping" >> .env
             echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
