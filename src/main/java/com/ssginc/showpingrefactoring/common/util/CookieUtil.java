@@ -10,14 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class CookieUtil {
     // 공통 쿠키 생성 유틸리티
-
-    @Value("${app.is-production:false}")
-    private boolean isProduction;
-
      public ResponseCookie createCookie(String name, String value, long maxAge) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
-                .secure(isProduction) // HTTPS 환경에서는 true로 변경
+                .secure(true) // HTTPS 환경에서는 true로 변경
                 .path("/")
                 .sameSite("Lax")
                 .maxAge(maxAge)

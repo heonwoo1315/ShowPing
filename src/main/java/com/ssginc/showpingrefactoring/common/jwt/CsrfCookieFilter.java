@@ -14,9 +14,6 @@ import java.io.IOException;
 
 public class CsrfCookieFilter extends OncePerRequestFilter {
 
-    @Value("${app.is-production:false}")
-    private boolean isProduction;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -37,7 +34,7 @@ public class CsrfCookieFilter extends OncePerRequestFilter {
             if (oldValue == null || !oldValue.equals(newValue)) {
                 ResponseCookie cookie = ResponseCookie.from("XSRF-TOKEN", newValue)
                         .httpOnly(false)          // JS에서 읽어 헤더로 보낼 수 있어야 함
-                        .secure(isProduction)       // 운영(https)=true, 로컬(http)=false
+                        .secure(true)       // 운영(https)=true, 로컬(http)=false
                         .sameSite("Lax")
                         .path("/")
                         .build();
