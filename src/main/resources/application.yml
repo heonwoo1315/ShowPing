@@ -124,6 +124,14 @@ kurento:
 
 server:
   port: ${SERVER_PORT}
+  forward-headers-strategy: native
+
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
 
 # 파일 경로 설정 (EC2 환경에 맞춰 환경변수화 추천)
 upload:
