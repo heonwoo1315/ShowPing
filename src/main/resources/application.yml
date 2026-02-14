@@ -185,9 +185,9 @@ portone:
 # WebAuthn 및 MFA 설정
 webauthn:
   rp:
-    id: ${WEBAUTHN_RP_ID} # 나중에 EC2 퍼블릭 ip 또는 도메인으로 인증서버 식별자 추가(EC2 생성하면)
-    name: ShowPing Admin MFA
-  origin: ${WEBAUTHN_ORIGIN} # http://EC2퍼블릭IP:8080
+    id: showping-live.com
+    name: "ShowPing Live"
+  origin: https://showping-live.com
 
 mfa:
   allowSelfInvite: true
@@ -211,6 +211,3 @@ redis:
 
 admin:
   password: ${ADMIN_PASSWORD:default_password}
-
-app:
-  is-production: ${IS_PRODUCTION:false} # 환경변수가 없으면 기본값 false (로컬용)
