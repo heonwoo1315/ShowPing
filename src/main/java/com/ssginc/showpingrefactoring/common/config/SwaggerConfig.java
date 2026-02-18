@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
         ),
         servers = {
                 @io.swagger.v3.oas.annotations.servers.Server(url = "http://localhost:8080", description = "로컬 개발 서버"),
-                @io.swagger.v3.oas.annotations.servers.Server(url = "https://showping.duckdns.org", description = "운영 서버")
+                @io.swagger.v3.oas.annotations.servers.Server(url = "https://showping-live.com", description = "운영 서버")
         }
 )
 @Configuration

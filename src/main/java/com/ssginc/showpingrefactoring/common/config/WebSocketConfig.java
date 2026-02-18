@@ -56,10 +56,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(liveHandler(), "/live")
                 .setAllowedOrigins("*");
-//                .setAllowedOrigins("https://showping.duckdns.org");
+//                .setAllowedOrigins("https://showping-live.com");
         registry.addHandler(recordHandler(), "/record")
                 .setAllowedOrigins("*");
-//                .setAllowedOrigins("https://showping.duckdns.org");
+//                .setAllowedOrigins("https://showping-live.com");
     }
 
 }
