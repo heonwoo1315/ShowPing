@@ -4,6 +4,10 @@
 // 1) 로그인 페이지 여부
 const IS_LOGIN_PAGE = window.location.pathname.startsWith('/login');
 
+if (IS_LOGIN_PAGE) {
+    try { sessionStorage.removeItem('AUTH_LOGGED_OUT'); } catch (_) {}
+}
+
 // 2) CSRF 쿠키 보장 (최초 1회)
 let _csrfReady = false;
 window.ensureCsrfCookie = async function ensureCsrfCookie() {
@@ -64,10 +68,18 @@ window.authApi.interceptors.response.use(
 
 // 7) 로그인 여부 확인 유틸 (헤더 UI 등에서 사용)
 window.fetchUserInfo = async () => {
+    // ✅ 로그아웃 상태면 user-info 요청 자체를 보내지 않음
+    try {
+        if (window.__LOGOUT_IN_PROGRESS__ || sessionStorage.getItem('AUTH_LOGGED_OUT') === '1') {
+            return null;
+        }
+    } catch (_) {}
+
     try {
         const res = await window.authApi.get('user-info');
-        return res.data; // {status:"SUCCESS", username, role}
+        return res.data;
     } catch {
         return null;
     }
 };
+

@@ -95,17 +95,21 @@ function setAsLogin(btn, icon) {
 }
 
 async function doLogoutOnce() {
+    // 로그아웃 중/로그아웃 완료 플래그 (user-info 요청 스킵용)
+    window.__LOGOUT_IN_PROGRESS__ = true;
+    try { sessionStorage.setItem('AUTH_LOGGED_OUT', '1'); } catch (_) {}
+
     try {
         await ensureFreshXsrf();
         const xsrf = getCookie('XSRF-TOKEN');
 
         await window.authApi.post('logout', {}, {
             withCredentials: true,
-            headers: { 'X-XSRF-TOKEN': xsrf }, // 명시적으로 첨부
-            _skipRefresh: true                 // 재발급 인터셉터 타지 않게
+            headers: { 'X-XSRF-TOKEN': xsrf },
+            _skipRefresh: true
         });
 
-        // UI 즉시 전환 (메인 그대로 유지)
+        // UI 즉시 전환
         const btn  = document.getElementById('auth-button');
         const icon = document.getElementById('auth-icon');
         if (btn) {
@@ -115,9 +119,11 @@ async function doLogoutOnce() {
             btn.onclick = null;
         }
         if (icon) icon.src = '/img/icon/login.png';
-        await setAdminNav();
 
-        // (선택) 토스트
+        // 여기서 setAdminNav() 호출하면 user-info가 나갈 수 있으니 직접 숨김 처리
+        const adminMenu = document.getElementById("admin-menu");
+        if (adminMenu) adminMenu.hidden = true;
+
         if (window.Swal) {
             Swal.fire({ icon: 'success', title: '로그아웃', text: '정상적으로 로그아웃되었습니다.' });
         }
@@ -126,6 +132,8 @@ async function doLogoutOnce() {
         if (window.Swal) {
             Swal.fire({ icon: 'error', title: '로그아웃 실패', text: '잠시 후 다시 시도해 주세요.' });
         }
+    } finally {
+        window.__LOGOUT_IN_PROGRESS__ = false;
     }
 }
 
