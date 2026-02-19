@@ -294,7 +294,10 @@ rec.onmessage = function(message) {
             break;
         case 'stopped':
             stopChat();
-            uploadFileToNCP();
+            // 3초 후 기다렸다가 업로드 시작
+            setTimeout(() => {
+                uploadFileToNCP();
+            }, 3000);
             break;
         default:
             console.error('Unrecognized message', parsedMessage);
