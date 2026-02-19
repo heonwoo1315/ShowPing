@@ -19,6 +19,9 @@ const DISABLED = 3;
 const IN_PLAY = 4;
 
 document.addEventListener('DOMContentLoaded', function () {
+    if (window.ensureCsrfCookie) {
+        window.ensureCsrfCookie().catch(e => console.warn('[csrf] warmup failed:', e))
+    }
     window.addEventListener('dataLoaded', function () {
         live = document.getElementById('live-video');
         watch = document.getElementById('live');
