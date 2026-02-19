@@ -128,7 +128,6 @@ function setupEventListeners(productNo) {
 
             // 로그인 정보 1회 조회
             const { data: member } = await axios.get('/api/carts/info', { withCredentials: true });
-            console.log("서버가 준 회원 정보:", member);
             const memberNo = member?.memberNo;
             if (!memberNo) throw new Error('NO_AUTH');
 
