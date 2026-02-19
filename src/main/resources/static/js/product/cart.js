@@ -172,7 +172,11 @@ function setupEventListeners() {
                 await window.csrfDelete(`/api/carts/remove?memberNo=${memberNo}&productNo=${productNo}`);
                 location.reload();
             } catch (error) {
-                alert("상품 삭제에 실패했습니다.");
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: '상품 삭제에 실패했습니다.'
+                });
                 console.error(error);
             }
         });
