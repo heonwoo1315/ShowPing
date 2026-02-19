@@ -91,10 +91,14 @@ public class RecordHandler extends TextWebSocketHandler {
 
             MediaProfileSpecType profile = MediaProfileSpecType.MP4;
 
-            String fileName = "file://" + RECORDER_FILE_PATH + jsonMessage.get("title").getAsString() + ".mp4";
-            System.out.println(RECORDER_FILE_PATH + fileName);
+            // RecordHandler.java의 record 메소드 내부 수정
+            String fileName = jsonMessage.get("title").getAsString() + ".mp4";
+            // 아래와 같이 "file://"을 붙여주기
+            String kurentoUri = "file://" + RECORDER_FILE_PATH + fileName;
 
-            RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, RECORDER_FILE_PATH + fileName)
+            System.out.println("KMS가 실제로 파일을 쓸 경로: " + kurentoUri);
+
+            RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, kurentoUri)
                     .withMediaProfile(profile).build();
 
             // Error listeners.
