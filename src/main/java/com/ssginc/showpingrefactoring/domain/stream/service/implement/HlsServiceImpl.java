@@ -123,36 +123,36 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public String createHLS(String title) throws IOException, InterruptedException {
-        // [수정 1] Nginx 설정과 맞추기 위해 hls 하위 폴더 대신 VIDEO_PATH에 바로 생성
-        // Nginx는 /api/hls/v2/ 요청을 /home/ec2-user/video/ 에서 찾고 있음.
-        File inputFile = new File(VIDEO_PATH, title + ".mp4");
-        File outputFile = new File(VIDEO_PATH, title + ".m3u8"); // hls 폴더 제거
+        // 1. 하위 폴더 경로 설정 및 생성 (hls)
+        File hlsFolder = new File(VIDEO_PATH, "hls");
+        if (!hlsFolder.exists()) {
+            hlsFolder.mkdirs();
+        }
 
-        // [수정 2] FFmpeg 명령어 보강: 'copy' 대신 재인코딩을 통해 타임스탬프 오류를 해결
+        // 2. 파일 경로 설정
+        File inputFile = new File(VIDEO_PATH, title + ".mp4");
+        File outputFile = new File(hlsFolder, title + ".m3u8"); // 출력은 hls 폴더 안으로
+
+        // 3. FFmpeg 명령어 실행 (재인코딩 옵션 포함)
         List<String> cmd = Arrays.asList(
-                "ffmpeg",
-                "-y",                                // 기존 파일 덮어쓰기
+                "ffmpeg", "-y",
                 "-i", inputFile.getAbsolutePath(),
-                "-c:v", "libx264",                   // 비디오 코덱 재인코딩
-                "-c:a", "aac",                       // 오디오 코덱 재인코딩
-                "-b:a", "128k",
-                "-start_number", "0",
-                "-hls_time", "10",
-                "-hls_list_size", "0",
+                "-c:v", "libx264", "-c:a", "aac", "-b:a", "128k",
+                "-start_number", "0", "-hls_time", "10", "-hls_list_size", "0",
                 "-f", "hls",
                 outputFile.getAbsolutePath()
         );
 
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectErrorStream(true);
-
         Process p = pb.start();
-        // FFmpeg 로그 소비 (생략 가능하나 유지를 위해 남겨둠)
+
+        // 로그 소비 쓰레드
         Thread gobbler = new Thread(() -> {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                 while (br.readLine() != null) { }
             } catch (IOException ignored) {}
-        }, "ffmpeg-output-gobbler");
+        });
         gobbler.start();
 
         int exitCode = p.waitFor();
@@ -162,16 +162,15 @@ public class HlsServiceImpl implements HlsService {
             throw new CustomException(ErrorCode.HLS_CONVERSION_FAILED);
         }
 
-        // [수정 3] NCP 업로드는 수행하되, 로컬 파일은 지우지 않는다
-        // 현재 Nginx가 로컬 디스크의 파일을 직접 읽어 서빙하도록 설정되어 있기 때문
-        File outputDir = new File(VIDEO_PATH);
-        File[] files = outputDir.listFiles((dir, name) -> name.startsWith(title));
-
-        if (files != null && files.length > 0) {
-            storageLoader.uploadHlsFiles(files, title);
+        // 4. NCP Storage 업로드 (hls 폴더 내의 m3u8, ts 파일만 업로드)
+        // 기존 VIDEO_PATH(루트)에서 업로드하던 중복 코드는 제거하는 것이 깔끔
+        File[] hlsFiles = hlsFolder.listFiles((dir, name) -> name.startsWith(title));
+        if (hlsFiles != null && hlsFiles.length > 0) {
+            storageLoader.uploadHlsFiles(hlsFiles, title);
         }
 
-        // safeDeleteDirectory(outputDir.toPath()); // 이 줄을 주석 처리하여 파일을 남겨둔다
+        // [로컬 파일 보존] Nginx가 직접 읽어야 하므로 삭제 로직은 주석 처리 유지
+        // safeDeleteDirectory(hlsFolder.toPath());
 
         return "SUCCESS";
     }
