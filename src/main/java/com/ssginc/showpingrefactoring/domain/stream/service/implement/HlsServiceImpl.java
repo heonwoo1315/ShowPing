@@ -211,8 +211,16 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Resource getHLSV2(String title) {
-        String fileName = title + ".m3u8";
-        return storageLoader.getHLS(fileName);
+        // File 생성자를 사용하여 경로를 안전하게 조합
+        // VIDEO_PATH 내의 'hls' 폴더 안에서 파일을 찾는다
+        File hlsFolder = new File(VIDEO_PATH, "hls");
+        File file = new File(hlsFolder, title + ".m3u8");
+
+        if (file.exists()) {
+            return resourceLoader.getResource("file:" + file.getAbsolutePath());
+        }
+        // 로컬에 없으면 기존처럼 NCP에서 시도 (백업용)
+        return storageLoader.getHLS(title + ".m3u8");
     }
 
     /**
@@ -223,8 +231,14 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Resource getTsSegmentV2(String title, String segment) {
-        String fileName = title + segment + ".ts";
-        return storageLoader.getHLS(fileName);
+        // [수정] 위와 동일하게 안전한 경로 조합 방식을 사용
+        File hlsFolder = new File(VIDEO_PATH, "hls");
+        File file = new File(hlsFolder, title + segment + ".ts");
+
+        if (file.exists()) {
+            return resourceLoader.getResource("file:" + file.getAbsolutePath());
+        }
+        return storageLoader.getHLS(title + segment + ".ts");
     }
 
 }
