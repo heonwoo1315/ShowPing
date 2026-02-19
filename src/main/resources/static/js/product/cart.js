@@ -151,7 +151,7 @@ function setupEventListeners() {
             updateTimeout = setTimeout(async () => {
                 try {
                     await window.ensureCsrfCookie();
-                    await window.csrfRequest('put',`/api/carts/update?memberNo=${memberNo}`, {
+                    await window.csrfPut(`/api/carts/update?memberNo=${memberNo}`, {
                         productNo: parseInt(productNo, 10),
                         quantity: quantity
                     });
@@ -169,10 +169,11 @@ function setupEventListeners() {
             const productNo = this.getAttribute("data-product-no");
             try {
                 await window.ensureCsrfCookie();
-                await window.csrfRequest('delete', `/api/carts/remove?memberNo=${memberNo}&productNo=${productNo}`);
+                await window.csrfDelete(`/api/carts/remove?memberNo=${memberNo}&productNo=${productNo}`);
                 location.reload();
             } catch (error) {
-                alert("상품 삭제 실패: " + (error.response?.data || error));
+                alert("상품 삭제에 실패했습니다.");
+                console.error(error);
             }
         });
     });
