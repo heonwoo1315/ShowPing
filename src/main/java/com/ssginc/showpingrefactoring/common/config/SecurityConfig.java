@@ -45,6 +45,7 @@ public class SecurityConfig {
 
         // --- CSRF 토큰 저장소 + RequestAttribute 핸들러 설정(지연 생성 보강) ---
         var csrfRepo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfRepo.setCookiePath("/");
         var csrfAttrHandler = new CsrfTokenRequestAttributeHandler();
         csrfAttrHandler.setCsrfRequestAttributeName("_csrf"); // 명시(권장)
 
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 // CORS 설정
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://showping-live.com", "http://localhost:8080"));
+                    config.setAllowedOrigins(List.of("https://showping-live.com"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN", "X-Requested-With"));
                     config.setAllowCredentials(true);
