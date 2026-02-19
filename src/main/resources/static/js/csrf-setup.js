@@ -1,162 +1,165 @@
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
+// csrf-setup.js (clean + robust)
+//
+// 핵심:
+// - XSRF-TOKEN 쿠키가 없으면 먼저 /api/csrf 로 "토큰 발급"을 워밍업
+// - 상태변경 요청(POST/PUT/PATCH/DELETE)은 항상 X-XSRF-TOKEN 헤더를 붙임
+// - 403이면 1회 강제 재발급 후 자동 재시도
+//
+// 주의:
+// - accessToken/refreshToken이 HttpOnly면 JS에서 못 읽는 게 정상.
+//   그래서 Authorization 헤더를 억지로 만들지 말고, withCredentials 쿠키 인증에 맡김.
 
-if (window.axios) {
-    axios.interceptors.request.use(config => {
-        const token = getCookie('accessToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+(function () {
+    const CSRF_COOKIE = 'XSRF-TOKEN';
+    const CSRF_HEADER = 'X-XSRF-TOKEN';
+
+    // 필요하면 여기서 호스트 강제 통일(선택)
+    // 예: www로 접속하면 non-www로 보내기
+    // if (location.hostname === 'www.showping-live.com') {
+    //   location.replace('https://showping-live.com' + location.pathname + location.search + location.hash);
+    // }
+
+    function getCookie(name) {
+        const cookies = document.cookie ? document.cookie.split('; ') : [];
+        for (const c of cookies) {
+            const eq = c.indexOf('=');
+            const k = eq >= 0 ? c.slice(0, eq) : c;
+            if (k === name) return decodeURIComponent(eq >= 0 ? c.slice(eq + 1) : '');
         }
-        return config;
-    });
-
-    axios.defaults.withCredentials = true;
-    axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
-    axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN';
-}
-
-window.csrfRequest = async function(method, url, data) {
-    await window.ensureCsrfCookie(); // 쿠키 보장
-    // axios 인터셉터가 X-XSRF-TOKEN 자동 주입
-    try {
-        return await axios({ method, url, data });
-    } catch (err) {
-        if (err.response && err.response.status === 403) { // 403에러가 날 경우 (기대 효과 UX향상)
-            await window.ensureCsrfCookie();             // 토큰 재발급
-            return await axios({ method, url, data });   // 1회 재시도
-        }
-        throw err;
-    }
-};
-
-document.addEventListener('DOMContentLoaded', async () => {
-    if (!document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='))) {
-        try { await fetch('/api/csrf', { credentials: 'include' }); } catch {}
-    }
-});
-
-;(function (global) {
-    // --- 공통: 토큰 읽기 ---
-    function getCsrfToken() {
-        var m = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
-        return m ? decodeURIComponent(m[1]) : null;
+        return null;
     }
 
-    // fetch 등에서 필요할 때 사용할 수 있도록 노출
-    global.__getCsrfToken = getCsrfToken;
+    function isSafeMethod(method) {
+        const m = (method || 'GET').toUpperCase();
+        return m === 'GET' || m === 'HEAD' || m === 'OPTIONS' || m === 'TRACE';
+    }
 
-    // --- axios 전역(또는 개별 인스턴스)용 설정 함수 ---
-    function setupCsrfOnAxios(axiosInstance) {
-        if (!axiosInstance) return;
+    // 동시에 여러 요청이 와도 /api/csrf 호출은 1번만 돌게
+    let csrfInitPromise = null;
 
-        // 이미 장착되어 있다면 중복 등록 막기
-        if (axiosInstance.__csrfInterceptorInstalled) return;
+    async function ensureCsrfCookie({ force = false } = {}) {
+        const existing = getCookie(CSRF_COOKIE);
+        if (existing && !force) return existing;
 
-        axiosInstance.defaults.withCredentials = true;
+        if (csrfInitPromise && !force) return csrfInitPromise;
 
-        var id = axiosInstance.interceptors.request.use(function (config) {
-            var method = (config && config.method ? String(config.method) : 'get').toLowerCase();
-            if (method === 'post' || method === 'put' || method === 'delete' || method === 'patch') {
-                var token = getCsrfToken();
-                if (token) {
-                    config.headers = config.headers || {};
-                    if (!('X-XSRF-TOKEN' in config.headers)) {
-                        config.headers['X-XSRF-TOKEN'] = token;
-                    }
+        csrfInitPromise = (async () => {
+            // /api/csrf 엔드포인트가 없어도, 보안필터를 타면 토큰 쿠키가 생길 수도 있음.
+            // 그래도 성공 여부는 "쿠키가 생겼는지"로 판단.
+            try {
+                const res = await fetch('/api/csrf', {
+                    method: 'GET',
+                    credentials: 'include',
+                    cache: 'no-store',
+                    headers: { 'X-CSRF-INIT': '1' },
+                });
+
+                // 디버그용(원하면 로그 유지)
+                if (!res.ok) {
+                    // 404라도 쿠키가 생기면 괜찮음(보안 필터가 발급해준 케이스)
+                    // console.warn('[csrf] /api/csrf responded', res.status);
                 }
+            } catch (e) {
+                // 네트워크 에러 등
+                // console.warn('[csrf] init fetch failed', e);
             }
+
+            // 브라우저가 Set-Cookie 반영하는 데 아주 짧은 틱이 필요한 경우가 있어서 한 번 양보
+            await new Promise((r) => setTimeout(r, 0));
+
+            const token = getCookie(CSRF_COOKIE);
+            if (!token) {
+                // 여기까지 왔는데도 쿠키가 없으면: (1) 호스트 불일치(www/non-www) (2) 서버가 쿠키를 HttpOnly로 내림 (3) 보안설정 문제
+                throw new Error('[csrf] XSRF-TOKEN cookie is still missing after init');
+            }
+            return token;
+        })();
+
+        try {
+            return await csrfInitPromise;
+        } finally {
+            csrfInitPromise = null;
+        }
+    }
+
+    // axios 기본 설정
+    if (typeof axios !== 'undefined') {
+        axios.defaults.withCredentials = true;
+        axios.defaults.xsrfCookieName = CSRF_COOKIE;
+        axios.defaults.xsrfHeaderName = CSRF_HEADER;
+
+        // 요청 인터셉터: 상태변경 요청이면 CSRF 토큰 보장 + 헤더 부착
+        axios.interceptors.request.use(async (config) => {
+            const method = (config.method || 'GET').toUpperCase();
+
+            if (!isSafeMethod(method)) {
+                // 토큰이 없으면 먼저 발급
+                await ensureCsrfCookie({ force: false });
+
+                const token = getCookie(CSRF_COOKIE);
+                config.headers = config.headers || {};
+                if (token) config.headers[CSRF_HEADER] = token;
+            }
+
+            config.withCredentials = true;
             return config;
         });
 
-        axiosInstance.__csrfInterceptorInstalled = true;
-        axiosInstance.__csrfInterceptorId = id;
+        // 응답 인터셉터: 403이면 1회 강제 재발급 후 재시도
+        axios.interceptors.response.use(
+            (res) => res,
+            async (err) => {
+                const status = err?.response?.status;
+                const config = err?.config;
+
+                if (!config) throw err;
+
+                const method = (config.method || 'GET').toUpperCase();
+                const canRetry = status === 403 && !isSafeMethod(method) && !config.__csrfRetried;
+
+                if (!canRetry) throw err;
+
+                config.__csrfRetried = true;
+
+                // 강제로 새 토큰 발급 후 재시도
+                await ensureCsrfCookie({ force: true });
+                const token = getCookie(CSRF_COOKIE);
+
+                config.headers = config.headers || {};
+                if (token) config.headers[CSRF_HEADER] = token;
+
+                return axios(config);
+            }
+        );
     }
 
-    window.ensureCsrfCookie = async function ensureCsrfCookie() {
-        const hasCookie = document.cookie.split('; ').some(c => c.startsWith('XSRF-TOKEN='));
-        if (!hasCookie) {
-            // 서버에서 XSRF-TOKEN 쿠키만 발급받는 엔드포인트(permitAll)
-            await fetch('/api/csrf', { credentials: 'include' });
+    // window로 노출(기존 stream.js 호환)
+    window.getCookie = getCookie;
+    window.ensureCsrfCookie = ensureCsrfCookie;
+
+    window.csrfRequest = async function (cfg) {
+        // axios 인터셉터가 알아서 처리하지만,
+        // 외부에서 직접 쓸 때도 안전하게 보장
+        const method = (cfg?.method || 'GET').toUpperCase();
+        if (!isSafeMethod(method)) {
+            await ensureCsrfCookie({ force: false });
+            const token = getCookie(CSRF_COOKIE);
+            cfg.headers = cfg.headers || {};
+            if (token) cfg.headers[CSRF_HEADER] = token;
         }
+        cfg.withCredentials = true;
+        return axios(cfg);
     };
 
-    // 전역 axios 자동 장착 (있을 때만)
-    if (typeof window !== 'undefined' && window.axios) {
-        setupCsrfOnAxios(window.axios);
-    } else {
-        window.addEventListener('load', () => window.axios && setupCsrfOnAxios(window.axios));
-    }
+    window.csrfPost = (url, data, cfg = {}) =>
+        window.csrfRequest({ ...cfg, method: 'POST', url, data });
 
-    // --- fetch 유틸 (선택) ---
-    function csrfFetch(input, init) {
-        init = init || {};
-        var method = ((init.method || 'GET') + '').toUpperCase();
+    window.csrfPut = (url, data, cfg = {}) =>
+        window.csrfRequest({ ...cfg, method: 'PUT', url, data });
 
-        if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
-            var token = getCsrfToken();
-            if (token) {
-                init.headers = init.headers || {};
-                // 기존 헤더가 Map/Headers 가 아니라 plain object 라는 가정(일반 케이스)
-                if (!(init.headers['X-XSRF-TOKEN'] || init.headers['x-xsrf-token'])) {
-                    init.headers['X-XSRF-TOKEN'] = token;
-                }
-            }
-            // 쿠키 동봉
-            if (init.credentials == null) {
-                init.credentials = 'include';
-            }
-        }
-        return fetch(input, init);
-    }
+    window.csrfPatch = (url, data, cfg = {}) =>
+        window.csrfRequest({ ...cfg, method: 'PATCH', url, data });
 
-    // 전역 노출(선택)
-    global.setupCsrfOnAxios = setupCsrfOnAxios;
-    global.csrfFetch = csrfFetch;
-
-    // ESM/CommonJS 환경 지원(번들러 사용 시)
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { setupCsrfOnAxios, csrfFetch, __getCsrfToken: getCsrfToken };
-    } else if (typeof define === 'function' && define.amd) {
-        define(function () { return { setupCsrfOnAxios, csrfFetch, __getCsrfToken: getCsrfToken }; });
-    }
-})(typeof window !== 'undefined' ? window : this);
-
-(function () {
-    if (!window.axios || !window.setupCsrfOnAxios) return;
-
-    // 1) 기본 전역 axios에도 장착
-    window.setupCsrfOnAxios(window.axios);
-
-    // 2) axios.create로 새 인스턴스를 만들 때마다 자동 장착
-    const origCreate = window.axios.create;
-    window.axios.create = function (config) {
-        const instance = origCreate.call(window.axios, config);
-        try { window.setupCsrfOnAxios(instance); } catch (_) {}
-        return instance;
-    };
+    window.csrfDelete = (url, cfg = {}) =>
+        window.csrfRequest({ ...cfg, method: 'DELETE', url });
 })();
-
-// 403이면 한 번만 CSRF 쿠키를 갱신하고 재시도
-window.csrfRetry = async function csrfRetry(fn) {
-    try {
-        return await fn();
-    } catch (err) {
-        const status = err?.response?.status;
-        if (status === 403) {
-            try {
-                await window.ensureCsrfCookie();          // 새 쿠키 발급
-                return await fn();                        // 한 번만 재시도
-            } catch (e2) {
-                throw e2;
-            }
-        }
-        throw err;
-    }
-};
-
-// 편의: JSON POST 래퍼(선택)
-window.csrfPost = (url, body) =>
-    window.csrfRetry(() => axios.post(url, body));
