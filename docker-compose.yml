@@ -47,7 +47,7 @@ services:
     volumes:
       - ./kurento_conf/WebRtcEndpoint.conf.ini:/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini
       # [추가] KMS 컨테이너도 같은 폴더를 바라보게 해야 영상을 여기에 저장
-      - /home/ec2-user/video:/app/video
+      - /home/ec2-user/video:/home/ec2-user/video
     deploy:
       resources:
         limits:
@@ -65,7 +65,7 @@ services:
       - kafka
       - kms
     volumes:
-      - /home/ec2-user/video:/app/video
+      - /home/ec2-user/video:/home/ec2-user/video
     networks:
       - showping-net
 
