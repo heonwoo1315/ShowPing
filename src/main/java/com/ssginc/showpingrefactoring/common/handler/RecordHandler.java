@@ -91,7 +91,7 @@ public class RecordHandler extends TextWebSocketHandler {
 
             MediaProfileSpecType profile = MediaProfileSpecType.MP4;
 
-            String fileName = jsonMessage.get("title").getAsString() + ".mp4";
+            String fileName = "file://" + RECORDER_FILE_PATH + jsonMessage.get("title").getAsString() + ".mp4";
             System.out.println(RECORDER_FILE_PATH + fileName);
 
             RecorderEndpoint recorder = new RecorderEndpoint.Builder(pipeline, RECORDER_FILE_PATH + fileName)
