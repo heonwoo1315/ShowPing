@@ -132,13 +132,10 @@ function setupEventListeners(productNo) {
             const memberNo = member?.memberNo;
             if (!memberNo) throw new Error('NO_AUTH');
 
-            // 403이면 내부에서 한 번만 토큰 갱신 후 재시도
-            await window.csrfRetry(() =>
-                axios.post(`/api/carts/add?memberNo=${memberNo}`, {
-                    productNo: product.productNo,
-                    quantity: parseInt(document.getElementById("quantity-input").value, 10) || 1
-                })
-            );
+            axios.post(`/api/carts/add?memberNo=${memberNo}`, {
+                productNo: product.productNo,
+                quantity: parseInt(document.getElementById("quantity-input").value, 10) || 1
+            })
 
             Swal.fire({
                 title: '장바구니에 추가되었습니다.',
@@ -150,6 +147,7 @@ function setupEventListeners(productNo) {
             }).then((r) => { if (r.isConfirmed) location.href = '/cart'; });
 
         } catch (error) {
+            console.error("상세 에러:", error);
             // 401/403 등 인증 실패 공통 처리
             Swal.fire({
                 title: "로그인 필요",
