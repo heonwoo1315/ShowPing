@@ -205,8 +205,15 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Resource getHLSV2(String title) {
-        String fileName = title + ".m3u8";
-        return storageLoader.getHLS(fileName);
+        // 1. 로컬의 hls 하위 폴더에서 먼저 찾기 (Nginx 설정과 일치)
+        File hlsFolder = new File(VIDEO_PATH, "hls");
+        File file = new File(hlsFolder, title + ".m3u8");
+
+        if (file.exists()) {
+            return resourceLoader.getResource("file:" + file.getAbsolutePath());
+        }
+        // 2. 로컬에 없으면 업로드가 완료된 것으로 간주하고 NCP에서 조회
+        return storageLoader.getHLS(title + ".m3u8");
     }
 
     /**
@@ -217,8 +224,13 @@ public class HlsServiceImpl implements HlsService {
      */
     @Override
     public Resource getTsSegmentV2(String title, String segment) {
-        String fileName = title + segment + ".ts";
-        return storageLoader.getHLS(fileName);
+        File hlsFolder = new File(VIDEO_PATH, "hls");
+        File file = new File(hlsFolder, title + segment + ".ts");
+
+        if (file.exists()) {
+            return resourceLoader.getResource("file:" + file.getAbsolutePath());
+        }
+        return storageLoader.getHLS(title + segment + ".ts");
     }
 
 }
