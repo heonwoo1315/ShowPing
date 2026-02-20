@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', function () {
         live = document.getElementById('live-video');
         watch = document.getElementById('live');
 
+        if (watch && ws.readyState === WebSocket.OPEN) {
+            viewer();
+        }
+
         if (live) {
             getMemberInfo(); // 여기서 memberRole을 설정함
 
@@ -472,6 +476,11 @@ async function stopLive() {
         // CSRF 쿠키가 없다면 발급
         await window.ensureCsrfCookie();
 
+        if (ws.readyState !== WebSocket.OPEN || rec.readyState !== WebSocket.OPEN) {
+            Swal.fire('연결 중', '서버와 연결 중입니다. 잠시 후 다시 시도해주세요.', 'info');
+            return;
+        }
+
         // 403이면 한 번 재시도까지 해주는 래퍼 사용
         const response = await window.csrfPost("/api/live/stop", { streamNo });
         console.log(response);
@@ -502,6 +511,25 @@ async function stopLive() {
         });
     }
 }
+
+// 소켓과 데이터 로드 상태를 모두 체크하여 실행하는 안전한 함수
+function tryStartViewer() {
+    if (watch && ws.readyState === WebSocket.OPEN) {
+        console.log("시청자 연결을 시작합니다.");
+        viewer();
+    }
+}
+
+window.addEventListener('dataLoaded', function () {
+    live = document.getElementById('live-video');
+    watch = document.getElementById('live');
+    tryStartViewer(); // 데이터 로드 완료 시점에 체크
+});
+
+ws.onopen = function () {
+    tryStartViewer(); // 소켓이 열리는 시점에 체크
+};
+
 function stopRecord() {
     let stopMessageId = (state === IN_CALL) ? 'stop' : 'stopPlay';
     console.log('Stopping video while in ' + state + '...');
@@ -528,13 +556,19 @@ function dispose() {
 }
 
 function sendLiveMessage(message) {
-    let jsonMessage = JSON.stringify(message);
-    ws.send(jsonMessage);
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+    } else {
+        console.error("Live WebSocket이 열려있지 않습니다. 상태:", ws.readyState);
+    }
 }
 
 function sendRecordMessage(message) {
-    let jsonMessage = JSON.stringify(message);
-    rec.send(jsonMessage);
+    if (rec.readyState === WebSocket.OPEN) {
+        rec.send(JSON.stringify(message));
+    } else {
+        console.error("Record WebSocket이 열려있지 않습니다. 상태:", rec.readyState);
+    }
 }
 
 // function showSpinner() {
