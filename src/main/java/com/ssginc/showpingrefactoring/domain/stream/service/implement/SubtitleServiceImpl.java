@@ -29,9 +29,6 @@ public class SubtitleServiceImpl implements SubtitleService {
 
     private final StorageLoader storageLoader;
 
-    @Qualifier("webApplicationContext")
-    private final ResourceLoader resourceLoader;
-
     /**
      * 영상 제목으로 자막 파일을 생성하고 저장하는 메서드
      * @param title 영상 제목
@@ -70,13 +67,7 @@ public class SubtitleServiceImpl implements SubtitleService {
      */
     @Override
     public Resource getSubtitle(String title) {
-        // [추가] 로컬 디렉토리에서 자막이 있는지 먼저 확인 (Nginx 서빙과 일치)
         String fileName = title + ".json";
-        File localFile = new File("/home/ec2-user/video/", fileName); // 또는 설정된 VIDEO_PATH 사용
-
-        if (localFile.exists()) {
-            return resourceLoader.getResource("file:" + localFile.getAbsolutePath());
-        }
         return storageLoader.getSubtitle(fileName);
     }
 
