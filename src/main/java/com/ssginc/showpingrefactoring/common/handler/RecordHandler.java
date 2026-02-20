@@ -16,6 +16,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -94,7 +95,10 @@ public class RecordHandler extends TextWebSocketHandler {
             // RecordHandler.java의 record 메소드 내부 수정
             String fileName = jsonMessage.get("title").getAsString() + ".mp4";
             // 아래와 같이 "file://"을 붙여주기
-            String kurentoUri = "file://" + RECORDER_FILE_PATH + fileName;
+            File recordFile = new File(RECORDER_FILE_PATH, fileName);
+            String kurentoUri = "file://" + recordFile.getAbsolutePath();
+
+            log.info("KMS가 파일을 저장할 절대 경로: {}", kurentoUri);
 
             System.out.println("KMS가 실제로 파일을 쓸 경로: " + kurentoUri);
 
