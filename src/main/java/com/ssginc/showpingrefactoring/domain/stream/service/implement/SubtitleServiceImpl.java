@@ -7,9 +7,7 @@ import com.ssginc.showpingrefactoring.infrastructure.NCP.subtitle.Segments;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.subtitle.SubtitleGenerator;
 import com.ssginc.showpingrefactoring.domain.stream.service.SubtitleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
