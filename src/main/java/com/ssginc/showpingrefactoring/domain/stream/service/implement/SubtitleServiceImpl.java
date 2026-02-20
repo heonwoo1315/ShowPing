@@ -7,7 +7,10 @@ import com.ssginc.showpingrefactoring.infrastructure.NCP.subtitle.Segments;
 import com.ssginc.showpingrefactoring.infrastructure.NCP.subtitle.SubtitleGenerator;
 import com.ssginc.showpingrefactoring.domain.stream.service.SubtitleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -27,10 +30,16 @@ public class SubtitleServiceImpl implements SubtitleService {
 
     private final StorageLoader storageLoader;
 
+    @Qualifier("webApplicationContext")
+    private final ResourceLoader resourceLoader;
+
     /**
      * 영상 제목으로 자막 파일을 생성하고 저장하는 메서드
      * @param title 영상 제목
      */
+    @Value("${download.path}")
+    private String VIDEO_PATH;
+
     @Override
     public void createSubtitle(String title) {
         // 자막 정보 불러오기
@@ -38,7 +47,7 @@ public class SubtitleServiceImpl implements SubtitleService {
 
         // 저장할 파일이름 지정
         String fileName = title + ".json";
-        File jsonFile = new File(fileName);
+        File jsonFile = new File(VIDEO_PATH, fileName);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -55,7 +64,7 @@ public class SubtitleServiceImpl implements SubtitleService {
 
         // 생성된 json 파일을 NCP Storage 업로드
         storageLoader.uploadSubtitleFile(jsonFile);
-        jsonFile.delete();
+        // jsonFile.delete();
     }
 
     /**
@@ -65,8 +74,12 @@ public class SubtitleServiceImpl implements SubtitleService {
      */
     @Override
     public Resource getSubtitle(String title) {
-        String fileName = title + ".json";
-        return storageLoader.getSubtitle(fileName);
+        // 조회 시에도 로컬을 먼저 확인합니다.
+        File localFile = new File(VIDEO_PATH, title + ".json");
+        if (localFile.exists()) {
+            return resourceLoader.getResource("file:" + localFile.getAbsolutePath());
+        }
+        return storageLoader.getSubtitle(title + ".json");
     }
 
 }
