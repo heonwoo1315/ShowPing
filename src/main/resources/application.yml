@@ -2,7 +2,7 @@ spring:
   config:
     import:
       # AWS Secrets Manager에서 시크릿을 불러옴
-      - aws-secretsmanager:/showping/prod/credentials
+      - aws-secretsmanager:showping/prod/credentials
 
   cloud:
     aws:
