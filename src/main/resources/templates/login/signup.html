@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 | ShowPing</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <link rel="stylesheet" th:href="@{/css/login/signup.css}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/csrf-setup.js"></script>
+    <script src="/js/signup-csrf.js"></script>
     <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -21,14 +25,14 @@
     <div class="signup-form">
         <form id="signup-form" autocomplete="off">
             <label for="memberId">아이디</label>
-            <div id="memberId-message" style="color: red; font-size: 12px; display: none;"></div> <!-- 아이디 메시지 추가 -->
+            <div id="memberId-message" style="color: red; font-size: 12px; display: none;"></div>
             <div class="input-group">
                 <input type="text" id="memberId" placeholder="아이디 입력 (6~20자)" required>
                 <button type="button" class="button" onclick="checkDuplicate()">중복 확인</button>
             </div>
 
             <label for="password">비밀번호</label>
-            <div id="password-message" style="color: red; font-size: 12px; display: none;"></div> <!-- 🔹 메시지 위치 변경 -->
+            <div id="password-message" style="color: red; font-size: 12px; display: none;"></div>
             <div class="input-group">
                 <input type="password" id="password" placeholder="비밀번호 입력 (문자, 숫자, 특수문자 포함 8~20자)" required autocomplete="new-password">
                 <button type="button" class="toggle-password">👁</button>
