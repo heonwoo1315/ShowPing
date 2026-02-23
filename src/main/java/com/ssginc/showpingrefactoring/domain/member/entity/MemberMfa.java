@@ -29,6 +29,7 @@ public class MemberMfa {
     private byte[] secretEnc;
 
     @Column(name = "enabled", nullable = false)
+    @Builder.Default
     private boolean enabled = false;
 
     @Column(name = "enrolled_at")
