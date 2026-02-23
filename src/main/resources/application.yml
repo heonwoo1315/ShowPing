@@ -178,6 +178,7 @@ ncp:
     bucket-name: show-ping
   clova-speech:
     path: video
+    api-url: ${NCP_CLOVA_API_URL}
 
 # PortOne 결제 설정
 portone:
