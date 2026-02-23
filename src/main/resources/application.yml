@@ -1,4 +1,19 @@
 spring:
+  config:
+    import:
+      # AWS Secrets Manager에서 시크릿을 불러옴
+      - aws-secretsmanager:/showping/prod/credentials
+
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        # GitHub Secrets에서 주입되는 환경변수를 사용
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+
   application:
     name: show-ping-live
 
@@ -19,8 +34,6 @@ spring:
   # DB 설정
   datasource: # RDS_HOSTNAME은 나중에 RDS 생성하면 값을 엔드포인트로 설정 지금은 localhost임
     url: jdbc:mysql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       pool-name: WinnerHikariPool
@@ -63,7 +76,6 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       timeout: 60000
-      password: ${REDIS_PASSWORD}
 
   # JPA 설정
   jpa:
@@ -89,8 +101,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
     default-encoding: UTF-8
     protocol: smtp
     properties:
@@ -155,7 +165,6 @@ logging:
 
 # 보안 및 인증
 jwt:
-  secret: ${JWT_SECRET}
   access:
     expiration: 3600000
   refresh:
@@ -167,20 +176,12 @@ ncp:
     region: kr-standard
     endpoint: https://kr.object.ncloudstorage.com/
     bucket-name: show-ping
-    access-key: ${NCP_ACCESS_KEY}
-    secret-key: ${NCP_SECRET_KEY}
   clova-speech:
-    api-url: ${NCP_CLOVA_API_URL}
     path: video
-    api-key: ${NCP_CLOVA_API_KEY}
 
 # PortOne 결제 설정
 portone:
-  secret-key: ${PORTONE_SECRET_KEY}
-  channel-key: ${PORTONE_CHANNEL_KEY}
   api-url: https://api.portone.io
-  store-id: ${PORTONE_STORE_ID}
-  api-key: ${PORTONE_API_KEY}
 
 # WebAuthn 및 MFA 설정
 webauthn:
@@ -199,15 +200,9 @@ mfa:
   mfaMaxAgeSeconds: 900
   rateLimitPerMinute: 5
 
-crypto:
-  aesGcmKeyBase64: ${AES_GCM_KEY_B64}
-
 # Redis 추가 설정
 redis:
   prefix: "sp:mfa:"
   ttl:
     rtMetaSeconds: 604800
     halfAuthSeconds: 900
-
-admin:
-  password: ${ADMIN_PASSWORD:default_password}

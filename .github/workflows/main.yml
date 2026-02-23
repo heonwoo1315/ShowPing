@@ -48,39 +48,26 @@ jobs:
           script: |
             cd ~
             # .env 파일 생성 로직
-            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" > .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
             echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
             echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> .env
             echo "RDS_PORT=${{ secrets.RDS_PORT }}" >> .env
             echo "RDS_DB_NAME=${{ secrets.RDS_DB_NAME }}" >> .env
-            echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
-            echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            echo "AES_GCM_KEY_B64=${{ secrets.AES_GCM_KEY_B64 }}" >> .env
             echo "JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}" >> .env
             echo "SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}" >> .env
-            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-            echo "MAIL_PASSWORD=\"${{ secrets.MAIL_PASSWORD }}\"" >> .env
-            echo "NCP_ACCESS_KEY=${{ secrets.NCP_ACCESS_KEY }}" >> .env
-            echo "NCP_SECRET_KEY=${{ secrets.NCP_SECRET_KEY }}" >> .env
-            echo "NCP_CLOVA_API_KEY=${{ secrets.NCP_CLOVA_API_KEY }}" >> .env
             echo "NCP_CLOVA_API_URL=${{ secrets.NCP_CLOVA_API_URL }}" >> .env
-            echo "PORTONE_API_KEY=${{ secrets.PORTONE_API_KEY }}" >> .env
-            echo "PORTONE_SECRET_KEY=${{ secrets.PORTONE_SECRET_KEY }}" >> .env
-            echo "PORTONE_STORE_ID=${{ secrets.PORTONE_STORE_ID }}" >> .env
-            echo "PORTONE_CHANNEL_KEY=${{ secrets.PORTONE_CHANNEL_KEY }}" >> .env
             echo "MONGO_HOST=mongo" >> .env
             echo "MONGO_PORT=27017" >> .env
             echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
             echo "REDIS_HOST=redis" >> .env
             echo "REDIS_PORT=6379" >> .env
-            echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
             echo "KAFKA_BOOTSTRAP_SERVERS=kafka:9092" >> .env
             echo "UPLOAD_PATH=${{ secrets.UPLOAD_PATH }}" >> .env
             echo "DOWNLOAD_PATH=${{ secrets.DOWNLOAD_PATH }}" >> .env
             echo "KMS_URL=ws://${{ secrets.KMS_PRIVATE_IP }}:8888/kurento" >> .env
             echo "COMPOSE_PROJECT_NAME=showping" >> .env
-            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
             
             # 1. 강력한 청소 (핵심 조치)
             # 모든 컨테이너 강제 중지 및 삭제 (이름 충돌 방지)
