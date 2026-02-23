@@ -205,7 +205,7 @@ document.getElementById("checkout-btn").addEventListener("click", function (even
     });
 
     if (selectedItems.length === 0) {
-        alert("선택된 상품이 없습니다.");
+        Swal.fire({ icon: 'info', title: "입력 오류", text: "선택된 상품이 없습니다." });
         return;
     }
 
