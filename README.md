@@ -1,280 +1,141 @@
-# ShowPing V3 – Live Commerce Refactoring & Performance Tuning
+## ☁️ AWS Cloud Infrastructure (클라우드 인프라 아키텍처)
 
-> 개발 기간: **2026.01 ~ (진행 중)**  
-> ⚠️ 이 레포지토리는 부트캠프 팀 프로젝트를 기반으로 **개인적으로 성능/인프라/보안 개선을 진행한 V3 버전**입니다.  
-> 원본/팀 리팩토링 버전은 아래 링크를 참고해주세요.
+> Elastic Beanstalk 등 추상화 도구 없이 VPC, ALB, ASG를 직접 수동 구성하여 인프라 전반에 대한 제어권을 확보했습니다.
 
-- V1: Bootcamp Final Project (원본) – https://github.com/ShowPingPrj/show-ping-live.git
-- V2: Team Refactoring Version – https://github.com/ShowPingPrj/show-ping-refactoring.git
+<!-- 아키텍처 구조도 이미지를 여기에 삽입 -->
+<!-- <img src="아키텍처_구조도_URL" alt="ShowPing V3 Infrastructure Architecture" /> -->
 
 ---
 
-## 1. Overview
+### 🔹 인프라 설계 원칙
 
-**ShowPing**은 실시간 라이브 스트리밍을 통해 상품을 소개하고,  
-시청자가 채팅과 장바구니/결제를 통해 바로 구매할 수 있는 **라이브 커머스 서비스**입니다.
-
-- 판매자는 라이브 방송을 생성하고, 상품 정보를 등록합니다.
-- 시청자는 실시간 스트리밍/채팅을 보면서 상품을 장바구니에 담고 결제할 수 있습니다.
-- 관리자/운영자는 회원, 주문, 방송 내역을 관리하고 통계를 조회합니다.
-
-이 레포지토리(V3)는 아래 두 가지를 목표로 합니다.
-
-1. **실제 트래픽·데이터 증가를 가정한 DB 성능 개선**
-2. **AWS 기반 CI/CD 및 인프라 비용 구조 개선**
+| 원칙 | 설명 |
+|------|------|
+| **제어권 확보** | EB 대신 수동 구성으로 인프라 전 계층에 대한 이해도 확보 |
+| **비용 효율성** | NAT Gateway 미사용, 보안그룹 강화로 비용 절감과 보안을 동시에 달성 |
+| **고가용성** | Multi-AZ(2a, 2c) 구성으로 단일 AZ 장애 시에도 서비스 지속 |
+| **계층형 보안** | ALB → EC2 → RDS로 이어지는 연쇄 보안그룹(Security Group Chain) 설계 |
 
 ---
 
-## 2. Version History
+### 🔹 1단계: 네트워크 설계 (VPC & Subnet)
 
-이 프로젝트는 다음과 같은 단계로 발전했습니다.
+독립된 전용 VPC(`ShowPing-VPC`, `10.0.0.0/16`)를 생성하고, 용도별로 서브넷을 분리했습니다.
 
-### 🔹 V1 – Bootcamp Final Project
+| 구분 | 서브넷 이름 | CIDR | 가용 영역 | 용도 |
+|------|------------|------|-----------|------|
+| **Public** | Public-SN-A | 10.0.1.0/24 | ap-northeast-2a | ALB |
+| **Public** | Public-SN-C | 10.0.2.0/24 | ap-northeast-2c | ALB (이중화) |
+| **Public** | App-SN-A | 10.0.10.0/24 | ap-northeast-2a | EC2 (Spring Boot) |
+| **Public** | App-SN-C | 10.0.11.0/24 | ap-northeast-2c | EC2 확장 대비 |
+| **Private** | DB-SN-A | 10.0.20.0/24 | ap-northeast-2a | RDS (MySQL) |
+| **Private** | DB-SN-C | 10.0.21.0/24 | ap-northeast-2c | RDS (이중화) |
 
-- 부트캠프에서 팀 단위로 진행한 **최초 버전**
-- 핵심 기능 위주로 빠르게 구현
-  - 회원가입/로그인
-  - 라이브 방송 생성 및 시청
-  - 채팅, 장바구니, 주문/결제 등
-
-### 🔹 V2 – Team Refactoring Version
-
-- 팀 단위로 코드 구조/품질 개선 및 기능 보완
-- 주요 내용
-  - 도메인/레이어 구조 재정리
-  - 일부 비즈니스 로직 리팩토링
-  - 공통 응답 구조, 예외 처리 정비
-- V2 레포지토리에서 **팀 전체가 함께 유지보수 가능한 형태**로 만드는 데 집중
-
-### 🔹 V3 – 개인 성능·인프라 개선 Version (이 레포)
-- 기간: 2026.01 ~ (진행 중)
-- V1/V2를 기반으로, **개인적으로 추가 개선 작업을 진행한 버전**
-- 초점
-  1. **DB 성능 개선 (쿼리/인덱스/테이블 구조 튜닝 + 부하 테스트)**
-  2. **AWS 기반 CI/CD 파이프라인 구축 및 인프라 비용 구조 개선**
-  3. (서브) Redis 기반 인증/세션 관리 & CSRF 방어 패턴 적용
----
-
-## 3. Tech Stack
-
-### Backend
-
-- Java 17
-- Spring Boot 3.x
-- Spring Web / Spring MVC
-- Spring Data JPA (Hibernate)
-- Spring Security (JWT + Cookie 기반 인증)
-- QueryDSL (선택사항/사용 시)
-- Lombok
-
-### Database & Cache
-
-- MySQL (RDS 사용 가정)
-- Redis (Refresh Token / 세션 / 캐시 용도)
-
-### Infra & DevOps
-
-- Docker / Docker Compose
-- Nginx (Reverse Proxy / HTTPS / WebSocket Proxy)
-- AWS
-  - EC2 (애플리케이션 서버)
-  - RDS (MySQL)
-  - S3 (정적 리소스/업로드 파일)
-  - ALB 또는 NLB (로드 밸런서) – 구성에 따라 변경
-  - CI/CD (GitHub Actions 또는 CodeDeploy/CodePipeline)
-
-### Etc
-
-- JMeter (성능/부하 테스트)
-- GitHub Projects / Issues (작업 관리)
-- Velog / 기술 블로그 (트러블슈팅 정리)
+**왜 EC2를 퍼블릭 서브넷에 두었는가?**
+> NAT Gateway는 시간당 비용이 발생하여 월 4~5만원의 추가 비용이 발생합니다. 프로젝트 규모와 비용 효율성을 고려하여 NAT Gateway 대신 퍼블릭 서브넷에 EC2를 배치하되, 보안그룹을 촘촘하게 설정하여 ALB를 통해서만 트래픽을 수신하도록 제한했습니다.
 
 ---
 
-## 4. What I Improved (나의 개선 포인트)
+### 🔹 2단계: 보안 설계 (IAM & Secrets Manager)
 
-이 V3에서 **제가 직접 설계·구현·검증한 개선 포인트**는 아래와 같습니다.
+민감 정보를 GitHub Secrets에서 AWS Secrets Manager로 이전하여 보안 수준을 강화했습니다.
 
-### 4.1 DB 성능 개선 – 회원/주문 조회 튜닝
+**Secrets Manager 구성:**
+- 시크릿 이름: `showping/prod/credentials`
+- JSON 그룹화로 DB 접속 정보, JWT Secret, 외부 API 키를 통합 관리
+- `application.yml`의 키 이름과 100% 일치시켜 자동 매핑 적용
 
-**상황(S)**  
-- 회원 수 및 주문 데이터가 증가하면서,  
-  마이페이지 / 관리자 회원 리스트 / 주문 내역 조회 속도가 눈에 띄게 느려지는 문제 발견  
-- 슬로우 쿼리 로그 및 모니터링 기준,
-  특정 조회 API의 응답 시간이 **수백 ms ~ 수 초**까지 증가
+**IAM 보안 정책:**
+- 정책명: `ShowPingSecretAccessPolicy`
+- IP 제한: 관리자 PC IP + EC2 탄력적 IP만 접근 허용
+- EC2에 IAM Role(인스턴스 프로필) 부여 → Access Key 파일 없이 Secrets Manager 접근
 
-**접근 방법(A)**
-
-1. **쿼리/실행 계획 분석**
-   - `EXPLAIN`을 이용해 주요 조회 쿼리 실행 계획 분석
-   - `WHERE` 조건 + `ORDER BY` + `LIMIT` 조합을 기준으로 실제 사용하는 인덱스 확인
-   - 슬로우 쿼리 로그를 통해 병목 쿼리 우선순위 선정
-
-2. **인덱스 및 쿼리 튜닝**
-   - 조회 패턴에 맞춘 **복합 인덱스** 설계  
-     예: `status + created_at`, `member_id + created_at` 등
-   - `SELECT *` 제거, 실제로 필요한 컬럼만 조회하도록 쿼리 슬림화
-   - 페이지네이션 기준 컬럼 정비 (`created_at` 또는 PK 기반)
-
-3. **테이블 구조 개선 (정규화 + 슬림화)**
-   - 자주 조회되는 컬럼만 가진 **코어 테이블**과  
-     부가 정보 테이블로 분리  
-     예: `member` / `member_profile` / `member_mgmt`
-   - TEXT/JSON, 관리자용 플래그 등 **덩치 큰 컬럼은 별도 테이블**로 분리해  
-     핵심 테이블의 row 사이즈 축소
-
-4. **부하 테스트로 검증**
-   - JMeter로 회원/주문 조회 API에 대해 **동시 사용자 수 / 데이터량**을 단계별로 증가시키며 테스트
-   - 개선 전/후의
-     - 평균 응답 시간
-     - 95th percentile 응답 시간
-     - DB CPU 사용률
-   - 을 비교
-
-**결과(R)**  
-> ⚠️ 아래 수치는 예시입니다. 실제 실험 후 수치로 교체 예정.
-
-- 회원 10만 건 기준, 마이페이지 조회 95th 응답 시간  
-  `약 2600ms → 60ms` (**약 97% 개선**)
-- DB CPU 피크 사용률  
-  `약 70% → 35%` 수준으로 감소
-- 동일한 인스턴스 스펙에서 **안정적으로 처리 가능한 동시 요청 수 증가**
-
-**학습(L)**
-
-- 성능 문제는 단순히 “나중에 튜닝”으로 해결하기보다,  
-  **초기 설계 단계에서 조회 패턴 / 인덱스 전략 / 테이블 구조를 함께 고민해야 한다**는 것을 체감
-- 슬로우 쿼리 로그와 실행 계획 분석, 부하 테스트를 통해  
-  **데이터 기반으로 성능을 측정·개선하는 프로세스**를 경험
+| 항목 | 기존 방식 (GitHub 중심) | 개선 방식 (AWS 중심) |
+|------|------------------------|---------------------|
+| 민감 정보 저장소 | GitHub Secrets (일일이 등록) | AWS Secrets Manager (JSON 그룹화) |
+| 보안 수준 | 유출 시 즉시 노출 | IP 제한 및 IAM Role 기반 보안 |
+| 관리 편의성 | 비번 변경 시 재배포 필요 | AWS 콘솔에서 수정 후 서버 재시작 |
 
 ---
 
-### 4.2 AWS 기반 CI/CD & 인프라 비용 구조 개선
+### 🔹 3단계: 트래픽 분산 및 HTTPS (ALB & ACM & Route53)
 
-**상황(S)**  
-- 초기에는 수동 배포/배포 자동화가 섞여 있어
-  - 배포 과정이 번거롭고,
-  - 롤백이 까다롭고,
-  - 인스턴스/리소스 구성도 비용 효율 관점에서 최적이라고 보기 어려운 상태
-- **실제 서비스 운영을 가정했을 때, 배포 안정성과 인프라 비용 구조를 재검토할 필요성**을 느낌
+**ALB (Application Load Balancer):**
+- Internet-facing ALB를 Public Subnet에 배치
+- HTTPS(443) 리스너 + HTTP(80) → HTTPS 자동 리다이렉트 설정
+- Target Group: EC2 8080 포트, 헬스체크 프로토콜 HTTP
 
-**접근 방법(A)**
+**ACM (SSL 인증서):**
+- `showping-live.com` 도메인에 대한 퍼블릭 인증서 발급 (DNS 검증)
+- ALB에 인증서를 연결하여 HTTPS Termination 처리
 
-1. **기존 인프라 구조 파악**
-   - EC2 + MySQL + Nginx 정도로 단순 구성된 상태(가정)
-   - 수동 또는 반자동 스크립트 기반 배포 프로세스 정리
-
-2. **CI/CD 파이프라인 설계 및 구축**
-   - GitHub Actions (또는 CodePipeline/CodeDeploy)를 활용해
-     - `main` 브랜치 merge 시 자동 빌드/테스트/배포 파이프라인 구성
-   - 배포 단계에서
-     - 무중단 배포(예: Blue-Green/Rolling) 전략 검토
-     - 롤백 시나리오 문서화
-
-3. **인프라 비용 구조 분석**
-   - AWS 요금 계산기 및 공식 요금표를 사용해
-     - 기존 구조(예: EC2 2대 + RDS 1대 + S3 기본 사용)
-     - 개선 구조(예: Auto Scaling + ALB, 인스턴스 타입 조정 등)
-     의 **월 예상 비용** 비교
-   - 사용량 패턴(트래픽 피크/비피크)을 고려해
-     - 필요 이상의 오버 프로비저닝을 줄이는 방향으로 설계
-
-4. **비용/운영/성능 트레이드오프 정리**
-   - 단순 비용 절감뿐만 아니라
-     - 배포 안정성
-     - 운영 복잡도
-     - 확장성
-   - 을 함께 고려해 최종 구조 선택
-
-**결과(R)**  
-> ⚠️ 아래 수치는 예시입니다. 실제 인프라/요금 시뮬레이션 후 수치로 교체 예정.
-
-- AWS 요금 계산기 기준, 월 예상 인프라 비용
-  - 기존 구조 대비 **약 XX% 비용 절감** (예: `약 30% 절감`)
-- GitHub Actions 기반 CI/CD 구축으로
-  - 수동 배포 시간을 `~N분 → ~M분` 수준으로 단축
-  - 배포 프로세스의 **재현성과 롤백 가능성** 확보
-
-**학습(L)**
-
-- 클라우드 인프라 설계는 성능뿐 아니라
-  **비용·운영·확장성을 동시에 보는 트레이드오프 게임**이라는 점을 체감
-- CI/CD 파이프라인을 직접 구성해보며,  
-  **“코드를 커밋하면 자동으로 배포까지 이어지는 흐름”**을 경험
+**Route 53:**
+- A 레코드를 EC2 IP 직접 연결 → ALB Alias로 전환
+- 도메인 → ALB → EC2로 이어지는 정석 트래픽 흐름 완성
 
 ---
 
-### 4.3 (Sub) Security & Reliability
+### 🔹 4단계: 보안그룹 체인 (Security Group Chain)
 
-- **JWT + Refresh Token + Redis**를 사용한 인증/세션 관리
-  - RT를 Redis에 저장하여 만료/로그아웃/블랙리스트 관리
-- **CSRF 방어**
-  - Double Submit Cookie 패턴 기반 CSRF 토큰 적용
-  - 상태 변경 요청(POST/PUT/DELETE)에 대해 CSRF 토큰 검증 로직 추가
+외부에서 내부로 갈수록 접근이 제한되는 **3-Tier 연쇄 보안** 구조를 설계했습니다.
 
-> ※ CSRF 모의 공격 자동화 및 상세 수치화는 추후 진행 예정입니다.
+| 보안 그룹 | 인바운드 규칙 | 설명 |
+|-----------|-------------|------|
+| **ShowPing-ALB-SG** | HTTP(80), HTTPS(443) ← `0.0.0.0/0` | 누구나 접속 가능한 정문 |
+| **ShowPing-EC2-SG** | 8080 ← `ShowPing-ALB-SG` | ALB를 통해서만 접근 가능 |
+| **ShowPing-RDS-SG** | 3306 ← `ShowPing-EC2-SG` | EC2 서버만 DB 접근 가능 |
 
----
+**핵심:** EC2의 8080 포트에 `0.0.0.0/0`을 열지 않고 ALB 보안그룹 ID로만 제한하여, 해커가 로드밸런서를 우회하여 직접 EC2에 접근하는 것을 원천 차단했습니다.
 
-## 5. My Role (내 역할)
-
-V3 버전에서는 **전 구간을 개인 주도로 진행**했습니다.
-
-- 성능 개선
-  - 슬로우 쿼리/실행 계획/부하 테스트를 통한 **DB 성능 병목 분석 및 튜닝**
-- 인프라/DevOps
-  - AWS 상의 배포 구조 및 CI/CD 파이프라인 설계·구성
-- 보안
-  - JWT + Redis 기반 인증 구조 설계
-  - CSRF 방어 패턴 적용
-- 문서화
-  - 성능 테스트 결과(전/후 비교 수치)
-  - 인프라 아키텍처 다이어그램
-  - 문제 상황 → 해결 과정 → 결과/학습 정리
+**DBeaver 접속:** RDS가 Private Subnet에 위치하므로 외부에서 직접 접근이 불가합니다. EC2를 Bastion Host로 활용한 SSH 터널링을 통해 안전하게 접속합니다.
 
 ---
 
-## 6. Architecture
+### 🔹 5단계: 고가용성 및 자동 확장 (Auto Scaling)
 
-> ⚠️ 다이어그램은 이후 추가 예정입니다. (예: draw.io / Excalidraw 이미지 첨부)
+**AMI & Launch Template:**
+- 정상 동작하는 EC2에서 AMI(`ShowPing-Gold-Image-v1`) 생성
+- Launch Template에 보안그룹, IAM Role(`S3StorageRole`) 연결
+- 서브넷은 템플릿에 지정하지 않고 ASG에서 Multi-AZ 선택
 
-예상 구조:
+**Auto Scaling Group:**
+- Desired: 2 / Min: 2 / Max: 5
+- 스케일링 정책: CPU 평균 사용률 60% 대상 추적 (Target Tracking)
+- 가용 영역 2a, 2c에 걸쳐 인스턴스 분산 배치
+- Sticky Session 활성화 (WebRTC/WebSocket 세션 유지)
 
-- Client (Web)
-  - React/Vue 등 SPA (가정)
-- API Server
-  - Spring Boot (REST API, JWT 인증)
-- Database
-  - MySQL (회원/주문/상품 등)
-- Cache & Token Store
-  - Redis (RT, 세션, 캐시)
-- Infra
-  - Nginx (Reverse Proxy / HTTPS Termination)
-  - AWS EC2 / RDS / S3 / ALB
-  - GitHub Actions 기반 CI/CD
+**검증:** ASG 활동 이력에서 Unhealthy 인스턴스 자동 교체(Self-Healing) 확인, Target Group에서 Healthy 상태 검증 완료
 
 ---
 
-## 7. Getting Started
+### 🔹 인프라 구축 과정 트러블슈팅
 
-> ⚠️ 실제 프로젝트에 맞게 명령어와 환경 변수는 수정해주세요.
+<details>
+<summary><b>VPC 간 보안그룹 격리 문제 (RDS 접속 실패)</b></summary>
 
-### 7.1 Prerequisites
+- **현상:** DBeaver에서 SSH 터널링을 통해 RDS에 접속하려 했으나 실패
+- **원인:** RDS 보안그룹이 이전 VPC(Default VPC)의 보안그룹 ID를 참조하고 있었음. 보안그룹은 VPC 경계를 넘으면 서로 인식하지 못하는 '유령 규칙'이 됨
+- **해결:** RDS 보안그룹의 인바운드 규칙을 현재 ShowPing-VPC 내의 EC2 보안그룹 ID로 수정
+- **교훈:** 보안그룹은 VPC 단위로 격리되며, VPC 이전 시 모든 SG 참조를 새 VPC 기준으로 갱신해야 함
 
-- JDK 17+
-- Docker & Docker Compose
-- MySQL / Redis (로컬 또는 Docker)
-- (선택) AWS 계정, GitHub Actions
+</details>
 
-### 7.2 Local Run
+<details>
+<summary><b>Target Group Unhealthy 문제 (헬스체크 실패)</b></summary>
 
-```bash
-# 1. 환경 변수 설정
-cp .env.example .env
-# .env 파일에 DB, Redis, JWT, AWS 관련 설정 값 입력
+- **현상:** ALB Target Group에서 EC2 인스턴스가 Unhealthy 상태
+- **원인:** 헬스체크 프로토콜이 HTTPS로 설정되어 있었고, 경로가 /index.html로 지정되어 있었음
+- **해결:** 프로토콜을 HTTP로 변경, 경로를 /로 수정, 성공 코드에 200,401,302,301 추가
+- **교훈:** ALB에서 HTTPS Termination을 처리하므로 EC2 헬스체크는 HTTP로 수행해야 함
 
-# 2. 빌드
-./gradlew clean build
+</details>
 
-# 3. 실행
-java -jar build/libs/showping-v3-0.0.1-SNAPSHOT.jar
+<details>
+<summary><b>WebRTC 라이브 방송 불가 (Kurento STUN 설정)</b></summary>
+
+- **현상:** 인프라 이전 후 라이브 방송이 작동하지 않음
+- **원인:** Kurento Media Server의 STUN 서버 IP가 이전 EC2의 IP를 참조하고 있었음
+- **해결:** EC2 터미널에서 `WebRtcEndpoint.conf.ini`의 `externalIPv4`를 새 탄력적 IP로 갱신, EC2 보안그룹에 UDP 10000-65535 포트 범위 개방, 컨테이너 재시작
+- **교훈:** WebRTC는 UDP 포트 범위와 STUN/TURN 서버 IP가 인프라 변경 시 함께 갱신되어야 함
+
+</details>
