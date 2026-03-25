@@ -2,8 +2,12 @@
 
 > Elastic Beanstalk 등 추상화 도구 없이 VPC, ALB, ASG를 직접 수동 구성하여 인프라 전반에 대한 제어권을 확보했습니다.
 
-<!-- 아키텍처 구조도 이미지를 여기에 삽입 -->
-<!-- <img src="아키텍처_구조도_URL" alt="ShowPing V3 Infrastructure Architecture" /> -->
+---
+
+### 🔹 인프라 아키텍처 구조
+
+<img width="1197" height="897" alt="image" src="https://github.com/user-attachments/assets/9bf5e4a3-61c5-48e4-a482-6514565d1679" />
+
 
 ---
 
