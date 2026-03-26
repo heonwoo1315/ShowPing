@@ -15,9 +15,9 @@
 
 | 원칙 | 설명 |
 |------|------|
-| **제어권 확보** | EB 대신 수동 구성으로 인프라 전 계층에 대한 이해도 확보 |
+| **제어권 확보** | EB 대신 수동 구성으로 각 리소스의 동작 원리를 체득. 향후 Terraform/CloudFormation으로 Iac 전환 계획 |
 | **비용 효율성** | Cost Explorer 기반 분석으로 불필요한 NAT Gateway 식별 및 제거, 월 $24~30 절감 |
-| **고가용성** | Multi-AZ(2a, 2b) 구성으로 단일 AZ 장애 시에도 서비스 지속 |
+| **고가용성** | "Multi-AZ(2a, 2b) 서브넷을 모든 계층(App, DB)에 설계하여 HA 전환 기반을 확보. 현재는 단일 노드 운영, 향후 즉시 전환 가능" |
 | **계층형 보안** | ALB → EC2 → RDS로 이어지는 연쇄 보안그룹 + IAM IP 제한 정책 |
 
 ---
@@ -138,8 +138,8 @@ EC2 인스턴스(t3.micro, 15.164.132.246) 내부에서 Docker Compose로 전체
 
 | 보안 그룹 | 인바운드 규칙 | 설명 |
 |-----------|-------------|------|
-| **ShowPing-ALB-SG** | HTTP(80), HTTPS(443) ← `0.0.0.0/0` | 누구나 접속 가능한 정문 |
-| **ShowPing-EC2-SG** | 8080 ← `ShowPing-ALB-SG` | ALB를 통해서만 접근 가능 |
+| **ShowPing-ALB-SG** | HTTP(80), HTTPS(443) ← `0.0.0.0/0` | 외부 접속 정문 |
+| **ShowPing-EC2-SG** | 8080 ← `ShowPing-ALB-SG` | ALB 우회 접근 차단 |
 | **ShowPing-RDS-SG-FINAL** | 3306 ← `ShowPing-EC2-SG` + 관리자 IP(`183.102.62.130/32`) | EC2 및 관리자만 DB 접근 |
 
 **핵심:** EC2의 8080 포트에 `0.0.0.0/0`을 열지 않고 ALB 보안그룹 ID로만 제한하여, 로드밸런서를 우회한 직접 접근을 원천 차단했습니다.
@@ -155,10 +155,10 @@ EC2 인스턴스(t3.micro, 15.164.132.246) 내부에서 Docker Compose로 전체
 - Launch Template에 보안그룹, IAM Role 연결
 - 서브넷은 ASG에서 Multi-AZ(2a, 2b) 선택
 
-**Auto Scaling Group:**
-- Desired: 2 / Min: 2 / Max: 5
-- 스케일링 정책: CPU 평균 사용률 60% 대상 추적 (Target Tracking)
-- Sticky Session 활성화 (WebRTC/WebSocket 세션 유지를 위해 필수)
+**Auto Scaling Group 운영 전략:**
+- **Desired: 1 / Min: 1 / Max: 1**
+- **전략 포인트:** 현재는 데이터 정합성(Stateful 서비스 내부 운영) 제약으로 단일 노드 운영 중입니다. 하지만 인스턴스 장애 시 ASG의 **Self-healing** 기능을 통해 동일한 AMI로 자동 복구되도록 설정하여 최소한의 가용성을 확보했습니다.
+- **확장성:** 향후 상태 저장 서비스(DB, Redis 등) 외부화 시, 즉시 **스케일 아웃 정책(Target Tracking)**을 적용할 수 있도록 시작 템플릿 설계를 완료했습니다.
 
 **검증:** ASG Self-Healing(Unhealthy 인스턴스 자동 교체) 작동 확인. 대상 그룹 헬스체크 설정 최적화는 진행 중
 
@@ -220,3 +220,20 @@ GitHub Push (main) → Build (Gradle) → Docker Build & Push → SCP → EC2 De
 - **교훈:** IaC 도구나 마법사가 자동 생성한 리소스도 실제 필요 여부를 데이터로 검증해야 함
 
 </details>
+
+## ⚠️ 엔지니어링 트레이드오프 및 한계점 (Reflections)
+
+프로젝트를 진행하며 직면한 기술적 제약과 그에 따른 선택, 그리고 현재 구조의 한계점을 기록합니다.
+
+### 1. ASG 내 상태 저장 서비스(Stateful) 운영의 한계
+* **현황:** 비용 절감을 위해 Redis, MongoDB, Kafka를 EC2 내부 Docker Compose로 운영하고 있습니다.
+* **문제점:** Auto Scaling 발생 시 각 인스턴스가 독립된 데이터 저장소를 갖게 되어 세션 불일치 및 데이터 파편화가 발생할 수 있음을 인지하고 있습니다.
+* **해결 방향:** 실운영 환경에서는 AWS ElastiCache(Redis), DocumentDB(Mongo), MSK(Kafka) 등의 관리형 서비스를 활용하여 상태 저장 계층을 애플리케이션 계층과 완전히 분리하는 것이 정석이나, 현재는 비용 제약으로 단일 EC2에서 Docker Compose로 운영하며, ASG는 Self-healing(자동 복구) 용도로 활용 중입니다. 스케일 아웃이 필요한 시점에는 상태 저장 서비스를 외부 관리형 서비스로 분리하는 것이 선행되어야 합니다.
+
+### 2. 비용 최적화와 네트워크 보안의 균형
+* **결정:** NAT Gateway의 고정 비용(월 약 $30) 발생을 방지하기 위해 EC2를 Public Subnet에 배치했습니다.
+* **보안 보완:** 서버가 외부 노출되는 위험을 최소화하기 위해 보안 그룹(Security Group)을 ALB ID 기반으로 체이닝하여 로드밸런서를 통하지 않은 직접 접근을 원천 차단했습니다.
+* **향후 계획:** NAT Instance를 직접 구축하여 비용을 유지하면서도 Private Subnet으로 서버를 이전하는 구조적 개선을 계획 중입니다. 이를 위한 Private App 서브넷(private-1, private-2)은 이미 2개 AZ에 걸쳐 확보해둔 상태입니다.
+
+### 3. 리소스 제약(t3.micro) 하의 안정성 확보
+* **액션:** "Swap 메모리 설정을 통해 물리 메모리 한계를 우회했으며, 향후 JMeter + CloudWatch를 연동한 부하 테스트를 통해 병목 지점을 수치화하고 인스턴스 Right-sizing을 진행할 계획입니다."
