@@ -1,0 +1,147 @@
+.admin-container {
+    padding: 30px 40px;
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.admin-header h2 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.search-area {
+    display: flex;
+    gap: 8px;
+}
+
+.search-area input {
+    width: 280px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.search-area input:focus {
+    outline: none;
+    border-color: #38A7FF;
+}
+
+.search-area button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#searchBtn {
+    background-color: #38A7FF;
+    color: white;
+}
+
+#searchBtn:hover {
+    background-color: #1a8fe0;
+}
+
+#resetBtn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+#resetBtn:hover {
+    background-color: #ddd;
+}
+
+.member-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.member-table th,
+.member-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e8e8e8;
+    white-space: nowrap;
+}
+
+.member-table th {
+    background-color: #f5f7fa;
+    color: #555;
+    font-weight: bold;
+    border-top: 2px solid #38A7FF;
+}
+
+.member-table tbody tr:hover {
+    background-color: #f0f7ff;
+    cursor: pointer;
+}
+
+.member-table td.center-cell {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.role-admin {
+    background-color: #fff0e0;
+    color: #e07800;
+}
+
+.role-user {
+    background-color: #e8f4ff;
+    color: #1a72cc;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 24px;
+    padding-bottom: 20px;
+}
+
+.pagination button {
+    padding: 6px 14px;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #333;
+}
+
+.pagination button:hover {
+    background-color: #e8f4ff;
+    border-color: #38A7FF;
+}
+
+.pagination button.active {
+    background-color: #38A7FF;
+    color: white;
+    border-color: #38A7FF;
+}
+
+.pagination button:disabled {
+    color: #bbb;
+    cursor: default;
+    background-color: #f9f9f9;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>ShowPing - 유저 관리</title>
+  <link rel="stylesheet" th:href="@{/css/admin/members.css}">
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="admin-container">
+
+    <div class="admin-header">
+      <h2>유저 관리</h2>
+      <div class="search-area">
+        <input type="text" id="searchInput" placeholder="아이디 / 이름 / 이메일 검색">
+        <button id="searchBtn">검색</button>
+        <button id="resetBtn">전체 조회</button>
+      </div>
+    </div>
+
+    <table class="member-table">
+      <thead>
+      <tr>
+        <th>No</th>
+        <th>아이디</th>
+        <th>이름</th>
+        <th>이메일</th>
+        <th>전화번호</th>
+        <th>주소</th>
+        <th>역할</th>
+        <th>포인트</th>
+      </tr>
+      </thead>
+      <tbody id="memberTableBody">
+      <tr id="loadingRow">
+        <td colspan="8" class="center-cell">불러오는 중...</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script th:src="@{/js/csrf-setup.js}"></script>
+  <script th:src="@{/js/admin/members.js}"></script>
+</div>
+</body>
+</html>
