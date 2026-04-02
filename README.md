@@ -16,7 +16,7 @@
 | 원칙 | 설명 |
 |------|------|
 | **제어권 확보** | EB 대신 수동 구성으로 각 리소스의 동작 원리를 체득. 향후 Terraform/CloudFormation으로 Iac 전환 계획 |
-| **비용 효율성** | Cost Explorer 기반 분석으로 불필요한 NAT Gateway 식별 및 제거, 월 $24~30 절감 |
+| **비용 효율성** | Cost Explorer 기반 분석으로 불필요한 NAT Gateway 식별 및 제거, 월 $66 절감 |
 | **고가용성** | "Multi-AZ(2a, 2b) 서브넷을 모든 계층(App, DB)에 설계하여 HA 전환 기반을 확보. 현재는 단일 노드 운영, 향후 즉시 전환 가능" |
 | **계층형 보안** | ALB → EC2 → RDS로 이어지는 연쇄 보안그룹 + IAM IP 제한 정책 |
 
@@ -36,7 +36,7 @@
 | **Private** | ShowPing-subnet-private4-ap-northeast-2b | 10.0.176.0/20 | ap-northeast-2b | RDS (이중화) |
 
 **왜 EC2를 퍼블릭 서브넷에 두었는가?**
-> NAT Gateway는 AZ당 월 약 4\~5만원의 비용이 발생합니다. EC2를 퍼블릭 서브넷에 배치하되 보안그룹으로 ALB를 통해서만 트래픽을 수신하도록 제한하여, NAT Gateway 없이도 보안성을 확보했습니다. VPC 생성 시 자동 생성된 NAT Gateway 2개는 Cost Explorer 분석을 통해 불필요한 유휴 리소스로 식별한 후 삭제하여 월 $24\~30의 비용을 절감했습니다.
+> NAT Gateway는 AZ당 월 약 4\~5만원의 비용이 발생합니다. EC2를 퍼블릭 서브넷에 배치하되 보안그룹으로 ALB를 통해서만 트래픽을 수신하도록 제한하여, NAT Gateway 없이도 보안성을 확보했습니다. VPC 생성 시 자동 생성된 NAT Gateway 2개는 Cost Explorer 분석을 통해 불필요한 유휴 리소스로 식별한 후 삭제하여 월 $66의 비용을 절감했습니다. (3월 총 청구액 $141.48 대비 약 47% 절감)
 
 **네트워크 연결:**
 - `ShowPing-igw`: 인터넷 게이트웨이 — VPC에 1:1로 attach되어 외부 통신의 유일한 출입구 역할. 퍼블릭 서브넷의 라우팅 테이블이 `0.0.0.0/0 → IGW`를 가리킴으로써 해당 서브넷이 퍼블릭으로 동작
@@ -216,7 +216,7 @@ GitHub Push (main) → Build (Gradle) → Docker Build & Push → SCP → EC2 De
 - **현상:** VPC 생성 마법사("VPC 등" 옵션)가 자동 생성한 NAT Gateway 2개가 Available 상태로 비용 발생 중
 - **분석:** EC2는 퍼블릭 서브넷에 위치하여 IGW로 직접 인터넷 통신 가능. RDS는 Private 서브넷에 있지만 외부로 나갈 일이 없음(연결을 받기만 하는 수동적 서비스). Redis/MongoDB/Kafka는 EC2 내부 Docker 컨테이너이므로 NAT Gateway와 무관. 즉, NAT Gateway를 사용하는 리소스가 없음
 - **해결:** Cost Explorer로 비용 분석 후 NAT Gateway 2개 삭제, Private 서브넷 라우팅 테이블의 NAT 경로 제거
-- **결과:** 월 $24~30 비용 절감
+- **결과:** 월 $66 비용 절감
 - **교훈:** IaC 도구나 마법사가 자동 생성한 리소스도 실제 필요 여부를 데이터로 검증해야 함
 
 </details>
