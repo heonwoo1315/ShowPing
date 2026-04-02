@@ -68,7 +68,8 @@ public class AdminServiceImpl implements AdminService {
         if (keyword == null || keyword.isBlank()) {
             return memberRepository.findAll(pageable).map(AdminMemberResponseDto::new);
         }
-        return memberRepository.findByKeyword(keyword.trim(), pageable)
+        String ftKeyword = keyword.trim() + "*";
+        return memberRepository.findByKeyword(ftKeyword, pageable)
                 .map(AdminMemberResponseDto::new);
     }
 }
