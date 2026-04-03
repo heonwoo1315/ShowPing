@@ -7,12 +7,14 @@ import com.ssginc.showpingrefactoring.common.jwt.JwtTokenProvider;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.AdminLoginRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.AdminMemberResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.response.PageResponse;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.entity.MemberRole;
 import com.ssginc.showpingrefactoring.domain.member.repository.MemberRepository;
 import com.ssginc.showpingrefactoring.domain.member.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,11 +66,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<AdminMemberResponseDto> searchMembers(String keyword, Pageable pageable) {
+    @Cacheable(value = "memberSearch", key = "#keyword + '_' + #pageable.pageNumber")
+    public PageResponse<AdminMemberResponseDto> searchMembers(String keyword, Pageable pageable) {
         if (keyword == null || keyword.isBlank()) {
-            return memberRepository.findAll(pageable).map(AdminMemberResponseDto::new);
+            return PageResponse.from(memberRepository.findAll(pageable).map(AdminMemberResponseDto::new));
         }
-        return memberRepository.findByKeyword(keyword.trim(), pageable)
-                .map(AdminMemberResponseDto::new);
+        return PageResponse.from(memberRepository.findByKeyword(keyword.trim(), pageable)
+                .map(AdminMemberResponseDto::new));
     }
 }

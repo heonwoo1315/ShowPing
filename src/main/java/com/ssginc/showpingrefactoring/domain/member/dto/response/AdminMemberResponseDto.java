@@ -3,18 +3,20 @@ package com.ssginc.showpingrefactoring.domain.member.dto.response;
 import com.ssginc.showpingrefactoring.domain.member.entity.Member;
 import com.ssginc.showpingrefactoring.domain.member.entity.MemberRole;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class AdminMemberResponseDto {
 
-    private final Long memberNo;
-    private final String memberId;
-    private final String memberName;
-    private final String memberEmail;
-    private final String memberPhone;
-    private final String memberAddress;
-    private final MemberRole memberRole;
-    private final Long memberPoint;
+    private Long memberNo;
+    private String memberId;
+    private String memberName;
+    private String memberEmail;
+    private String memberPhone;
+    private String memberAddress;
+    private MemberRole memberRole;
+    private Long memberPoint;
 
     public AdminMemberResponseDto(Member member) {
         this.memberNo = member.getMemberNo();

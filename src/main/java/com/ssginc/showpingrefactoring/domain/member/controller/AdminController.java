@@ -3,6 +3,7 @@ package com.ssginc.showpingrefactoring.domain.member.controller;
 import com.ssginc.showpingrefactoring.domain.member.dto.request.AdminLoginRequestDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.AdminMemberResponseDto;
 import com.ssginc.showpingrefactoring.domain.member.dto.response.LoginResponseDto;
+import com.ssginc.showpingrefactoring.domain.member.dto.response.PageResponse;
 import com.ssginc.showpingrefactoring.domain.member.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,7 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "관리자 권한 없음")
     })
     @GetMapping("/api/admin/members/search")
-    public ResponseEntity<Page<AdminMemberResponseDto>> searchMembers(
+    public ResponseEntity<PageResponse<AdminMemberResponseDto>> searchMembers(
             @RequestParam(required = false) String keyword,
             @PageableDefault(size = 20, sort = "memberNo", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(adminService.searchMembers(keyword, pageable));
